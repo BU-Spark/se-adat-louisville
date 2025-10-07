@@ -4,12 +4,13 @@
       <loc>https://anti-displacement.com/</loc>
    </url>
    <url>
-      <loc>https://anti-displacement.com/assessment</loc>
-   </url>
-   <url>
       <loc>https://anti-displacement.com/resources</loc>
    </url>
    <url>
-      <loc>https://anti-displacement.com/resources/eligibility</loc>
+      <loc>https://anti-displacement.com/assessment</loc>
+   </url>
+   <url>
+      <loc>https://anti-displacement.com/assessment/eligibility</loc>
    </url>
 </urlset>
+
