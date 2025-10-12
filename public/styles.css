@@ -1,0 +1,903 @@
+/* ===================================
+   Global Resets & Base Styles
+=================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --content-left: 83px;
+  --content-max-width: 1170px;
+}
+
+body {
+  font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #000000ad;
+  background-color: #ffffff;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===================================
+   Layout
+=================================== */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 46px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  background-image: url('/assets/education/skyhouse.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-bottom: 73px;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 55px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 146px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-shadow: 0px 4px 4px #888888ff;
+  background-color: #0000007f;
+  padding: 14px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+  width: 94%;
+}
+
+.header-nav {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  gap: 17px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 32%;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.nav-link {
+  padding: 0 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+}
+
+.nav-text {
+  font-size: 20px;
+  font-family: Jura, sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffffff;
+  width: auto;
+}
+
+.hero-text-section {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+  margin: 0 var(--content-left);
+}
+
+.hero-title {
+  font-size: 50px;
+  font-family: MuseoModerno, sans-serif;
+  font-weight: 400;
+  line-height: 52px;
+  text-align: left;
+  color: #ffffff;
+  width: 76%;
+}
+
+.hero-description {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+}
+
+.hero-icon {
+  width: 102px;
+  height: 102px;
+}
+
+.hero-desc-text {
+  font-size: 16px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: left;
+  color: #ffffff;
+  width: 40%;
+  margin-left: 20px;
+}
+
+/* ===================================
+   Content Sections
+=================================== */
+.content-section {
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.section-header {
+  padding: 10px;
+  margin: 0 78px;
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.section-icon-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  height: auto;
+  border: 3px solid #ffba37;
+  border-radius: 26px;
+  padding: 12px;
+  background-color: #ffba37;
+}
+
+.section-icon {
+  width: 28px;
+  height: 30px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 600;
+  line-height: 30px;
+  text-align: left;
+  color: #00000093;
+  width: auto;
+}
+
+.divider-line {
+  background-color: #0000004c;
+  width: 100%;
+  height: 1px;
+  margin-top: 26px;
+}
+
+.scroll-indicator {
+  padding: 6px;
+  margin: 0 32px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+}
+
+.scroll-text-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
+.scroll-text {
+  font-size: 20px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 700;
+  line-height: 25px;
+  text-align: center;
+  color: #000000ad;
+  width: auto;
+}
+
+.scroll-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+}
+
+.main-content {
+  margin: 20px var(--content-left) 0 var(--content-left);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+}
+
+.content-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.content-left {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-self: center;
+  flex: 1;
+}
+
+.text-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 90%;
+}
+
+.main-text {
+  font-size: 16px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: left;
+  color: #000000ad;
+  width: 100%;
+}
+
+.content-image {
+  flex: 1;
+  border-radius: 10px;
+  margin-top: -34px;
+}
+
+.image-caption {
+  font-size: 12px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #000000;
+  width: 64%;
+  margin-left: 62px;
+}
+
+.content-right {
+  display: flex;
+  flex-direction: column;
+  gap: 118px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 46%;
+}
+
+.right-content-top {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+}
+
+.right-image {
+  flex: 1;
+  border-radius: 10px;
+}
+
+.right-caption {
+  font-size: 12px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #000000;
+  width: auto;
+}
+
+.right-content-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.right-subtitle {
+  font-size: 24px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 30px;
+  text-align: left;
+  color: #6b6b6b;
+  width: auto;
+}
+
+.right-text {
+  font-size: 20px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 400;
+  line-height: 28px;
+  text-align: left;
+  color: #000000ad;
+  width: 100%;
+}
+
+/* ===================================
+   Overview Section
+=================================== */
+.overview-title {
+  font-size: 32px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: left;
+  color: #000000ad;
+  align-self: flex-start;
+  margin: 50px 0 0 var(--content-left);
+}
+
+.overview-text {
+  color: rgba(0, 0, 0, 0.74);
+  font-size: 24px;
+  font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 400;
+  line-height: 32px;
+  overflow-wrap: break-word;
+  max-width: var(--content-max-width);
+  margin: 10px auto 0 var(--content-left);
+}
+
+.u { text-decoration: underline; }
+.strong { font-weight: 700; }
+
+/* ===================================
+   Rent Burden Section
+=================================== */
+.rent-burden-section {
+  margin: 42px auto 0 var(--content-left);
+  max-width: var(--content-max-width);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+}
+
+.rent-burden-content {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.rent-burden-title {
+  font-size: 32px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 400;
+  line-height: 25px;
+  text-align: left;
+  color: #000000ad;
+  width: auto;
+}
+
+.rent-burden-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 73px;
+}
+
+.rent-burden-quote {
+  max-width: 600px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 36px;
+  font-family: Instrument Sans;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 40px;
+  word-wrap: break-word;
+}
+
+.rent-burden-description {
+  max-width: 600px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 20px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 400;
+  line-height: 28px;
+  word-wrap: break-word;
+}
+
+/* ===================================
+   Chart Section
+=================================== */
+.chart-section {
+  margin: 36px auto 0 var(--content-left);
+  max-width: var(--content-max-width);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  border: 3px solid #eaeaea;
+  border-radius: 14px;
+  padding: 14px;
+  background-color: #ffffff;
+}
+
+.chart-image {
+  width: 88%;
+  border-radius: 14px;
+}
+
+.chart-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  justify-content: flex-start;
+  align-items: flex-end;
+  width: auto;
+}
+
+.chart-sidebar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  border: 3px solid #eaeaea;
+  border-radius: 14px;
+  padding: 44px 14px;
+  background-color: #ffffff;
+}
+
+.chart-sidebar-image {
+  width: 100%;
+  border-radius: 14px;
+}
+
+.learn-more-btn {
+  font-size: 16px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: left;
+  color: #ffffff;
+  width: auto;
+  border: 2px solid #d58c00;
+  border-radius: 6px;
+  padding: 6px 18px;
+  margin-right: 4px;
+  background-color: #ffba37;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ===================================
+   Housing Mismatch Section
+=================================== */
+.housing-mismatch-section {
+  display: flex;
+  flex-direction: column;
+  gap: 46px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+  margin-left: var(--content-left);
+  max-width: var(--content-max-width);
+}
+
+.housing-mismatch-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.housing-mismatch-text {
+  font-size: 20px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: left;
+  color: #000000ad;
+  width: 48%;
+}
+
+.housing-mismatch-right {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  justify-content: flex-start;
+  align-items: flex-end;
+  flex: 1;
+  margin-top: 0;
+}
+
+.housing-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  border: 3px solid #eaeaea;
+  border-radius: 14px;
+  padding: 16px 12px;
+}
+
+.housing-chart-image {
+  width: 98%;
+  border-radius: 14px;
+}
+
+/* ===================================
+   Role Section
+=================================== */
+.role-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+}
+
+.role-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  height: auto;
+  border: 3px solid #ffba37;
+  border-radius: 26px;
+  padding: 12px 10px;
+  background-color: #ffba37;
+}
+
+.role-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.role-title {
+  font-size: 24px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 600;
+  line-height: 30px;
+  text-align: left;
+  color: #00000093;
+  width: auto;
+}
+
+.role-cards-section {
+  display: flex;
+  flex-direction: column;
+  gap: 42px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+  margin: 48px 0 0 24px;
+}
+
+.role-cards-divider {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.role-cards-container {
+  display: flex;
+  gap: 36px;
+  flex: 1;
+  padding: 0 97px 0 97px;
+}
+
+.role-card {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 328px;
+  height: auto;
+  border: 3px solid #eaeaea;
+  border-radius: 20px;
+  padding: 44px 46px;
+  background-color: #fcf8f8ad;
+}
+
+.role-card-image {
+  border-radius: 52px;
+  margin-top: 4px;
+}
+
+.role-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.role-card-title {
+  font-size: 20px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 700;
+  line-height: 25px;
+  text-align: left;
+  color: #004596;
+  width: auto;
+}
+
+.role-card-description {
+  font-size: 15px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 400;
+  line-height: 18px;
+  text-align: left;
+  color: #555555;
+  width: 100%;
+}
+
+/* ===================================
+   ADAT Usage Section
+=================================== */
+.adat-usage-section {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+  margin-top: 104px;
+}
+
+.adat-usage-header {
+  padding: 10px;
+  margin: 0 78px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+}
+
+.adat-usage-icon-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  height: auto;
+  border: 3px solid #ffba37;
+  border-radius: 26px;
+  padding: 12px 8px;
+  background-color: #ffba37;
+}
+
+.adat-usage-icon {
+  width: auto;
+}
+
+.adat-usage-title {
+  font-size: 24px;
+  font-family: Instrument Sans, sans-serif;
+  font-weight: 600;
+  line-height: 30px;
+  text-align: left;
+  color: #00000093;
+  width: auto;
+  margin-left: 32px;
+}
+
+.adat-diagram-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.adat-diagram-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.adat-diagram-divider {
+  background-color: #0000004c;
+  width: flex-1;
+  height: 1px;
+  margin-left: 88px;
+}
+
+.adat-diagram-image {
+  flex: 1;
+  margin: 0 139px;
+}
+
+/* ===================================
+   Typography Helpers
+=================================== */
+.text-bold { font-weight: 700; }
+.text-italic { font-style: italic; }
+.text-underline { text-decoration: underline; }
+.text-uppercase { text-transform: uppercase; }
+.text-large { font-size: 32px; line-height: 28px; }
+
+/* ===================================
+   Video Wrapper (Figma 555x305)
+=================================== */
+.video-wrapper {
+  width: 555px;
+  height: 305px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ===================================
+   Responsive
+=================================== */
+@media (max-width: 639px) {
+  .hero-title { font-size: 32px; line-height: 36px; width: 90%; }
+  .hero-desc-text { font-size: 14px; line-height: 18px; width: 60%; margin-left: 16px; }
+  .hero-text-section { margin: 0 24px; }
+  .section-header { margin: 0 24px; flex-direction: column; gap: 16px; }
+  .section-title { font-size: 20px; line-height: 26px; text-align: center; }
+  .main-content { margin: 20px 24px 0 24px; }
+  .content-row { flex-direction: column; gap: 24px; }
+  .content-left { width: 100%; }
+  .content-right { width: 100%; gap: 32px; }
+  .main-text, .right-text { font-size: 14px; line-height: 20px; }
+
+  .overview-title { font-size: 24px; line-height: 32px; margin: 32px 0 0 24px; }
+  .overview-text { font-size: 16px; line-height: 22px; width: 90%; margin: 10px 0 0 24px; }
+
+  .rent-burden-section { margin: 24px 24px 0 24px; }
+  .rent-burden-row { flex-direction: column; gap: 16px; }
+  .rent-burden-quote { width: 100%; font-size: 20px; line-height: 26px; }
+  .rent-burden-description { width: 100%; font-size: 14px; line-height: 20px; }
+
+  .chart-section { margin: 24px 24px 0 24px; flex-direction: column; gap: 16px; }
+  .chart-sidebar { width: 100%; align-items: center; }
+
+  .housing-mismatch-content { flex-direction: column; gap: 24px; width: 90%; }
+  .housing-mismatch-text { width: 100%; font-size: 14px; line-height: 20px; }
+  .housing-mismatch-right { width: 100%; margin-top: 0; align-items: center; }
+
+  .role-cards-container { flex-direction: column; padding: 0 24px; gap: 24px; }
+  .role-card { width: 100%; padding: 32px 24px; }
+
+  .adat-usage-header { margin: 0 24px; flex-direction: column; gap: 16px; }
+  .adat-usage-title { font-size: 20px; line-height: 26px; text-align: center; margin-left: 0; }
+  .adat-diagram-image { margin: 0 24px; }
+
+  .video-wrapper { width: 100%; height: auto; aspect-ratio: 555/305; }
+  .right-video { width: 100%; height: 100%; }
+}
+
+@media (min-width: 640px) {
+  .hero-title { font-size: 60px; line-height: 62px; }
+  .hero-desc-text { font-size: 18px; line-height: 22px; }
+  .main-text, .right-text { font-size: 18px; line-height: 24px; }
+  .section-title { font-size: 28px; line-height: 34px; }
+}
+
+@media (min-width: 768px) {
+  .hero-title { font-size: 80px; line-height: 82px; }
+  .hero-desc-text { font-size: 20px; line-height: 24px; }
+  .main-text, .right-text { font-size: 20px; line-height: 28px; }
+  .section-title { font-size: 32px; line-height: 38px; }
+  .role-cards-container { flex-direction: row; padding: 0 56px 0 97px; }
+  .role-card { width: 328px; }
+}
+
+@media (min-width: 1024px) {
+  .hero-title { font-size: 100px; line-height: 103px; }
+  .hero-desc-text { font-size: 25px; line-height: 30px; margin-left: 40px; }
+  .section-title { font-size: 39px; line-height: 48px; }
+  .content-row { flex-direction: row; }
+  .rent-burden-row { flex-direction: row; }
+  .chart-section { flex-direction: row; }
+  .housing-mismatch-content { flex-direction: row; }
+}
+
+@media (min-width: 1280px) {
+  .main-container { gap: 92px; }
+  .hero-content { gap: 110px; }
+  .hero-text-section { gap: 68px; margin: 0 146px; }
+}
