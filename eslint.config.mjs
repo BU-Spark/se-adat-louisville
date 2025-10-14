@@ -1,29 +1,18 @@
 // @ts-check
 
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { FlatCompat } from '@eslint/eslintrc';
-import { fixupConfigRules } from '@eslint/compat';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: pluginJs.configs.recommended,
-});
+import eslintPluginAstro from 'eslint-plugin-astro';
 
 const config = [
   {
     // Global ignores
-    ignores: ['.next/*', 'node_modules/', 'coverage/', 'dist/'],
+    ignores: ['.astro/*', 'node_modules/', 'coverage/', 'dist/'],
   },
   {
     // General file settings
-    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx,astro}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -46,11 +35,27 @@ const config = [
       'react/react-in-jsx-scope': 'off',
     },
   },
-  // This will load rules from 'eslint-config-next'
-  ...fixupConfigRules(compat.extends('next/core-web-vitals')),
+  // Astro ESLint plugin recommended config
+  ...eslintPluginAstro.configs.recommended,
 
-  // Prettier - MUST be last to override other formatting rules
+  // Prettier - applied before Astro overrides
   eslintPluginPrettierRecommended,
+
+  // Override rules specifically for Astro files - MUST be after prettier to take precedence
+  {
+    files: ['**/*.astro'],
+    rules: {
+      'prettier/prettier': 'off', // Disable prettier for Astro files to avoid parsing conflicts
+      '@typescript-eslint/triple-slash-reference': 'off',
+    },
+  },
+  // Allow TS triple-slash in the canonical Astro env types file
+  {
+    files: ['src/env.d.ts'],
+    rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
+    },
+  },
 ];
 
 export default config;
