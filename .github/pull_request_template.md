@@ -1,4 +1,4 @@
-# Pull Request: [Your Concise Title Here]
+# Pull Request:
 
 ## Related Issue(s)
 
