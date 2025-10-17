@@ -32,7 +32,7 @@ Provide a clear and concise description of the changes.
 - What are the key changes?
 -->
 
-Creates and formats the Landing Page for the frontend of Louisville's deployment of the ADAT tool. Matches the proposed figma design. Buttons are currently clickable, but waiting on other pages to be added to direct to the correct page.
+Creates and formats the Landing Page for the frontend of Louisville's deployment of the ADAT tool. Matches the proposed figma design. Buttons are currently clickable, but waiting on other pages to be added to direct to the correct page. Additionally a gray translucent box was added behind the block of text to improve readability on a vertical/mobile display.
 
 ## How to Test / Verification Steps
 
