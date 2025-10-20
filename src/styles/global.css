@@ -1,19 +1,7 @@
-/* Ultra thin divider for AssessmentForm */
-.ultra-thin-divider {
-  position: relative;
-  height: 1px;
-  width: 100%;
-}
-.ultra-thin-divider::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.10);
-  pointer-events: none;
-}
+/* Import Instrument Sans from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;700&display=swap');
+
+
 /* Global CSS for the entire site */
 
 /* CSS variables */
@@ -30,9 +18,6 @@ html, body {
   margin: 0;
   min-height: 100%;
 }
-
-/* Import Instrument Sans from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@200;400;700&display=swap');
 
 html {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans,
