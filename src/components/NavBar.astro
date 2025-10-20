@@ -1,0 +1,79 @@
+---
+const navLinks = [
+  { href: '/assessment', label: 'ASSESSMENT' },
+  { href: '/resources', label: 'RESOURCES' },
+];
+---
+
+<nav class="navbar">
+  <div class="left-section">
+    <a href="/">
+      <img src="/logo.png" alt="Logo" class="logo" />
+    </a>
+    <ul class="nav-links">
+      {
+        navLinks.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600;700&display=swap');
+
+  .navbar {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.15);
+    height: 83px;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'Jura', sans-serif;
+  }
+
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .logo {
+    width: 49px;
+    height: 49px;
+    object-fit: contain;
+    cursor: pointer;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition:
+      color 0.2s,
+      text-decoration 0.2s;
+  }
+
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+    }
+  }
+</style>
