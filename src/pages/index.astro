@@ -1,95 +1,134 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import background from '../assets/background.png';
-import titleHouse from '../assets/title-house.png';
+import '../styles/home.css';
+import Button from '../components/Button.astro';
+import { ThemeToggle } from '../components/ThemeToggle/ThemeToggle';
+import { FeatureCard } from '../components/FeatureCard';
+
+const features = [
+  {
+    id: 'modern-stack',
+    icon: '🚀',
+    title: 'Modern Stack',
+    description: 'Astro 5, React 19, TypeScript. Fast, efficient, and type-safe development.',
+    details: `This template utilizes a cutting-edge stack for building high-performance, scalable, and maintainable web applications.
+
+Astro (v5+):
+• Static Site Generation with Islands Architecture
+• Zero JS by default, React islands when needed
+• Built-in optimizations and performance
+
+React (v19):
+• Built-in Document Metadata, Actions, and enhanced Suspense
+• Used only for interactive components (islands)
+• Flexible server integration when you need dynamic UI
+
+TypeScript:
+• Full type safety across the entire application
+• Enhanced developer experience with IntelliSense
+• Compile-time error detection`,
+  },
+  {
+    id: 'styling-freedom',
+    icon: '🎨',
+    title: 'Styling Freedom',
+    description: 'Styling agnostic! Choose Tailwind, CSS Modules, Emotion, or your favorite solution.',
+    details: `This template does not impose a specific styling library, giving you the flexibility to integrate the solution that best fits your project needs and team expertise.
+
+Flexible Options:
+• Scoped CSS: Built-in Astro scoped styling
+• CSS Modules: Component-scoped CSS with classes
+• Tailwind CSS: Utility-first CSS framework
+• Styled Components: CSS-in-JS with React islands
+• SCSS/Sass: Enhanced CSS with variables and mixins`,
+  },
+  {
+    id: 'dev-tools',
+    icon: '🛠️',
+    title: 'Dev Tools Ready',
+    description: 'ESLint, Prettier, Husky hooks, and Vitest testing pre-configured for quality code.',
+    details: `Automated linting, formatting, and pre-commit/pre-push checks ensure code consistency and quality. A solid testing foundation with Vitest and React Testing Library is ready for you to build upon.
+
+Code Quality Tools:
+• ESLint: Linting with Astro-specific rules
+• Prettier: Code formatting with Astro support
+• Husky: Git hooks for quality gates
+• Vitest: Fast unit testing framework
+• TypeScript: Compile-time type checking`,
+  },
+  {
+    id: 'responsive-design',
+    icon: '📱',
+    title: 'Responsive Design',
+    description: 'Built with a responsive layout in mind. Looks great on all devices.',
+    details: `The foundational layout uses modern CSS techniques that adapt to various screen sizes. The provided example components and page structure serve as a starting point for building fully responsive user interfaces.
+
+Responsive Features:
+• Mobile-First: Designed for mobile, enhanced for desktop
+• Flexible Grid: CSS Grid and Flexbox layouts
+• Breakpoint System: Consistent responsive breakpoints
+• Touch Friendly: Optimized for touch interactions`,
+  },
+];
+
+// Split features into two columns
+const column1Features = features.filter((_, index) => index % 2 === 0);
+const column2Features = features.filter((_, index) => index % 2 === 1);
 ---
 
-<Layout>
-  --- ---
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <title>Anti-Displacement Assessment Tool</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;700&family=MuseoModerno:wght@400;700;900&display=swap"
-        rel="stylesheet"
-      />
-    </head>
-    <body class="bg-blue-100" style="font-family: 'Instrument Sans', sans-serif;">
-      <main class="relative min-h-screen">
-        <!-- Background Image -->
-        <div class="fixed inset-0 z-0">
-          <img
-            src={background.src}
-            alt="Construction site"
-            class="w-full h-full object-cover object-top"
-            style={{
-              position: 'absolute',
-              top: '200px',
-              left: '0',
-              width: '100%',
-              height: '120%',
-              transform: 'scale(1.7) translateX(20%)',
-              filter: 'saturate(1.5) contrast(1.05)',
-            }}
-          />
-          <div class="absolute inset-0 bg-blue-500 bg-opacity-0"></div>
-        </div>
+<Layout title="Astro Starter Template">
+  <div class="container">
+    <div class="theme-toggle-container">
+      <ThemeToggle client:load />
+    </div>
 
-        <!-- Content -->
-        <div class="relative z-10 max-w-4xl pl-24 pr-12 py-28 text-white">
-          <!-- Title -->
-          <h1
-            class="text-5xl md:text-6xl mb-6 leading-tight"
-            style="font-family: 'MuseoModerno', cursive; font-weight: 400;"
-          >
-            <span style="display: inline-block; vertical-align: bottom; height: 1em;">
-              <img
-                src={titleHouse.src}
-                alt="A"
-                style="height: 1em; width: auto; display: inline; margin-right: 0.05em; position: relative; top: -0.18em;"
+    <main class="page-main">
+      <section class="hero-section">
+        <h1 class="title">Spark Your Next Creation! ✨</h1>
+        <p class="subtitle">
+          An Astro & TypeScript template designed for rapid development and learning industry best practices.
+        </p>
+        <div class="cta-buttons">
+          <Button variant="primary" size="large" href="https://docs.astro.build"> Explore Astro Docs </Button>
+        </div>
+      </section>
+
+      <section class="features-container">
+        <div class="feature-column">
+          {
+            column1Features.map((feature) => (
+              <FeatureCard
+                key={feature.id}
+                id={feature.id}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                details={feature.details}
+                client:load
               />
-            </span>nti-Displacement Assessment Tool
-          </h1>
-
-          <!-- CTA Button -->
-          <a
-            href="/assessment"
-            class="inline-block
-            text-white
-            font-semibold
-            text-lg
-            px-5
-            py-1
-            rounded-md
-            shadow-md
-            mb-10
-            border-2"
-            style="background-color: #FFBA37; border-color: #D68C00;"
-          >
-            Take Assessment
-          </a>
-          <div class="bg-gray-500 bg-opacity-60 p-4 max-w-md rounded">
-            <!-- Subtitle -->
-            <h2 class="text-xl font-bold mb-3">Required by Law. Powered by Purpose.</h2>
-
-            <!-- Description -->
-            <p class="max-w-sm text-white text-sm leading-relaxed">
-              New residential developments seeking Louisville Metro support must meet the criteria set by the
-              Anti-Displacement Assessment Tool (ADAT) to make sure new subsidized projects mitigate residential
-              displacement for vulnerable populations and contribute to closing the affordable housing gap in
-              Louisville.
-            </p>
-
-            <!-- Learn More Link -->
-          </div>
-          <div class="mt-6">
-            <a href="/education" class="text-white font-bold underline">Learn more</a>
-          </div>
+            ))
+          }
         </div>
-      </main>
-    </body>
-  </html>
+        <div class="feature-column">
+          {
+            column2Features.map((feature) => (
+              <FeatureCard
+                key={feature.id}
+                id={feature.id}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                details={feature.details}
+                client:load
+              />
+            ))
+          }
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>This template is a launchpad for your amazing projects. Happy coding!</p>
+    </footer>
+  </div>
 </Layout>
