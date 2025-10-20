@@ -4,92 +4,89 @@ import background from '../assets/background.png';
 import titleHouse from '../assets/title-house.png';
 ---
 
-<Layout>
-  --- ---
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <title>Anti-Displacement Assessment Tool</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;700&family=MuseoModerno:wght@400;700;900&display=swap"
-        rel="stylesheet"
-      />
-    </head>
-    <body class="bg-blue-100" style="font-family: 'Instrument Sans', sans-serif;">
-      <main class="relative min-h-screen">
-        <!-- Background Image -->
-        <div class="fixed inset-0 z-0">
-          <img
-            src={background.src}
-            alt="Construction site"
-            class="w-full h-full object-cover object-top"
-            style={{
-              position: 'absolute',
-              top: '200px',
-              left: '0',
-              width: '100%',
-              height: '120%',
-              transform: 'scale(1.7) translateX(20%)',
-              filter: 'saturate(1.5) contrast(1.05)',
-            }}
-          />
-          <div class="absolute inset-0 bg-blue-500 bg-opacity-0"></div>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Anti-Displacement Assessment Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;700&family=MuseoModerno:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-blue-100" style="font-family: 'Instrument Sans', sans-serif;">
+    <main class="relative min-h-screen">
+      <!-- Background Image -->
+      <div class="fixed inset-0 z-0">
+        <img
+          src={background.src}
+          alt="Construction site"
+          class="w-full h-full object-cover object-top"
+          style={{
+            position: 'absolute',
+            top: '200px',
+            left: '0',
+            width: '100%',
+            height: '120%',
+            transform: 'scale(1.7) translateX(20%)',
+            filter: 'saturate(1.5) contrast(1.05)',
+          }}
+        />
+        <div class="absolute inset-0 bg-blue-500 bg-opacity-0"></div>
+      </div>
+
+      <!-- Content -->
+      <div class="relative z-10 max-w-4xl pl-24 pr-12 py-28 text-white">
+        <!-- Title -->
+        <h1
+          class="text-5xl md:text-6xl mb-6 leading-tight"
+          style="font-family: 'MuseoModerno', cursive; font-weight: 400;"
+        >
+          <span style="display: inline-block; vertical-align: bottom; height: 1em;">
+            <img
+              src={titleHouse.src}
+              alt="A"
+              style="height: 1em; width: auto; display: inline; margin-right: 0.05em; position: relative; top: -0.18em;"
+            />
+          </span>nti-Displacement Assessment Tool
+        </h1>
+
+        <!-- CTA Button -->
+        <a
+          href="/assessment"
+          class="inline-block
+          text-white
+          font-semibold
+          text-lg
+          px-5
+          py-1
+          rounded-md
+          shadow-md
+          mb-10
+          border-2"
+          style="background-color: #FFBA37; border-color: #D68C00;"
+        >
+          Take Assessment
+        </a>
+        <div class="bg-gray-500 bg-opacity-60 p-4 max-w-md rounded">
+          <!-- Subtitle -->
+          <h2 class="text-xl font-bold mb-3">Required by Law. Powered by Purpose.</h2>
+
+          <!-- Description -->
+          <p class="max-w-sm text-white text-sm leading-relaxed">
+            New residential developments seeking Louisville Metro support must meet the criteria set by the
+            Anti-Displacement Assessment Tool (ADAT) to make sure new subsidized projects mitigate residential
+            displacement for vulnerable populations and contribute to closing the affordable housing gap in
+            Louisville.
+          </p>
+
+          <!-- Learn More Link -->
         </div>
-
-        <!-- Content -->
-        <div class="relative z-10 max-w-4xl pl-24 pr-12 py-28 text-white">
-          <!-- Title -->
-          <h1
-            class="text-5xl md:text-6xl mb-6 leading-tight"
-            style="font-family: 'MuseoModerno', cursive; font-weight: 400;"
-          >
-            <span style="display: inline-block; vertical-align: bottom; height: 1em;">
-              <img
-                src={titleHouse.src}
-                alt="A"
-                style="height: 1em; width: auto; display: inline; margin-right: 0.05em; position: relative; top: -0.18em;"
-              />
-            </span>nti-Displacement Assessment Tool
-          </h1>
-
-          <!-- CTA Button -->
-          <a
-            href="/assessment"
-            class="inline-block
-            text-white
-            font-semibold
-            text-lg
-            px-5
-            py-1
-            rounded-md
-            shadow-md
-            mb-10
-            border-2"
-            style="background-color: #FFBA37; border-color: #D68C00;"
-          >
-            Take Assessment
-          </a>
-          <div class="bg-gray-500 bg-opacity-60 p-4 max-w-md rounded">
-            <!-- Subtitle -->
-            <h2 class="text-xl font-bold mb-3">Required by Law. Powered by Purpose.</h2>
-
-            <!-- Description -->
-            <p class="max-w-sm text-white text-sm leading-relaxed">
-              New residential developments seeking Louisville Metro support must meet the criteria set by the
-              Anti-Displacement Assessment Tool (ADAT) to make sure new subsidized projects mitigate residential
-              displacement for vulnerable populations and contribute to closing the affordable housing gap in
-              Louisville.
-            </p>
-
-            <!-- Learn More Link -->
-          </div>
-          <div class="mt-6">
-            <a href="/education" class="text-white font-bold underline">Learn more</a>
-          </div>
+        <div class="mt-6">
+          <a href="/education" class="text-white font-bold underline">Learn more</a>
         </div>
-      </main>
-    </body>
-  </html>
-</Layout>
+      </div>
+    </main>
+  </body>
+</html>
