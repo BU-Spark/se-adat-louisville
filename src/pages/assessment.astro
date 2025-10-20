@@ -1,10 +1,13 @@
 ---
+import Layout from '../layouts/Layout.astro';
 import AssessmentForm from '../components/AssessmentForm';
 ---
 
-<div class="min-h-screen bg-gray-50 font-sans">
-  <!-- Map Section (Astro Island for React component) -->
-  <div class="w-full bg-gray-200 relative">
-    <AssessmentForm client:load />
+<Layout title="Assessment">
+  <div class="min-h-screen bg-gray-50 font-sans">
+    <!-- Map Section (Astro Island for React component) -->
+    <div class="w-full bg-gray-200 relative">
+      <AssessmentForm client:load />
+    </div>
   </div>
-</div>
+</Layout>
