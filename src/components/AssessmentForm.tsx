@@ -6,7 +6,7 @@ const defaultCenter = { lat: 42.3505, lng: -71.1054 };
 
 const containerStyle = {
   width: '100%',
-  height: '220px',
+  height: '300px',
 };
 
 export default function AssessmentForm() {
@@ -39,7 +39,7 @@ export default function AssessmentForm() {
   return (
     <div style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
       {/* Google Map */}
-      <div className="w-full h-56 p-0" style={{ paddingLeft: 0, paddingRight: 0 }}>
+      <div className="w-full h-64 p-0" style={{ paddingLeft: 0, paddingRight: 0 }}>
         {isLoaded ? (
           <GoogleMap
             mapContainerStyle={containerStyle}
@@ -60,35 +60,56 @@ export default function AssessmentForm() {
       </div>
       {/* Form */}
       <main
-        className="max-w-md mx-auto bg-white rounded-xl shadow-lg -mt-16 p-8 relative z-10"
-        style={{ display: 'block' }}
+        className="bg-white rounded-xl shadow-lg p-8 relative z-10"
+        style={{
+          display: 'block',
+          maxWidth: '50rem',
+          marginLeft: '2rem',
+          marginRight: '2rem',
+          marginTop: '2.5rem',
+          lineHeight: '1.5',
+        }}
       >
         <h1
-          className="mb-4"
-          style={{ fontSize: '1.25rem', color: '#004597', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 700 }}
+          style={{
+            fontSize: '1.25rem',
+            color: '#004597',
+            fontFamily: 'Instrument Sans, sans-serif',
+            fontWeight: 700,
+            marginBottom: '1.5rem',
+            lineHeight: '1.5',
+          }}
         >
           How to Start The Assessment
         </h1>
-        <p className="mb-1" style={{ fontSize: '0.75rem', color: '#0B488F', fontWeight: 200 }}>
+        <p
+          className="mb-1 leading-relaxed"
+          style={{ fontSize: '0.70rem', color: '#0B488F', fontWeight: 400, lineHeight: '1.5' }}
+        >
           Select the location of the proposed project to begin the assessment. This should be the address at which the
           project will be built.
           <br />
           You can enter the address in the search bar or directly enter the address in the field below*.
         </p>
-        <p className="mb-6" style={{ fontSize: '0.75rem', color: '#0B488F' }}>
-          <em style={{ fontWeight: 200 }}>
+        <p className="mb-6 leading-relaxed" style={{ fontSize: '0.70rem', color: '#0B488F', lineHeight: '1.5' }}>
+          <em style={{ fontWeight: 400 }}>
             *If the address is not recognized, place a location pin directly on the map where the development is to
             occur.
           </em>
         </p>
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.15)', margin: '2rem 0' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.15)', margin: '1.5rem 0' }} />
         <h2
           className="mb-4"
-          style={{ fontSize: '1rem', color: '#004597', fontFamily: 'Instrument Sans, sans-serif', fontWeight: 500 }}
+          style={{
+            fontSize: '1rem',
+            color: '#004597',
+            fontFamily: 'Instrument Sans, sans-serif',
+            fontWeight: 500,
+          }}
         >
           Step 1: Select development location
         </h2>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '1rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '50%', gap: '1rem' }}>
           <label
             className="block"
             style={{
