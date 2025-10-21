@@ -1,14 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from '../styles/AssessmentForm.module.css';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-
-// Default map center (Boston)
-const defaultCenter = { lat: 42.3505, lng: -71.1054 };
-
-const containerStyle = {
-  width: '100%',
-  height: '315px',
-};
+import LocationMap from './LocationMap';
 
 export default function AssessmentForm() {
   const [address, setAddress] = useState('');
@@ -30,20 +22,10 @@ export default function AssessmentForm() {
   const step2Ref = useRef<HTMLDivElement>(null);
   const step3Ref = useRef<HTMLDivElement>(null);
 
-  // Load Google Maps JS API
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // <-- Replace with your API key
-  });
-
-  // Handle map click: place marker
-  const onMapClick = useCallback((e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      setMarker({
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng(),
-      });
-    }
-  }, []);
+  // Handle location selection from map
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setMarker(location);
+  };
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,26 +53,9 @@ export default function AssessmentForm() {
 
   return (
     <div style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-      {/* Google Map */}
-      <div className="w-full h-56 p-0" style={{ paddingLeft: 0, paddingRight: 0 }}>
-        {isLoaded ? (
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={defaultCenter}
-            zoom={15}
-            onClick={onMapClick}
-            options={{
-              streetViewControl: false,
-              mapTypeControl: false,
-              fullscreenControl: false,
-            }}
-          >
-            {marker && <Marker position={marker} />}
-          </GoogleMap>
-        ) : (
-          <div className="flex items-center justify-center h-full text-blue-900">Loading map…</div>
-        )}
-      </div>
+      {/* Google Map - now a separate component */}
+      <LocationMap marker={marker} onLocationSelect={handleLocationSelect} />
+
       {/* Form */}
       <main className={styles.formMain}>
         {/* Header section - spans full width above both columns */}
