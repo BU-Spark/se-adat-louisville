@@ -23,8 +23,29 @@ export default function AssessmentForm() {
   const step3Ref = useRef<HTMLDivElement>(null);
 
   // Handle location selection from map
-  const handleLocationSelect = (location: { lat: number; lng: number }) => {
-    setMarker(location);
+  const handleLocationSelect = (location: {
+    lat: number;
+    lng: number;
+    address?: string;
+    city?: string;
+    zipcode?: string;
+  }) => {
+    console.log('AssessmentForm received location:', location);
+    setMarker({ lat: location.lat, lng: location.lng });
+
+    // Auto-fill form fields if address data is available
+    if (location.address) {
+      console.log('Setting address:', location.address);
+      setAddress(location.address);
+    }
+    if (location.city) {
+      console.log('Setting city:', location.city);
+      setCity(location.city);
+    }
+    if (location.zipcode) {
+      console.log('Setting zipcode:', location.zipcode);
+      setZipcode(location.zipcode);
+    }
   };
 
   function handleSubmit(e: React.FormEvent) {
