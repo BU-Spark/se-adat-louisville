@@ -111,7 +111,7 @@ export default function AssessmentForm() {
         {/* Two column layout: Step 1 on left, Step 3 on right (when visible) */}
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
           {/* Left column: Step 1 - fixed width */}
-          <div style={{ width: '60%', maxWidth: '60%', minWidth: '50%' }}>
+          <div style={{ width: '50%', maxWidth: '50%', minWidth: '50%' }}>
             <h2 className={styles.sectionHeader}>Step 1: Select development location</h2>
             <form
               onSubmit={handleSubmit}
@@ -170,7 +170,7 @@ export default function AssessmentForm() {
                 <h2 className={styles.sectionHeader}>Step 2: Input Expected Housing Units</h2>
                 <form
                   onSubmit={handleStep2Confirm}
-                  style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '500px', gap: '1rem' }}
+                  style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100%', gap: '1rem' }}
                 >
                   <label className={styles.label}>Units </label>
                   <div style={{ width: '100%', display: 'block' }}>
