@@ -30,20 +30,15 @@ export default function AssessmentForm() {
     city?: string;
     zipcode?: string;
   }) => {
-    console.log('AssessmentForm received location:', location);
     setMarker({ lat: location.lat, lng: location.lng });
-
     // Auto-fill form fields if address data is available
     if (location.address) {
-      console.log('Setting address:', location.address);
       setAddress(location.address);
     }
     if (location.city) {
-      console.log('Setting city:', location.city);
       setCity(location.city);
     }
     if (location.zipcode) {
-      console.log('Setting zipcode:', location.zipcode);
       setZipcode(location.zipcode);
     }
   };
@@ -119,6 +114,7 @@ export default function AssessmentForm() {
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  autoComplete="off"
                 />
               </div>
               <div style={{ width: '100%', display: 'block' }}>
@@ -131,6 +127,7 @@ export default function AssessmentForm() {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
+                  autoComplete="off"
                 />
               </div>
               <div style={{ width: '100%', display: 'block' }}>
@@ -143,6 +140,7 @@ export default function AssessmentForm() {
                   type="text"
                   value={zipcode}
                   onChange={(e) => setZipcode(e.target.value)}
+                  autoComplete="off"
                 />
               </div>
               <button type="submit" className={`${styles.confirmButton}`}>
