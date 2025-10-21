@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import styles from '../styles/AssessmentForm.module.css';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 
@@ -16,6 +16,12 @@ export default function AssessmentForm() {
   const [zipcode, setZipcode] = useState('');
   const [confirmed, setConfirmed] = useState(false);
   const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(null);
+
+  // Step 2 field
+  const [numUnits, setNumUnits] = useState('');
+
+  // Ref for Step 2 section to scroll to
+  const step2Ref = useRef<HTMLDivElement>(null);
 
   // Load Google Maps JS API
   const { isLoaded } = useJsApiLoader({
@@ -36,6 +42,13 @@ export default function AssessmentForm() {
     e.preventDefault();
     setConfirmed(true);
   }
+
+  // Auto-scroll to Step 2 when it appears
+  useEffect(() => {
+    if (confirmed && step2Ref.current) {
+      step2Ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [confirmed]);
 
   return (
     <div style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
@@ -122,7 +135,33 @@ export default function AssessmentForm() {
             Confirm
           </button>
         </form>
-        {confirmed && <div className="mt-6 text-blue-900 text-lg font-semibold">Location confirmed!</div>}
+
+        {/* Step 2: Number of units - shown after Step 1 is confirmed */}
+        {confirmed && (
+          <div ref={step2Ref}>
+            <hr className={styles.divider} />
+            <h2 className={styles.sectionHeader}>Step 2: Input Expected Housing Units</h2>
+            <form style={{ display: 'flex', flexDirection: 'column', width: '50%', gap: '1rem' }}>
+              <label className={styles.label}>Units </label>
+              <div style={{ width: '100%', display: 'block' }}>
+                <label className={styles.hintText} htmlFor="numUnitsInput">
+                  Type the number of units in proposed project
+                </label>
+                <input
+                  id="numUnitsInput"
+                  className={`${styles.input} focus:border-blue-700 focus:outline-none`}
+                  type="number"
+                  value={numUnits}
+                  onChange={(e) => setNumUnits(e.target.value)}
+                  min="1"
+                />
+              </div>
+              <button type="button" className={`${styles.confirmButton}`}>
+                Confirm
+              </button>
+            </form>
+          </div>
+        )}
       </main>
     </div>
   );
