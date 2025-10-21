@@ -61,13 +61,13 @@
   background-color: #ffffff; /* Tailwind gray-100 */
   padding: 0.2rem 0.4rem; /* px-3 py-2 */
   border-radius: 0.375rem; /* rounded-md */
-  font-size: clamp(0.6rem, 0.55rem + 0.2vw, 1.1rem); /* Responsive input text - scales to 1.1rem */
+  font-size: clamp(0.8rem, 0.75rem + 0.3vw, 1.8rem); /* Responsive input text - scales to 1.8rem */
 }
 
 .hintText {
   color: rgba(0, 0, 0, 0.4);
   font-weight: 400;
-  font-size: clamp(0.6rem, 0.45rem + 0.25vw, 1.4rem); /* Responsive hint text - scales to 1.4rem */
+  font-size: clamp(0.5rem, 0.45rem + 0.25vw, 1.4rem); /* Responsive hint text - scales to 1.4rem */
 }
 
 /* Confirm button custom colors */
@@ -82,8 +82,9 @@
   width: 23%;
   max-width: 7rem;
   margin-top: 1rem;
-  margin-bottom: 2rem;
 }
+
+/*text-blue-900 font-semibold rounded-md px-6 py-2 mt-2 shadow hover:bg-yellow-300 transition`*/
 
 /* Full-bleed divider that spans the entire viewport width */
 .divider {
@@ -94,78 +95,4 @@
   max-width: 100vw;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-}
-
-/* Map search bar styling */
-.mapSearchBarContainer {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 101;
-  display: flex;
-  align-items: center;
-}
-
-.mapSearchBar {
-  box-sizing: border-box;
-  border: 2px solid #EAEAEA;
-  width: 320px;
-  height: 36px;
-  font-size: 14px;
-  border-radius: 66px;
-  background: #fff;
-  transition: width 0.3s cubic-bezier(.4,0,.2,1);
-  padding-left: 16px;
-  padding-right: 40px;
-  outline: none;
-}
-
-.mapSearchBarIcon {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.mapSearchIcon {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 101;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 50%;
-  border: 2px solid #EAEAEA;
-  cursor: pointer;
-  outline: none;
-}
-
-.mapPinIcon {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 101;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FFBA37;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.mapPinIcon:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
