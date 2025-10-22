@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useRef } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
-import styles from '../styles/AssessmentForm.module.css';
+import styles from '../styles/LocationMap.module.css';
 import mapPinIcon from '../assets/mapPin.svg';
 
 const defaultCenter = { lat: 42.3505, lng: -71.1054 };
@@ -25,11 +25,18 @@ const PinIcon = () => <img src={mapPinIcon.src} alt="Pin" width="20" height="20"
 
 export type LocationMapProps = {
   marker: { lat: number; lng: number } | null;
-  onLocationSelect: (location: { lat: number; lng: number; address?: string; city?: string; zipcode?: string }) => void;
+  onLocationSelect?: (location: {
+    lat: number;
+    lng: number;
+    address?: string;
+    city?: string;
+    zipcode?: string;
+  }) => void;
 };
 
 export default function LocationMap({ marker, onLocationSelect }: LocationMapProps) {
   const [center, setCenter] = useState(marker || defaultCenter);
+  const [localMarker, setLocalMarker] = useState<{ lat: number; lng: number } | null>(marker || null);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -42,7 +49,10 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
 
   // keep map centered with marker updates from parent
   React.useEffect(() => {
-    if (marker) setCenter(marker);
+    if (marker) {
+      setCenter(marker);
+      setLocalMarker(marker);
+    }
   }, [marker]);
 
   // Helper function to parse address components
@@ -80,16 +90,14 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
         const lng = place.geometry.location.lng();
         const newCenter = { lat, lng };
         setCenter(newCenter);
+        setLocalMarker(newCenter);
 
         const { address, city, zipcode } = parseAddressComponents(place.address_components);
-
-        onLocationSelect({
-          lat,
-          lng,
-          address,
-          city,
-          zipcode,
-        });
+        const payload = { lat, lng, address, city, zipcode } as const;
+        // Emit CustomEvent so the form handler (Astro island) can auto-fill fields
+        window.dispatchEvent(new CustomEvent('location-selected', { detail: payload }));
+        // Still support optional callback for parent React usage
+        onLocationSelect?.(payload);
 
         // Pan the map to the new location
         if (mapRef.current) {
@@ -97,16 +105,9 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
         }
 
         // Close the search bar after selection
-        setSearchOpen(false);
+        // setSearchOpen(false);
       }
     }
-  };
-
-  const handleInputBlur = () => {
-    // Delay closing to allow autocomplete selection to complete
-    setTimeout(() => {
-      setSearchOpen(false);
-    }, 200);
   };
 
   const handleMapClick = useCallback(
@@ -114,24 +115,23 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
       if (e.latLng && pinDropMode) {
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
-        setCenter({ lat, lng });
+        const newCenter = { lat, lng };
+        setCenter(newCenter);
+        setLocalMarker(newCenter);
 
         // Perform reverse geocoding to get address
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({ location: { lat, lng } }, (results, status) => {
           if (status === 'OK' && results?.[0]) {
             const { address, city, zipcode } = parseAddressComponents(results[0].address_components);
-
-            onLocationSelect({
-              lat,
-              lng,
-              address,
-              city,
-              zipcode,
-            });
+            const payload = { lat, lng, address, city, zipcode } as const;
+            window.dispatchEvent(new CustomEvent('location-selected', { detail: payload }));
+            onLocationSelect?.(payload);
           } else {
             // If geocoding fails, just send coordinates
-            onLocationSelect({ lat, lng });
+            const payload = { lat, lng } as const;
+            window.dispatchEvent(new CustomEvent('location-selected', { detail: payload }));
+            onLocationSelect?.(payload);
           }
         });
 
@@ -171,7 +171,7 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
           draggableCursor: pinDropMode ? 'crosshair' : 'default',
         }}
       >
-        {marker && <Marker position={marker} />}
+        {(marker || localMarker) && <Marker position={marker || localMarker!} />}
       </GoogleMap>
       <div>
         {!searchOpen && (
@@ -182,14 +182,7 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
         {searchOpen && (
           <div className={styles.mapSearchBarContainer}>
             <Autocomplete onLoad={setAutocomplete} onPlaceChanged={onPlaceChanged}>
-              <input
-                ref={inputRef}
-                type="text"
-                autoComplete="on"
-                className={styles.mapSearchBar}
-                onBlur={handleInputBlur}
-                autoFocus
-              />
+              <input ref={inputRef} type="text" autoComplete="on" className={styles.mapSearchBar} autoFocus />
             </Autocomplete>
             <div className={styles.mapSearchBarIcon}>
               <SearchIcon />
