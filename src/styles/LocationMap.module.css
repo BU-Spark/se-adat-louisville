@@ -1,0 +1,103 @@
+/* Google Maps Autocomplete Dropdown Styling */
+:global(.pac-container) {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+}
+
+:global(.pac-item) {
+  padding: 4px 5px;
+  font-size: 10px;
+  cursor: pointer;
+  border-top: 1px solid #f0f0f0;
+}
+
+:global(.pac-item:hover) {
+  background-color: #f5f5f5;
+}
+
+:global(.pac-item-query) {
+  color: #333;
+  font-weight: 500;
+}
+
+:global(.pac-matched) {
+  font-weight: 700;
+}
+
+/* Map search bar styling */
+.mapSearchBarContainer {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+}
+
+.mapSearchBar {
+  box-sizing: border-box;
+  border: 2px solid #EAEAEA;
+  width: 320px;
+  height: 36px;
+  font-size: 14px;
+  border-radius: 66px;
+  background: #fff;
+  transition: width 0.3s cubic-bezier(.4,0,.2,1);
+  padding-left: 16px;
+  padding-right: 40px;
+  outline: none;
+}
+
+.mapSearchBarIcon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 101;
+}
+
+.mapSearchIcon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 101;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid #EAEAEA;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.mapPinIcon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 101;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFBA37;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.mapPinIcon:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
