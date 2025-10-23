@@ -1,0 +1,333 @@
+/* ================================
+   Base + Design Tokens
+================================ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img, video { max-width: 100%; height: auto; display: block; }
+
+:root{
+  /* Layout */
+  --max: 1160px;               /* content max width */
+  --pad: 24px;                 /* side padding */
+  --gap: 24px;                 /* vertical rhythm */
+
+  /* Type */
+  --font: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --body: rgba(0,0,0,.68);
+  --muted: rgba(0,0,0,.58);
+  --heading: #3a3a3a;
+
+  /* Brand */
+  --accent: #ffba37;
+  --card: #fcf8f8ad;
+  --line: #eaeaea;
+}
+
+body{
+  font-family: var(--font);
+  color: var(--body);
+  line-height: 1.6;
+  background: #fff;
+}
+
+/* Utilities */
+.container{
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+.stack > * { margin-block: 0; }
+.stack > * + * { margin-block-start: var(--gap); }
+
+.u{ text-decoration: underline; }
+.strong{ font-weight: 700; }
+
+/* ================================
+   Hero (unchanged markup)
+================================ */
+.hero-section{
+  background: url('/assets/education/skyhouse.jpg') center/cover no-repeat;
+  margin-bottom: 56px;
+}
+.header{ background: #0000007f; box-shadow: 0 4px 4px #8884; padding: 14px; }
+.header-content{ width: 100%; }
+.header-nav{ display: flex; align-items: center; }
+.header-left{ display:flex; gap: 16px; align-items: center; }
+.logo{ width: 48px; height: 48px; }
+.nav-links{ display:flex; gap: 28px; color: #fff; text-transform: uppercase; font-weight: 700; }
+
+.hero-content{ padding-block: 32px 90px; }
+.hero-text-section{ padding-inline: var(--pad); }
+.hero-title{
+  color:#fff; font-weight:400; line-height:1.03;
+  font-family: MuseoModerno, sans-serif;
+  font-size: clamp(36px, 7vw, 100px);
+  max-width: 20ch;
+  margin: 0 0 16px;
+}
+.hero-description{ display:flex; align-items:center; gap: 16px; }
+.hero-icon{ width: 90px; height: 90px; }
+.hero-desc-text{ color:#fff; font-size: clamp(14px, 2.2vw, 20px); max-width: 55ch; }
+
+/* ================================
+   Section header pattern
+   (used by ADAT?, Housing Need, Role, How to Use)
+================================ */
+.section-header{
+  display:flex; align-items:center; gap: 16px;
+  padding-block: 10px;
+}
+.section-header .section-icon-container{
+  display:grid; place-items:center;
+  background: var(--accent);
+  border: 3px solid var(--accent);
+  border-radius: 26px;
+  padding: 10px;
+}
+.section-header .section-icon{ width: 28px; height: 28px; }
+.section-title{
+  color: var(--heading);
+  font-weight: 600;
+  font-size: clamp(20px, 3vw, 39px);
+  line-height: 1.2;
+  margin: 0;
+}
+.divider-line{
+  height:1px; background:#00000033; margin-block: 18px 0;
+}
+
+/* Make all top headers align to the same container */
+.content-section > .scroll-container,
+.content-section > .section-content,
+.section-header,
+.overview-wrap,
+.rent-burden-section,
+.chart-section,
+.housing-mismatch-section,
+.role-cards-wrap,
+.adat-usage-header,
+.adat-diagram-section {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+/* ================================
+   “What is ADAT?” body block
+================================ */
+.main-content{ padding-inline: var(--pad); }
+.content-row{
+  display:grid; gap: 32px;
+  grid-template-columns: 1fr;
+}
+.content-left .main-text{
+  font-size: clamp(16px, 2.2vw, 20px);
+  line-height: 1.4;
+}
+.right-content-top .right-caption{
+  text-transform: uppercase; font-style: italic; font-weight: 600; font-size: 12px; color:#000;
+}
+.right-subtitle{ color:#6b6b6b; font-weight:600; font-style: italic; font-size: 24px; margin:0; }
+.right-text{ font-size: clamp(16px, 2.2vw, 20px); }
+
+.video-wrapper{ width:100%; aspect-ratio: 555/305; border-radius:10px; overflow:hidden; }
+.right-video{ width:100%; height:100%; object-fit: cover; }
+
+@media (min-width: 1024px){
+  .content-row{ grid-template-columns: 1.1fr 0.9fr; align-items:start; }
+}
+
+/* ================================
+   Overview (under Housing Need)
+================================ */
+.overview-content {
+  max-width: 880px;             /* keeps content aligned and narrower */
+  margin-inline: auto;          /* centers it */
+}
+.overview-title{
+  color: var(--heading); font-weight:700; font-size: clamp(24px, 3vw, 32px); margin: 48px 0 8px;
+}
+.overview-text{
+  font-size: clamp(18px, 2.4vw, 24px);
+  line-height: 1.35;
+}
+
+/* ================================
+   Rent Burden
+================================ */
+.rent-burden-section{ margin-block: 32px 0; }
+.rent-burden-title{
+  color: var(--heading);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.rent-burden-row{
+  display:grid; gap: 24px;
+  grid-template-columns: 1fr;
+}
+.rent-burden-quote{
+  font-size: clamp(22px, 3.4vw, 36px);
+  line-height: 1.2;
+  font-style: italic;
+  color: var(--body);
+}
+.rent-burden-description{
+  font-size: clamp(16px, 2.2vw, 20px);
+  line-height: 1.4;
+  color: var(--body);
+}
+@media (min-width: 1024px){
+  .rent-burden-row{ grid-template-columns: 1fr 1fr; gap: 56px; }
+}
+
+/* Chart + legend */
+.chart-section{ margin-block: 24px 0; }
+.chart-layout{
+  display:grid; gap: 20px;
+  grid-template-columns: 1fr;
+}
+.chart-container{
+  border: 3px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  background:#fff;
+}
+.chart-sidebar{ display:flex; flex-direction:column; gap: 20px; align-items:flex-end; }
+.chart-sidebar .chart-sidebar-container{
+  border: 3px solid var(--line); border-radius: 14px; padding: 20px 14px; background:#fff;
+}
+.learn-more-btn{
+  display:inline-block; background: var(--accent);
+  color:#fff; border-radius:6px; border:2px solid #d58c00;
+  padding: 8px 18px; font-weight:500; text-decoration:none;
+}
+@media (min-width: 1024px){
+  .chart-layout{ grid-template-columns: 1fr auto; align-items:start; }
+}
+
+/* ================================
+   Housing Mismatch
+================================ */
+.housing-mismatch-section{ margin-block: 40px 0; }
+.housing-mismatch-content{
+  display:grid; gap: 24px; grid-template-columns: 1fr;
+}
+.housing-mismatch-text{ font-size: clamp(16px, 2.2vw, 20px); line-height:1.4; }
+.housing-chart-container{ border:3px solid var(--line); border-radius:14px; padding: 12px; }
+@media (min-width: 1024px){
+  .housing-mismatch-content{ grid-template-columns: 1fr 1fr; gap: 56px; }
+}
+
+/* ================================
+   Role Cards (New Figma-based)
+================================ */
+.role-section {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.role-header {
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  border: 3px solid var(--accent);
+  border-radius: 26px;
+  padding: 10px;
+}
+.role-icon { width: 30px; height: 30px; }
+.role-title { color: var(--heading); font-weight: 600; font-size: clamp(20px,3vw,24px); margin:0; }
+
+.role-cards-section { margin-top: 32px; }
+.role-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+.role-card {
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  background: #fdfbfb;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+}
+.role-card-image {
+  width: 112px;
+  height: 107px;
+  border-radius: 9999px;
+  border: 1px solid #d4d4d4;
+  object-fit: cover;
+  object-position: center;
+}
+.role-card-title {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+  color: #004597;
+}
+.role-card-description {
+  margin: 0;
+  max-width: 234px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #555555;
+}
+@media (max-width: 1024px) {
+  .role-cards-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .role-cards-container {
+    grid-template-columns: 1fr;
+  }
+  .role-card {
+    padding: 22px;
+    gap: 18px;
+  }
+  .role-card-image {
+    width: 88px;
+    height: 84px;
+  }
+  .role-card-title {
+    font-size: 20px;
+  }
+  .role-card-description {
+    max-width: 100%;
+    font-size: 14px;
+  }
+}
+
+/* ================================
+   How to use the ADAT
+================================ */
+.adat-usage-header{ display:flex; align-items:center; gap: 16px; padding-block: 10px; }
+.adat-usage-icon-container{
+  display:grid; place-items:center; background: var(--accent);
+  border:3px solid var(--accent); border-radius: 26px; padding: 10px;
+}
+.adat-usage-title{
+  color: var(--heading); font-weight:600; font-size: clamp(20px,3vw,24px); margin:0;
+}
+
+.adat-diagram-section{ padding-block: 8px 24px; }
+.adat-diagram-container{ display:grid; gap: 10px; }
+
+/* ================================
+   Small screens polish
+================================ */
+@media (max-width: 640px){
+  .hero-icon{ width:72px; height:72px; }
+  .section-header{ padding-inline: var(--pad); }
+}

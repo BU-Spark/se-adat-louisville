@@ -1,3 +1,51 @@
+<<<<<<< HEAD
+# Astro Starter Kit: Basics
+
+```sh
+npm create astro@latest -- --template basics
+```
+
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+
+## 🚀 Project Structure
+
+Inside of your Astro project, you'll see the following folders and files:
+
+```text
+/
+├── public/
+│   └── favicon.svg
+├── src
+│   ├── assets
+│   │   └── astro.svg
+│   ├── components
+│   │   └── Welcome.astro
+│   ├── layouts
+│   │   └── Layout.astro
+│   └── pages
+│       └── index.astro
+└── package.json
+```
+
+To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+=======
 This is a template for Spark! DS 519 projects. It ships with an Astro 5 + React 19 islands stack, along with eslint.config.mjs ([`ESLint`](https://eslint.org/)) and .prettierrc ([`Prettier`](https://prettier.io/)) aligned to industry-standard guidelines.
 
 ## Setting Up Your Developer Experience
@@ -128,3 +176,4 @@ Astro is flexible and supports many integrations. A few starting points:
 
 ### Component Libraries
 All new projects are expected to align with a design system. Work with your DS488 design team to determine the component library (e.g., Material UI, Chakra UI, Tailwind UI) that best matches the provided design kit, then integrate it within Astro/React islands.
+>>>>>>> origin/feature/LandingPage-rb
