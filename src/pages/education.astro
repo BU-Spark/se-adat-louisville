@@ -152,12 +152,7 @@ import BaseLayout from '../layouts/Layout.astro';
 
         <p class="overview-text">
           Louisville Metro produced a comprehensive
-          <a
-            href="https://louisvilleky.gov/housing-needs-assessment"
-            class="u"
-            target="_blank"
-            rel="noopener noreferrer">Housing Needs Assessment</a
-          >
+          <a href="/assessment" class="u" target="_blank" rel="noopener noreferrer">Housing Needs Assessment</a>
           in 2019 that was updated in 2024. The assessment identified
           <span class="strong"> two critical factors</span>
           that contribute to displacement risk. First, nearly all people with income below 50% AMI are housing cost burdened
@@ -209,8 +204,7 @@ import BaseLayout from '../layouts/Layout.astro';
     <section class="housing-mismatch-section">
       <div class="housing-mismatch-content">
         <div class="housing-mismatch-text">
-          <h3 class="text-large text-bold">Housing Mismatch</h3>
-          <br /><br />
+          <h3 class="housing-mismatch-title">Housing Mismatch</h3>
           There are currently a <span class="text-bold text-italic"
             >shortage of affordable housing units for Louisville residents</span
           >. Currently, there are about
@@ -234,114 +228,113 @@ import BaseLayout from '../layouts/Layout.astro';
           <a href="/housing-data" class="learn-more-btn">Learn more</a>
         </div>
       </div>
+    </section>
 
-      <!-- Role Section -->
-      <section class="content-section">
-        <div class="scroll-container">
-          <div class="section-content">
-            <div class="section-header">
-              <div class="section-icon-container">
-                <img src="/assets/education/ADT master file_icon/Vector-2.svg" alt="Role icon" class="section-icon" />
-              </div>
-              <h2 class="section-title">The Role You Play</h2>
+    <!-- Role Section -->
+    <section class="content-section">
+      <div class="scroll-container">
+        <div class="section-content">
+          <div class="section-header">
+            <div class="section-icon-container">
+              <img src="/assets/education/ADT master file_icon/Vector-2.svg" alt="Role icon" class="section-icon" />
             </div>
-
-            <div class="divider-line"></div>
+            <h2 class="section-title">The Role You Play</h2>
           </div>
-        </div>
-      </section>
 
-      <!-- Role Cards Section -->
-      <section class="role-cards-section">
-        <div class="role-cards-divider"></div>
-
-        <div class="role-cards-container">
-          <article class="role-card">
-            <img
-              src="/assets/education/ADT master file_icon/Ellipse 1-1.svg"
-              alt="City official representative"
-              class="role-card-image"
-              style="width: 48%;"
-            />
-            <div class="role-card-content">
-              <h3 class="role-card-title">City Officials</h3>
-              <p class="role-card-description">
-                Review development proposals using ADAT to ensure projects meet anti-displacement requirements and
-                support equitable growth.
-              </p>
-            </div>
-          </article>
-
-          <article class="role-card">
-            <img
-              src="/assets/education/ADT master file_icon/Ellipse 2.svg"
-              alt="Community member representative"
-              class="role-card-image"
-              style="width: 36%;"
-            />
-            <div class="role-card-content">
-              <h3 class="role-card-title">Community Members</h3>
-              <p class="role-card-description" style="width: 86%;">
-                Use ADAT to understand how proposed developments may impact your neighborhood and advocate for
-                affordable housing.
-              </p>
-            </div>
-          </article>
-
-          <article class="role-card">
-            <img
-              src="/assets/education/ADT master file_icon/Ellipse 1.svg"
-              alt="Developer representative"
-              class="role-card-image"
-              style="width: 44%;"
-            />
-            <div class="role-card-content">
-              <h3 class="role-card-title">Developers</h3>
-              <p class="role-card-description">
-                Plan projects that meet affordability requirements and contribute to community stability using ADAT
-                insights.
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- ADAT Usage Section -->
-      <section class="content-section">
-        <div class="scroll-container">
-          <div class="section-content">
-            <div class="section-header">
-              <div class="section-icon-container">
-                <img
-                  src="/assets/education/ADT master file_icon/Vector.svg"
-                  alt="How to use ADAT icon"
-                  class="section-icon"
-                />
-              </div>
-              <h2 class="section-title">How to Use ADAT</h2>
-            </div>
-
-            <div class="divider-line"></div>
-          </div>
-        </div>
-      </section>
-
-      <div class="adat-diagram-section">
-        <div class="adat-diagram-container">
-          <div class="adat-diagram-divider"></div>
-          <img
-            src="/assets/education/ADT master file_img/ADATExplainer-DRAFT2 1.png"
-            alt="ADAT tool usage diagram and workflow"
-            class="adat-diagram-image"
-          />
+          <div class="divider-line"></div>
         </div>
       </div>
     </section>
-  </main>
 
-  <script
-    type="module"
-    src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fdanielsa4079back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"
-    is:inline></script>
-  <script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1" is:inline></script>
+    <!-- Role Cards Section -->
+    <section class="role-cards-section">
+      <div class="role-cards-divider"></div>
+
+      <div class="role-cards-container">
+        <article class="role-card">
+          <img
+            src="/assets/education/ADT master file_icon/Ellipse 1-1.svg"
+            alt="City official representative"
+            class="role-card-image"
+            style="width: 48%;"
+          />
+          <div class="role-card-content">
+            <h3 class="role-card-title">City Officials</h3>
+            <p class="role-card-description">
+              Review development proposals using ADAT to ensure projects meet anti-displacement requirements and support
+              equitable growth.
+            </p>
+          </div>
+        </article>
+
+        <article class="role-card">
+          <img
+            src="/assets/education/ADT master file_icon/Ellipse 2.svg"
+            alt="Community member representative"
+            class="role-card-image"
+            style="width: 36%;"
+          />
+          <div class="role-card-content">
+            <h3 class="role-card-title">Community Members</h3>
+            <p class="role-card-description" style="width: 86%;">
+              Use ADAT to understand how proposed developments may impact your neighborhood and advocate for affordable
+              housing.
+            </p>
+          </div>
+        </article>
+
+        <article class="role-card">
+          <img
+            src="/assets/education/ADT master file_icon/Ellipse 1.svg"
+            alt="Developer representative"
+            class="role-card-image"
+            style="width: 44%;"
+          />
+          <div class="role-card-content">
+            <h3 class="role-card-title">Developers</h3>
+            <p class="role-card-description">
+              Plan projects that meet affordability requirements and contribute to community stability using ADAT
+              insights.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ADAT Usage Section -->
+    <section class="content-section">
+      <div class="scroll-container">
+        <div class="section-content">
+          <div class="section-header">
+            <div class="section-icon-container">
+              <img
+                src="/assets/education/ADT master file_icon/Vector.svg"
+                alt="How to use ADAT icon"
+                class="section-icon"
+              />
+            </div>
+            <h2 class="section-title">How to Use the ADAT</h2>
+          </div>
+
+          <div class="divider-line"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="adat-diagram-section">
+      <div class="adat-diagram-container">
+        <img
+          src="/assets/education/ADT master file_img/ADATExplainer-DRAFT2 1.png"
+          alt="ADAT tool usage diagram and workflow"
+          class="adat-diagram-image"
+        />
+      </div>
+    </div>
+  </main>
 </BaseLayout>
+
+<script
+  type="module"
+  src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fdanielsa4079back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"
+  is:inline></script>
+<script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1" is:inline></script>
