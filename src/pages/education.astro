@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/Layout.astro';
+import ScrollToTop from '../components/ScrollToTop.tsx';
 ---
 
 <BaseLayout
@@ -41,16 +42,7 @@ import BaseLayout from '../layouts/Layout.astro';
 
           <div class="divider-line"></div>
 
-          <div class="scroll-indicator">
-            <div class="scroll-text-container">
-              <span class="scroll-text">Scroll</span>
-              <img
-                src="/assets/education/ADT master file_icon/Chevron down.svg"
-                alt="Scroll indicator"
-                class="scroll-icon"
-              />
-            </div>
-          </div>
+          <ScrollToTop client:load />
 
           <div class="main-content">
             <div class="content-row">

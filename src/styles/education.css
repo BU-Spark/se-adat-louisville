@@ -155,6 +155,7 @@ body{
    “What is ADAT?” body block
 ================================ */
 .content-row{
+  margin-top: 40px;
   display:grid; gap: 32px;
   grid-template-columns: 1fr;
 }
