@@ -70,7 +70,7 @@ a {
   text-decoration: underline;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
   .flex-box-background {
     background-color: rgba(197, 197, 197, 0.8);
     padding: 10px;
