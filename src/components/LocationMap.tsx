@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useRef } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import styles from '../styles/LocationMap.module.css';
-import mapPinIcon from '../assets/mapPin.svg';
+import mapPinIcon from '../../public/assets/assessment/mapPin.svg';
 
 const defaultCenter = { lat: 42.3505, lng: -71.1054 };
 
