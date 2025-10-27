@@ -14,7 +14,7 @@ function() {
 #* Example endpoint (POST JSON body)
 #* @post /eligibility
 function(req) {
-  # Expect JSON body: {"project_name":"...", "affordable_units":0.3}
+  # Expect JSON body: {"affordable_units":0.3}
   body <- tryCatch(jsonlite::fromJSON(req$postBody), error = function(e) list())
   
   au <- body$affordable_units
