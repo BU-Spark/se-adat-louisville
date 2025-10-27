@@ -13,7 +13,7 @@ function() {
 
 #* Example endpoint (POST JSON body)
 #* @post /eligibility
-function(req) {
+function(req, res) {
   # Expect JSON body: {"affordable_units":0.3}
   body <- tryCatch(jsonlite::fromJSON(req$postBody), error = function(e) list())
   
@@ -22,10 +22,12 @@ function(req) {
     list(status="ok",
          result=list(eligible = au >= 0.3, affordable_units = au))
   } else {
+    res$status <- 400
     list(status="error",
          result=list(eligible = FALSE,
                      reason = "affordable_units missing or out of [0,1]"))
   }
 }
+
 
 
