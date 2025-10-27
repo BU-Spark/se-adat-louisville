@@ -22,7 +22,7 @@ function(req) {
     list(status="ok",
          result=list(eligible = au >= 0.3, affordable_units = au))
   } else {
-    list(status="ok",
+    list(status="error",
          result=list(eligible = FALSE,
                      reason = "affordable_units missing or out of [0,1]"))
   }
