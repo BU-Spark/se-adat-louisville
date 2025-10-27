@@ -2,27 +2,37 @@
 import '../styles/global.css';
 import NavBar from '../components/NavBar.astro';
 
-export interface Props {
-  title: string;
-}
-
-const { title } = Astro.props;
+const {
+  title = "Louisville Anti-Displacement Assessment Tool (ADAT)",
+  description = "Learn about Louisville's Anti-Displacement Assessment Tool (ADAT) - a free public platform to assess housing development impact on communities and prevent displacement.",
+  keywords = "Louisville housing, displacement assessment, ADAT tool, affordable housing, housing policy, community development, gentrification prevention",
+  ogType = "website",
+  ogTitle = "Louisville Anti-Displacement Assessment Tool (ADAT) | Housing Policy Resource",
+  ogDescription = description,
+} = Astro.props;
 ---
 
-<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="description"
-      content="An Astro & TypeScript template designed for rapid development and learning industry best practices."
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <NavBar />
+   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="keywords" content={keywords} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={ogType} />
+  <meta property="og:title" content={ogTitle} />
+  <meta property="og:description" content={ogDescription} />
+
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <NavBar />
+  <main>
     <slot />
-  </body>
+  </main>
+</body>
 </html>
