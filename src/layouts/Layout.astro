@@ -1,4 +1,7 @@
 ---
+import '../styles/global.css';
+import NavBar from '../components/NavBar.astro';
+
 const {
   title = "Louisville Anti-Displacement Assessment Tool (ADAT)",
   description = "Learn about Louisville's Anti-Displacement Assessment Tool (ADAT) - a free public platform to assess housing development impact on communities and prevent displacement.",
@@ -26,10 +29,10 @@ const {
   <!-- Global CSS -->
   <link rel="stylesheet" href="/styles.css" />
 </head>
-
-  <body>
-    <main>
-      <slot />
-    </main>
-  </body>
+<body>
+  <NavBar />
+  <main>
+    <slot />
+  </main>
+</body>
 </html>
