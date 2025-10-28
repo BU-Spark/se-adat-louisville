@@ -29,7 +29,7 @@
 /* Map search bar styling */
 .mapSearchBarContainer {
   position: absolute;
-  top: 16px;
+  top: 100px;
   left: 16px;
   z-index: 101;
   display: flex;
@@ -64,7 +64,7 @@
 
 .mapSearchIcon {
   position: absolute;
-  top: 16px;
+  top: 100px;
   left: 16px;
   z-index: 101;
   width: 40px;
@@ -82,7 +82,7 @@
 
 .mapPinIcon {
   position: absolute;
-  top: 16px;
+  top: 100px;
   right: 16px;
   z-index: 101;
   width: 40px;
