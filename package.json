@@ -18,10 +18,16 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.0",
-    "astro": "^5.14.1",
+    "@react-google-maps/api": "^2.20.7",
+    "@stadiamaps/maplibre-search-box": "^3.1.0",
+    "@types/google.maps": "^3.58.1",
+    "astro": "^5.0.0",
     "clsx": "^2.1.1",
+    "maplibre-gl": "^5.9.0",
+    "node": "^25.0.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-map-gl": "^8.1.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

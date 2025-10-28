@@ -1,0 +1,155 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LocationMap from '../components/LocationMap.tsx';
+import AssessmentFormHandler from '../components/AssessmentForm.tsx';
+import formStyles from '../styles/AssessmentForm.module.css';
+---
+
+<Layout title="Assessment">
+  <div class="min-h-screen bg-white font-sans">
+    <!-- Map Section (React island only for the map) -->
+    <div class="w-full bg-white-200 relative">
+      <LocationMap client:idle marker={null} />
+    </div>
+
+    <!-- Form Section -->
+    <main class={formStyles.formMain}>
+      <h1 class={formStyles.header}>How to Start The Assessment</h1>
+      <p class={formStyles.paragraph}>
+        Select the location of the proposed project to begin the assessment. This should be the address at which the
+        project will be built. You can enter the address in the search bar or directly enter the address in the field
+        below*.
+      </p>
+      <p class={formStyles.paragraphBottom}>
+        <em style="font-weight: 400;">
+          *If the address is not recognized, place a location pin directly on the map where the development is to occur.
+        </em>
+      </p>
+      <hr class={formStyles.divider} />
+
+      <div style="display: flex; gap: 2rem; align-items: flex-start;">
+        <!-- Left column: Step 1 + Step 2 -->
+        <div style="width: 50%; max-width: 50%; min-width: 50%;">
+          <h2 class={formStyles.sectionHeader}>Step 1: Select development location</h2>
+          <form id="step1Form" style="display: flex; flex-direction: column; width: 100%; gap: 1rem;">
+            <label class={formStyles.label}>
+              Address
+              <span class={formStyles.hintText} style="margin-left: 0.5rem;">Type here or select on map</span>
+            </label>
+
+            <div style="width: 100%; display: block;">
+              <label class={formStyles.hintText} for="addressInput">Address</label>
+              <input
+                id="addressInput"
+                name="address"
+                class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                type="text"
+                autocomplete="off"
+              />
+            </div>
+
+            <div style="width: 100%; display: block;">
+              <label class={formStyles.hintText} for="cityInput">City</label>
+              <input
+                id="cityInput"
+                name="city"
+                class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                type="text"
+                autocomplete="off"
+              />
+            </div>
+
+            <div style="width: 100%; display: block;">
+              <label class={formStyles.hintText} for="zipcodeInput">Zipcode</label>
+              <input
+                id="zipcodeInput"
+                name="zipcode"
+                class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                type="text"
+                autocomplete="off"
+              />
+            </div>
+
+            <button type="submit" class={formStyles.confirmButton}>Confirm</button>
+          </form>
+
+          <!-- Step 2: Hidden until Step 1 is confirmed -->
+          <div id="step2" style="margin-top: 2rem; display: none;">
+            <h2 class={formStyles.sectionHeader}>Step 2: Input Expected Housing Units</h2>
+            <form
+              id="step2Form"
+              style="display: flex; flex-direction: column; width: 100%; max-width: 100%; gap: 1rem;"
+            >
+              <label class={formStyles.label}>Units</label>
+              <div style="width: 100%; display: block;">
+                <label class={formStyles.hintText} for="numUnitsInput">
+                  Type the number of units in proposed project
+                </label>
+                <input
+                  id="numUnitsInput"
+                  name="units"
+                  class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                  type="number"
+                  min="1"
+                />
+              </div>
+              <button type="submit" class={formStyles.confirmButton}>Confirm</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right column: Step 3 -->
+        <div id="step3" style="width: 50%; max-width: 50%; min-width: 50%; display: none;">
+          <h2 class={formStyles.sectionHeader}>Step 3: Input Unit Affordability Levels</h2>
+          <form style="display: flex; flex-direction: column; width: 100%; gap: 1rem;">
+            <label class={formStyles.hintText}>
+              The affordability of housing affects local rent prices and who can move into a given neighborhood. Below,
+              please enter the number of units in the proposed development reserved for each Area Median Income (AMI)
+              tier.
+            </label>
+
+            <label class={formStyles.label}>Rental Price - 80% AMI</label>
+            <div style="width: 100%; display: block;">
+              <label class={formStyles.hintText} for="units80AMI">Type the number of affordable units</label>
+              <input
+                id="units80AMI"
+                name="units80"
+                class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                type="number"
+                min="0"
+              />
+            </div>
+
+            <label class={formStyles.label}>Rental Price - 50% AMI</label>
+            <div style="width: 100%; display: block;">
+              <label class={formStyles.hintText} for="units50AMI">Type the number of affordable units</label>
+              <input
+                id="units50AMI"
+                name="units50"
+                class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                type="number"
+                min="0"
+              />
+            </div>
+
+            <label class={formStyles.label}>Rental Price - 30% AMI</label>
+            <div style="width: 100%; display: block;">
+              <label class={formStyles.hintText} for="units30AMI">Type the number of affordable units</label>
+              <input
+                id="units30AMI"
+                name="units30"
+                class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
+                type="number"
+                min="0"
+              />
+            </div>
+
+            <button type="button" class={formStyles.confirmButton}>Confirm</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <AssessmentFormHandler client:load />
+</Layout>
