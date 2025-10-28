@@ -90,8 +90,7 @@
   border: 0; /* remove default hr border */
   height: 1px;
   background-color: rgba(0, 0, 0, 0.15);
-  width: 90vw; /* full viewport width */
-  max-width: 100vw;
+  width: 100%;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
