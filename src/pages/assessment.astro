@@ -45,6 +45,7 @@ import formStyles from '../styles/AssessmentForm.module.css';
                 class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
                 type="text"
                 autocomplete="off"
+                aria-describedby="addresHint"
               />
             </div>
 
@@ -56,6 +57,7 @@ import formStyles from '../styles/AssessmentForm.module.css';
                 class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
                 type="text"
                 autocomplete="off"
+                aria-describedby="cityHint"
               />
             </div>
 
@@ -67,6 +69,7 @@ import formStyles from '../styles/AssessmentForm.module.css';
                 class:list={[formStyles.input, 'focus:border-blue-700 focus:outline-none']}
                 type="text"
                 autocomplete="off"
+                aria-describedby="zipcodeHint"
               />
             </div>
 
@@ -144,7 +147,7 @@ import formStyles from '../styles/AssessmentForm.module.css';
               />
             </div>
 
-            <button type="button" class={formStyles.confirmButton}>Confirm</button>
+            <button type="finalSubmit" class={formStyles.confirmButton}>Confirm</button>
           </form>
         </div>
       </div>
