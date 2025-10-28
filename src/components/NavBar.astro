@@ -31,11 +31,12 @@ const navLinks = [
   .navbar {
     display: flex;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.15);
-    height: 83px;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 70px;
     padding: 0 2rem;
-    position: sticky;
+    position: fixed; /* overlay content */
     top: 0;
+    width: 100%;
     z-index: 1000;
     font-family: 'Jura', sans-serif;
     gap: 2rem;
@@ -46,6 +47,7 @@ const navLinks = [
     height: 49px;
     object-fit: contain;
     cursor: pointer;
+    margin-right: 2rem;
   }
 
   .hamburger {
@@ -78,7 +80,7 @@ const navLinks = [
 
   .nav-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 3rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -87,7 +89,7 @@ const navLinks = [
   .nav-links a {
     color: white;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 700;
     transition: color 0.2s;
   }
 
@@ -103,7 +105,7 @@ const navLinks = [
     .nav-links {
       display: none;
       position: absolute;
-      top: 83px;
+      top: 70px;
       left: 0;
       right: 0;
       flex-direction: column;
