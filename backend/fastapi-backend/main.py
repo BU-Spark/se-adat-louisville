@@ -43,10 +43,6 @@ class AssessmentInput(BaseModel):
     project_name: constr(min_length=1)
     project_units_total: conint(gt=0)
     build_type: Optional[str] = None
-     project_units_total: conint(gt=0)
-     build_type: Optional[str] = None
-
-     address: constr(min_length=1)
 
     address: constr(min_length=1)
     city: constr(min_length=1)
@@ -54,7 +50,6 @@ class AssessmentInput(BaseModel):
     zip: constr(min_length=5, max_length=10)
 
     affordability: Affordability
-
 @app.post("/api/assess")
 async def assess(payload: AssessmentInput):
     # 1) Geocode via R
