@@ -91,12 +91,13 @@ async def assess(payload: AssessmentInput):
         "session_id": payload.session_id,
         "project_name": payload.project_name,
         "project_units_total": payload.project_units_total,
-        "build_type": payload.build_type,
-        "affordability": payload.affordability.dict(),
+        "affordability": jsonable_encoder(payload.affordability),
         "lat": lat,
         "lng": lng,
         "gisjoin": gisjoin
     }
+    if payload.build_type is not None:
+        r_body["build_type"] = payload.build_type
     async with httpx.AsyncClient(timeout=60) as client:
         r_resp = await client.post(f"{R_BASE}/assess", json=r_body)
 
