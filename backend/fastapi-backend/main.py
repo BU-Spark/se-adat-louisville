@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, conint, constr
 import httpx
 
