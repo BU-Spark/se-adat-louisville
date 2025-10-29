@@ -69,8 +69,13 @@ function(req, res){
     res$status <- 400
     return(list(status="error", reason="lat/lng required"))
   }
-  pt <- st_sfc(st_point(c(body$lng, body$lat)), crs = 4326)
-  idx <- st_intersects(pt, lvm_bg_geo)[[1]]
+  lat <- suppressWarnings(as.numeric(body$lat))
+  lng <- suppressWarnings(as.numeric(body$lng))
+  if (is.na(lat) || is.na(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    res$status <- 400
+    return(list(status="error", reason="lat/lng invalid")) }
+  pt <- st_sfc(st_point(c(lng, lat)), crs = 4326)
+  idx <- tryCatch(st_intersects(pt, lvm_bg_geo)[[1]], error=function(e) integer(0))
   if (length(idx) < 1) {
     res$status <- 404
     return(list(status="error", reason="Point not in study area"))
@@ -85,8 +90,8 @@ function(req, res){
   b <- tryCatch(jsonlite::fromJSON(req$postBody), error=function(e) NULL)
   if (is.null(b)) { res$status <- 400; return(list(status="error", reason="Invalid JSON")) }
   
-  reqd <- c("session_id","project_name","project_units_total","build_type",
-            "affordability","gisjoin","lat","lng")
+  reqd <- c("session_id","project_name","project_units_total",
+                        "affordability","gisjoin","lat","lng")
   miss <- reqd[!reqd %in% names(b)]
   if (length(miss) > 0) {
     res$status <- 400
@@ -112,6 +117,7 @@ function(req, res){
     )
   )
 }
+
 
 
 
