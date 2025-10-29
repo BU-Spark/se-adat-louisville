@@ -59,7 +59,7 @@ async def assess(payload: AssessmentInput):
         "state": payload.state,
         "zip": payload.zip
     }
-     try:
+    try:
         async with httpx.AsyncClient(timeout=30) as client:
             geo = await client.post(f"{R_BASE}/geocode", json=geo_req)
     except httpx.TimeoutException as exc:
