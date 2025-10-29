@@ -62,7 +62,8 @@ async def assess(payload: AssessmentInput):
     if geo.status_code != 200:
         raise HTTPException(status_code=geo.status_code, detail=f"Geocode failed: {geo.text}")
     geo_json = geo.json()
-    lat = geo_json.get("lat"); lng = geo_json.get("lng")
+    lat = geo_json.get("lat")
+    lng = geo_json.get("lng")
     if lat is None or lng is None:
         raise HTTPException(status_code=400, detail="Geocode returned no lat/lng")
 
