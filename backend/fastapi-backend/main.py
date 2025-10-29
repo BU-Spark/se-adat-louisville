@@ -42,7 +42,10 @@ class AssessmentInput(BaseModel):
     project_name: constr(min_length=1)
     project_units_total: conint(gt=0)
     build_type: Optional[str] = None
-    scatter: Optional[bool] = None
+     project_units_total: conint(gt=0)
+     build_type: Optional[str] = None
+
+     address: constr(min_length=1)
 
     address: constr(min_length=1)
     city: constr(min_length=1)
