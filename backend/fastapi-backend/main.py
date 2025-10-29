@@ -64,8 +64,10 @@ async def assess(payload: AssessmentInput):
         "zip": payload.zip
     }
     try:
-    async with httpx.AsyncClient(timeout=30) as client:
-        geo = await client.post(f"{R_BASE}/geocode", json=geo_req)
+        async with httpx.AsyncClient(timeout=30) as client:
+            geo = await client.post(f"{R_BASE}/geocode", json=geo_req)
+    except httpx.TimeoutException as exc:
+        raise HTTPException(status_code=504, detail=f"Geocode timeout: {exc}")
     except httpx.RequestError as exc:
         raise HTTPException(status_code=503, detail=f"Geocode service unavailable: {exc}")
     if geo.status_code != 200:
