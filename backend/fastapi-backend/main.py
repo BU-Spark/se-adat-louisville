@@ -60,8 +60,11 @@ async def assess(payload: AssessmentInput):
         "state": payload.state,
         "zip": payload.zip
     }
+    try:
     async with httpx.AsyncClient(timeout=30) as client:
         geo = await client.post(f"{R_BASE}/geocode", json=geo_req)
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=503, detail=f"Geocode service unavailable: {exc}")
     if geo.status_code != 200:
         raise HTTPException(status_code=geo.status_code, detail=f"Geocode failed: {geo.text}")
     geo_json = geo.json()
