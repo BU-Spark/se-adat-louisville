@@ -6,7 +6,10 @@ import httpx
 app = FastAPI(title="ADAT API Gateway")
 
 ### ---- R service base ----
-R_BASE = "http://127.0.0.1:8001"  # plumber run.r uses 8001
+import os
+
+### ---- R service base ----
+R_BASE = os.getenv("R_SERVICE_URL", "http://127.0.0.1:8001")
 
 ### ---- Existing quick endpoint (keep) ----
 class EligibilityInput(BaseModel):
