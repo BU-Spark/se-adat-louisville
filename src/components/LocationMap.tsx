@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useRef } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import styles from '../styles/LocationMap.module.css';
-import mapPinIcon from '../../public/assets/assessment/mapPin.svg';
+import mapPinIcon from '../assets/mapPin.svg';
 
 const defaultCenter = { lat: 42.3505, lng: -71.1054 };
 
@@ -156,9 +156,9 @@ export default function LocationMap({ marker, onLocationSelect }: LocationMapPro
   }, [autocomplete]);
 
   return isLoaded ? (
-    <div style={{ position: 'relative', width: '100%', height: '315px' }}>
+    <div style={{ position: 'relative', width: '100%', height: '65vh' }}>
       <GoogleMap
-        mapContainerStyle={{ width: '100%', height: '315px' }}
+        mapContainerStyle={{ width: '100%', height: '65vh' }}
         center={center}
         zoom={15}
         onClick={handleMapClick}

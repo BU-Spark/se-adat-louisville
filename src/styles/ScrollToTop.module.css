@@ -1,0 +1,33 @@
+.root{
+  position: fixed;
+  right: var(--pad);
+  bottom: 50px;
+  z-index: 60;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: block;
+}
+.container{
+  display:flex; gap:8px; align-items:center;
+  padding: 8px 12px; border-radius: 999px;
+  backdrop-filter: blur(4px);
+  opacity: 0.68;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.text{ 
+  color: #000000;
+  font-size: 16px; 
+  letter-spacing: .4px; 
+  font-family: Instrument Sans; 
+  font-weight: 700; 
+}
+.icon{ width: 18px; height: 18px; }
+.show{ opacity: 1; transform: translateY(0); }
+.hide{ opacity: 0; transform: translateY(8px); pointer-events: none; }
+
+/* Reduce opacity to 47% on hover */
+.root:hover .container,
+.container:hover {
+  opacity: 0.47;
+}
