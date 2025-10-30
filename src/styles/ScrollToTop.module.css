@@ -21,7 +21,6 @@
   letter-spacing: .4px; 
   font-family: Instrument Sans; 
   font-weight: 700; 
-  font-style: bold;
 }
 .icon{ width: 18px; height: 18px; }
 .show{ opacity: 1; transform: translateY(0); }
