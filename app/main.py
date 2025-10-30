@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 from dotenv import load_dotenv
 import os
@@ -12,6 +12,7 @@ load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_SCHEMA = os.getenv("SUPABASE_SCHEMA", "public")
 
 if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
     raise RuntimeError("Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in environment or .env file")
@@ -26,16 +27,18 @@ class SessionIn(BaseModel):
     expires_by: datetime = Field(..., alias="expiresBy", example="2025-10-30T13:00:00Z")
     is_active: bool = Field(..., alias="isActive", example=True)
 
-    @root_validator
-    def check_times(cls, values):
-        created = values.get("created_at")
-        expires = values.get("expires_by")
-        if created and expires and expires <= created:
+    @model_validator(mode="after")
+    def check_times(self):
+        # run after model creation so we have typed attributes available
+        if self.created_at and self.expires_by and self.expires_by <= self.created_at:
             raise ValueError("expires_by must be after created_at")
-        return values
+        return self
 
-    class Config:
-        allow_population_by_field_name = True
+    # Pydantic v2 configuration: allow population by field name so the endpoint
+    # accepts either snake_case (field names) or the provided aliases (camelCase).
+    model_config = {
+        "populate_by_name": True,
+    }
 
 
 @app.get("/health")
@@ -54,6 +57,10 @@ async def create_session(payload: SessionIn):
       - is_active / isActive (boolean)
     """
 
+    # Use the standard REST path and, when a non-public schema is requested,
+    # instruct PostgREST/Supabase to operate against that schema via the
+    # Content-Profile / Accept-Profile headers. This avoids schema-qualification
+    # in the URL which can produce cache lookup issues.
     url = SUPABASE_URL.rstrip('/') + '/rest/v1/sessions'
     headers = {
         'apikey': SUPABASE_SERVICE_ROLE_KEY,
@@ -63,8 +70,27 @@ async def create_session(payload: SessionIn):
         'Prefer': 'return=representation',
     }
 
+    # When a custom schema is set, tell Supabase/PostgREST which schema to use
+    if SUPABASE_SCHEMA and SUPABASE_SCHEMA != 'public':
+        headers['Content-Profile'] = SUPABASE_SCHEMA
+        headers['Accept-Profile'] = SUPABASE_SCHEMA
+
     # Use the model's field names (snake_case) when sending to Supabase
-    payload_json = payload.dict(by_alias=False, exclude_none=True)
+    # Ensure any datetimes are serialized to ISO-8601 strings because
+    # the httpx client/json encoder cannot serialize datetime objects.
+    payload_json = payload.model_dump(by_alias=False, exclude_none=True)
+    for k, v in list(payload_json.items()):
+        # convert datetimes to ISO strings and UUIDs to strings so JSON serialization
+        # works when httpx encodes the request body
+        if isinstance(v, datetime):
+            # Prefer 'Z' for UTC when possible
+            if v.tzinfo is None:
+                payload_json[k] = v.isoformat() + "Z"
+            else:
+                s = v.isoformat()
+                payload_json[k] = s.replace("+00:00", "Z")
+        elif isinstance(v, UUID):
+            payload_json[k] = str(v)
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
