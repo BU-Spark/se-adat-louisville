@@ -133,3 +133,57 @@ Astro is flexible and supports many integrations. A few starting points:
 ### Component Libraries
 
 All new projects are expected to align with a design system. Work with your DS488 design team to determine the component library (e.g., Material UI, Chakra UI, Tailwind UI) that best matches the provided design kit, then integrate it within Astro/React islands.
+
+## Backend (FastAPI) — Run & deploy
+
+This repository includes a small FastAPI app at `app/main.py` that exposes a POST endpoint for creating `sessions` records in Supabase via the REST API. Use the steps below to run it locally.
+
+Quick steps (PowerShell):
+
+```powershell
+# create + activate a venv
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+# install Python dependencies
+pip install -r requirements.txt
+
+# copy the env template and edit with your Supabase values
+copy .env.example .env
+# then edit .env and set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+
+# run the server (auto-reload)
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Test the API (example JSON body):
+
+```json
+{
+  "address": "123 Main St",
+  "city": "Louisville",
+  "zipcode": "40202",
+  "units": 12
+}
+```
+
+POST to `http://127.0.0.1:8000/api/assessments`. The service uses the Supabase service role key (server secret) so do not commit your `.env` file with real credentials.
+
+Notes:
+
+- Ensure the `sessions` table exists in your Supabase project. Example SQL:
+
+```sql
+create extension if not exists pgcrypto;
+
+create table public.assessments (
+  id uuid primary key default gen_random_uuid(),
+  address text,
+  city text,
+  zipcode text,
+  units integer,
+  created_at timestamptz default now()
+);
+```
+
+- The requirements are listed in `requirements.txt`. For deployments, pin versions appropriately and follow your hosting provider's docs (e.g., Render, Fly, Heroku, or a containerized approach).
