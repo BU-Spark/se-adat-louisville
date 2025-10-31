@@ -22,10 +22,10 @@ app = FastAPI(title="ADAT FastAPI (Supabase) API")
 
 class SessionIn(BaseModel):
     # Accept both snake_case and camelCase payloads via aliases
-    session_id: UUID = Field(..., alias="sessionID", example="3fa85f64-5717-4562-b3fc-2c963f66afa6")
-    created_at: datetime = Field(..., alias="createdAt", example="2025-10-30T12:00:00Z")
-    expires_by: datetime = Field(..., alias="expiresBy", example="2025-10-30T13:00:00Z")
-    is_active: bool = Field(..., alias="isActive", example=True)
+    session_id: UUID = Field(..., alias="sessionID", json_schema_extra={"example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"})
+    created_at: datetime = Field(..., alias="createdAt", json_schema_extra={"example": "2025-10-30T12:00:00Z"})
+    expires_by: datetime = Field(..., alias="expiresBy", json_schema_extra={"example": "2025-10-30T13:00:00Z"})
+    is_active: bool = Field(..., alias="isActive", json_schema_extra={"example": True})
 
     @model_validator(mode="after")
     def check_times(self):
