@@ -255,12 +255,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         
         .logo-preview svg {
             width: 2rem;
             height: 2rem;
             color: #9ca3af;
+        }
+        
+        .logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .upload-btn {
@@ -298,6 +305,11 @@
             border: 1px solid #d1d5db;
             border-radius: 0.25rem;
             cursor: pointer;
+        }
+        
+        .color-swatch:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
         }
         
         .color-picker input[type="text"] {
@@ -506,11 +518,12 @@
                 <p>Set city seal and customize branding colors</p>
                 
                 <div class="logo-upload">
-                    <div class="logo-preview">
+                    <div class="logo-preview" id="logoPreview">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                         </svg>
                     </div>
+                    <input type="file" id="logoUpload" accept="image/png, image/jpeg" style="display: none;">
                     <button class="upload-btn">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -522,16 +535,16 @@
                 <div class="form-grid">
                     <div class="form-field">
                         <label>Primary Color</label>
-                        <div class="color-picker">
-                            <div class="color-swatch" style="background-color: #BF1212;"></div>
+                        <div class="color-picker" role="group" aria-label="Primary color picker">
+                            <div class="color-swatch" style="background-color: #BF1212;" role="button" tabindex="0" aria-label="Select primary color"></div>
                             <input type="text" value="#BF1212">
                         </div>
                     </div>
                     
                     <div class="form-field">
                         <label>Accent Color</label>
-                        <div class="color-picker">
-                            <div class="color-swatch" style="background-color: #FBD04E;"></div>
+                        <div class="color-picker" role="group" aria-label="Accent color picker">
+                            <div class="color-swatch" style="background-color: #FBD04E;" role="button" tabindex="0" aria-label="Select accent color"></div>
                             <input type="text" value="#FBD04E">
                         </div>
                     </div>
@@ -549,14 +562,13 @@
     </button>
 
     <script>
+        // State dropdown functionality
         const stateInput = document.getElementById('state');
         const stateDropdown = document.getElementById('stateDropdown');
         const stateOptions = document.querySelectorAll('.state-option');
         let currentFocusIndex = -1;
         
-        // Only run if elements exist
         if (stateInput && stateDropdown) {
-            // Toggle dropdown when clicking the input
             stateInput.addEventListener('click', function() {
                 stateDropdown.classList.toggle('show');
                 if (stateDropdown.classList.contains('show')) {
@@ -564,7 +576,6 @@
                 }
             });
             
-            // Keyboard navigation for the input field
             stateInput.addEventListener('keydown', function(e) {
                 if (!stateDropdown.classList.contains('show')) {
                     if (e.key === 'ArrowDown' || e.key === 'Enter') {
@@ -596,7 +607,6 @@
                 }
             });
             
-            // Select state when clicking an option
             stateOptions.forEach((option, index) => {
                 option.addEventListener('click', function() {
                     stateInput.value = this.getAttribute('data-value');
@@ -604,7 +614,6 @@
                     stateInput.focus();
                 });
                 
-                // Keyboard support for options
                 option.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
@@ -625,7 +634,6 @@
                 });
             });
             
-            // Helper function to focus an option
             function focusOption(index) {
                 if (index >= 0 && index < stateOptions.length) {
                     stateOptions[index].focus();
@@ -633,7 +641,6 @@
                 }
             }
             
-            // Helper function to select an option
             function selectOption(index) {
                 if (index >= 0 && index < stateOptions.length) {
                     stateInput.value = stateOptions[index].getAttribute('data-value');
@@ -642,7 +649,6 @@
                 }
             }
             
-            // Close dropdown when clicking outside
             document.addEventListener('click', function(event) {
                 if (!event.target.closest('.state-select')) {
                     stateDropdown.classList.remove('show');
@@ -650,11 +656,32 @@
             });
         }
         
+        // Logo upload functionality
+        const uploadBtn = document.querySelector('.upload-btn');
+        const logoInput = document.getElementById('logoUpload');
+        const logoPreview = document.getElementById('logoPreview');
+        
+        if (uploadBtn && logoInput) {
+            uploadBtn.addEventListener('click', () => logoInput.click());
+            
+            logoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        logoPreview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Color picker functionality
         function isHex(color) {
             return /^#(?:[0-9A-F]{3}){1,2}$/i.test(color);
         }
+        
         function normalizeHex(h) {
-            // Expand #RGB to #RRGGBB and uppercase
             if (/^#[0-9A-F]{3}$/i.test(h)) {
                 return '#' + h.slice(1).split('').map(c => c + c).join('').toUpperCase();
             }
@@ -663,9 +690,8 @@
 
         document.querySelectorAll('.color-picker').forEach(picker => {
             const swatch = picker.querySelector('.color-swatch');
-            const text   = picker.querySelector('input[type="text"]');
+            const text = picker.querySelector('input[type="text"]');
 
-            // Initialize swatch from current input value
             if (text && isHex(text.value)) {
                 const hex = normalizeHex(text.value.trim());
                 swatch.style.backgroundColor = hex;
@@ -688,7 +714,18 @@
                 }
             });
 
+            // Click to open color picker
             swatch.addEventListener('click', () => hidden.click());
+            
+            // Keyboard accessibility for color swatch
+            swatch.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    hidden.click();
+                }
+            });
+            
+            // Update when color picker changes
             hidden.addEventListener('input', e => {
                 const hex = e.target.value.toUpperCase();
                 swatch.style.backgroundColor = hex;
@@ -697,5 +734,4 @@
         });
     </script>
 </body>
-</html>
 </html>
