@@ -534,18 +534,18 @@
                 
                 <div class="form-grid">
                     <div class="form-field">
-                        <label>Primary Color</label>
+                        <label for="primaryColor">Primary Color</label>
                         <div class="color-picker" role="group" aria-label="Primary color picker">
                             <div class="color-swatch" style="background-color: #BF1212;" role="button" tabindex="0" aria-label="Select primary color"></div>
-                            <input type="text" value="#BF1212">
+                            <input id="primaryColor" name="primaryColor" type="text" value="#BF1212">
                         </div>
                     </div>
                     
                     <div class="form-field">
-                        <label>Accent Color</label>
+                        <label for="accentColor">Accent Color</label>
                         <div class="color-picker" role="group" aria-label="Accent color picker">
                             <div class="color-swatch" style="background-color: #FBD04E;" role="button" tabindex="0" aria-label="Select accent color"></div>
-                            <input type="text" value="#FBD04E">
+                            <input id="accentColor" name="accentColor" type="text" value="#FBD04E">
                         </div>
                     </div>
                 </div>
@@ -701,6 +701,7 @@
             const hidden = document.createElement('input');
             hidden.type = 'color';
             hidden.style.display = 'none';
+            hidden.setAttribute('aria-hidden', 'true');
             hidden.value = isHex(text.value) ? normalizeHex(text.value) : '#000000';
             picker.appendChild(hidden);
 
