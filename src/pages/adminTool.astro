@@ -672,6 +672,12 @@
                 text.value = hex;
             }
 
+            const hidden = document.createElement('input');
+            hidden.type = 'color';
+            hidden.style.display = 'none';
+            hidden.value = isHex(text.value) ? normalizeHex(text.value) : '#000000';
+            picker.appendChild(hidden);
+
             text.addEventListener('input', e => {
                 const val = e.target.value.trim();
                 if (isHex(val)) {
@@ -681,12 +687,6 @@
                     if (hidden) hidden.value = hex;
                 }
             });
-
-            const hidden = document.createElement('input');
-            hidden.type = 'color';
-            hidden.style.display = 'none';
-            hidden.value = isHex(text.value) ? normalizeHex(text.value) : '#000000';
-            picker.appendChild(hidden);
 
             swatch.addEventListener('click', () => hidden.click());
             hidden.addEventListener('input', e => {
