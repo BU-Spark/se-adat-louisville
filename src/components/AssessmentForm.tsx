@@ -69,6 +69,87 @@ export default function AssessmentFormHandler() {
       step2Form.addEventListener('submit', handleStep2Submit);
     }
 
+    // Step 3 confirm: create a session via API when the final confirm button is clicked
+    const genUUID = (): string => {
+      // Prefer the native crypto.randomUUID when available
+      const webCrypto =
+        typeof crypto !== 'undefined' ? (crypto as unknown as { randomUUID?: () => string }) : undefined;
+      if (webCrypto && typeof webCrypto.randomUUID === 'function') {
+        return webCrypto.randomUUID();
+      }
+      // fallback simple UUID generator
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
+    };
+
+    const handleFinalSubmit = async (e: Event) => {
+      e.preventDefault();
+      try {
+        const sessionID = genUUID();
+        const created = new Date();
+        const expires = new Date(created.getTime() + 12 * 60 * 60 * 1000); // +12 hours
+
+        const payload = {
+          session_id: sessionID,
+          created_at: created.toISOString(),
+          expires_by: expires.toISOString(),
+          is_active: true,
+        };
+
+        // Determine backend API base. Prefer a build-time env var (PUBLIC_API_BASE).
+        // Fallback to localhost:8000 which is where the FastAPI app runs in dev.
+        const apiBase =
+          typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_BASE
+            ? import.meta.env.PUBLIC_API_BASE
+            : '';
+
+        console.log('Using API base:', apiBase);
+        const url = apiBase.replace(/\/$/, '') + '/api/sessions';
+        console.log('URL for session creation:', url);
+
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          console.error('Failed to create session', resp.status, text);
+          alert('Failed to create session: ' + resp.status + '\n' + text);
+          return;
+        }
+
+        const data = await resp.json();
+        console.log('Session created', data);
+
+        if (step3) {
+          let statusEl = document.getElementById('sessionStatus');
+          if (!statusEl) {
+            statusEl = document.createElement('div');
+            statusEl.id = 'sessionStatus';
+            statusEl.style.marginTop = '1rem';
+            statusEl.style.fontSize = '0.9rem';
+            statusEl.style.color = '#064e3b';
+            step3.appendChild(statusEl);
+          }
+          statusEl.textContent = `Session created: ${payload.session_id}`;
+        }
+      } catch (err) {
+        console.error('Error creating session', err);
+        alert('Error creating session: ' + String(err));
+      }
+    };
+
+    let finalButton: HTMLButtonElement | null = null;
+    if (step3) {
+      finalButton = step3.querySelector('button[type="finalSubmit"]') as HTMLButtonElement | null;
+      if (finalButton) finalButton.addEventListener('click', handleFinalSubmit);
+    }
+
     // Cleanup
     return () => {
       window.removeEventListener('location-selected', handleLocationSelected as EventListener);
@@ -78,6 +159,7 @@ export default function AssessmentFormHandler() {
       if (step2Form) {
         step2Form.removeEventListener('submit', handleStep2Submit);
       }
+      if (finalButton) finalButton.removeEventListener('click', handleFinalSubmit);
     };
   }, []);
 

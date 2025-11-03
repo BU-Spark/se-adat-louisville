@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 from dotenv import load_dotenv
@@ -18,6 +19,29 @@ if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
     raise RuntimeError("Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in environment or .env file")
 
 app = FastAPI(title="ADAT FastAPI (Supabase) API")
+
+# Configure CORS so the browser-based frontend (Astro dev server) can call
+# this backend during local development. Set FRONTEND_ORIGINS in your .env to
+# a comma-separated list of allowed origins, otherwise a sensible default list
+# is used for common local dev hosts.
+_frontend_origins = os.getenv("FRONTEND_ORIGINS")
+if _frontend_origins:
+    origins = [o.strip() for o in _frontend_origins.split(",") if o.strip()]
+else:
+    origins = [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+    ]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class SessionIn(BaseModel):
