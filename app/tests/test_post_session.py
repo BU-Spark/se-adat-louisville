@@ -28,9 +28,19 @@ sys.path.insert(0, str(repo_root))
 
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-SUPABASE_SCHEMA = os.getenv("SUPABASE_SCHEMA", "public")
+_supabase_url = os.getenv("SUPABASE_URL")
+SUPABASE_URL = _supabase_url.strip() if _supabase_url else None
+
+_supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_SERVICE_ROLE_KEY = _supabase_key.strip() if _supabase_key else None
+
+_supabase_schema = os.getenv("SUPABASE_SCHEMA")
+SUPABASE_SCHEMA = _supabase_schema.strip() if _supabase_schema else "public"
+
+# Control whether the test auto-deletes the inserted row. Set to 'false' to keep
+# the row for inspection. Default: true (auto-cleanup).
+_cleanup = os.getenv("SUPABASE_TEST_AUTOCLEANUP", "true")
+SUPABASE_TEST_AUTOCLEANUP = str(_cleanup).strip().lower() in ("1", "true", "yes")
 
 # import app after loading environment
 from app.main import app
@@ -77,7 +87,7 @@ def run_test():
     # ensure the session_id round-trips
     assert str(row.get("session_id")) == payload["session_id"], "session_id mismatch"
 
-    # Cleanup: remove the inserted session row from Supabase so tests are idempotent
+    # Prepare cleanup info (delete URL and headers)
     delete_url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/sessions?session_id=eq.{payload['session_id']}"
     headers = {
         'apikey': SUPABASE_SERVICE_ROLE_KEY,
@@ -86,6 +96,42 @@ def run_test():
     if SUPABASE_SCHEMA and SUPABASE_SCHEMA != 'public':
         headers['Content-Profile'] = SUPABASE_SCHEMA
         headers['Accept-Profile'] = SUPABASE_SCHEMA
+
+    # If running interactively (script) give the user a prompt to inspect before deleting.
+    # When running under pytest, respect SUPABASE_TEST_AUTOCLEANUP environment flag.
+    running_under_pytest = 'PYTEST_CURRENT_TEST' in os.environ or 'pytest' in sys.modules
+
+    if running_under_pytest and not SUPABASE_TEST_AUTOCLEANUP:
+        # Do not auto-delete; print instructions so the developer can delete manually later.
+        print("\nAutocleanup is disabled (SUPABASE_TEST_AUTOCLEANUP=false). The test row was not deleted.")
+        print("Delete it manually with one of these commands:")
+        print("PowerShell (Invoke-RestMethod):")
+        ps_cmd = (
+            f"Invoke-RestMethod -Uri \"{delete_url}\" -Method DELETE -Headers @{{\n"
+            f"  'apikey' = '{SUPABASE_SERVICE_ROLE_KEY}';\n"
+            f"  'Authorization' = 'Bearer {SUPABASE_SERVICE_ROLE_KEY}';\n"
+            + (f"  'Content-Profile' = '{SUPABASE_SCHEMA}';\n  'Accept-Profile' = '{SUPABASE_SCHEMA}';\n" if SUPABASE_SCHEMA and SUPABASE_SCHEMA != 'public' else "")
+            + " }}"
+        )
+        print(ps_cmd)
+        print("curl (bash):")
+        curl_cmd = (
+            f"curl -X DELETE '{delete_url}' -H \"apikey: {SUPABASE_SERVICE_ROLE_KEY}\" -H \"Authorization: Bearer {SUPABASE_SERVICE_ROLE_KEY}\""
+            + (f" -H \"Content-Profile: {SUPABASE_SCHEMA}\" -H \"Accept-Profile: {SUPABASE_SCHEMA}\"" if SUPABASE_SCHEMA and SUPABASE_SCHEMA != 'public' else "")
+        )
+        print(curl_cmd)
+        return
+
+    # Interactive path when running as script
+    if not running_under_pytest:
+        print("\nInserted test row. Press Enter to delete it, or Ctrl+C to keep it for inspection.")
+        try:
+            input()
+        except KeyboardInterrupt:
+            print("Skipping deletion (user requested to keep row).")
+            return
+
+    # Default auto-cleanup (either pytest with SUPABASE_TEST_AUTOCLEANUP true or user pressed Enter)
     with httpx.Client(timeout=15.0) as hb:
         del_resp = hb.delete(delete_url, headers=headers)
     print("Cleanup status:", del_resp.status_code, del_resp.text)
