@@ -1,0 +1,110 @@
+/* Custom styling for Stadia Maps search box */
+
+/* Initially hide the search box */
+:global(.maplibre-search-box) {
+  display: none !important;
+  border-radius: 66px !important;
+  width: 320px !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+}
+
+/* Show search box when expanded */
+:global(.maplibre-search-box.expanded) {
+  display: block !important;
+}
+
+:global(.maplibre-search-box .input-container input) {
+  font-size: 14px !important;
+  padding: 20px 12px !important;
+  border: 1.5px solid #EAEAEA !important;
+  border-radius: 66px !important;
+  font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+:global(.maplibre-search-box .results) {
+  border-radius: 8px !important;
+  margin-top: 8px !important;
+  width: 320px !important;
+}
+
+:global(.maplibre-search-box .result) {
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+:global(.maplibre-search-box .result:hover),
+:global(.maplibre-search-box .result.hover) {
+  background-color: #EAEAEA !important;
+}
+
+:global(.maplibre-search-box .result-label) {
+  font-weight: 500 !important;
+  flex-shrink: 0 !important;
+}
+
+:global(.maplibre-search-box .result-extra) {
+  font-size: 8px !important;
+  color: #666 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+
+/* Search icon when expanded */
+.mapSearchIconExpanded {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  z-index: 102;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  transition: all 0.2s ease;
+}
+
+.mapSearchIcon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 101;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid #EAEAEA;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mapPinIcon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 101;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFBA37;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
