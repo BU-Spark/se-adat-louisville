@@ -11,8 +11,10 @@ try {
 
   if (data.status === 'error') {
     error = data.reason;
-  } else {
+  } else if (data.result?.developable !== undefined) {
     developable = data.result.developable;
+  } else {
+    error = 'Invalid response structure from API';
   }
 } catch (err) {
   error = err.message;
