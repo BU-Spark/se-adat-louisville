@@ -1,6 +1,6 @@
 ---
 const { sessionId } = Astro.props;
-const apiUrl = 'http://localhost:8000';
+const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
 let developable = null;
 let error = null;
