@@ -1,5 +1,6 @@
 ---
-import BaseLayout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/EducationLayout.astro';
+import ScrollToTop from '../components/ScrollToTop.tsx';
 ---
 
 <BaseLayout
@@ -10,29 +11,6 @@ import BaseLayout from '../layouts/Layout.astro';
     <!-- Hero Section -->
     <section class="hero-section" style="background-image: url('/assets/education/skyhouse.jpg')">
       <div class="hero-content">
-        <!-- Header -->
-        <header class="header">
-          <div class="header-content">
-            <nav class="header-nav">
-              <div class="header-left">
-                <img
-                  src="/assets/education/ADT master file_img/source/image.png"
-                  alt="Louisville Metro Logo"
-                  class="logo"
-                />
-                <div class="nav-links">
-                  <a href="/assessment" class="nav-link">
-                    <span class="nav-text">Assessment</span>
-                  </a>
-                  <a href="/resources" class="nav-link">
-                    <span class="nav-text">Resources</span>
-                  </a>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </header>
-
         <!-- Hero Content -->
         <div class="hero-text-section">
           <h1 class="hero-title">What is Displacement?</h1>
@@ -64,42 +42,33 @@ import BaseLayout from '../layouts/Layout.astro';
 
           <div class="divider-line"></div>
 
-          <div class="scroll-indicator">
-            <div class="scroll-text-container">
-              <span class="scroll-text">Scroll</span>
-              <img
-                src="/assets/education/ADT master file_icon/Chevron down.svg"
-                alt="Scroll indicator"
-                class="scroll-icon"
-              />
-            </div>
-          </div>
+          <ScrollToTop client:load />
 
           <div class="main-content">
             <div class="content-row">
               <div class="content-left">
-                <div class="text-content-container">
-                  <p class="main-text">
-                    The Anti-Displacement Assessment Tool (ADAT) was created in response to the
-                    <span class="text-bold text-underline"> Anti-Displacement Ordinance</span> passed by Louisville Metro
-                    City Council on November 9th, 2023.
-                    <span class="text-bold">
-                      This law requires that new housing projects receiving city support, such as tax breaks or official
-                      letters of support, be reviewed for their potential to displace current residents.</span
-                    >
-                    <br /><br />
-                    The ADAT is a public and free-to-use platform that helps assess how new housing developments may affect
-                    local communities.
-                    <span class="text-bold">
-                      Its purpose is to prevent displacement and to support fair, equitable, and inclusive neighborhood
-                      growth.</span
-                    >
-                    <br /><br />
-                    Developed by researchers at Boston University and the University of Southern California in collaboration
-                    with Metro Louisville, the ADAT determines the risk of displacement associated with the location of projects
-                    seeking Metro support and the required affordability level required for the project to mitigate displacement.
-                  </p>
+                <p class="main-text">
+                  The Anti-Displacement Assessment Tool (ADAT) was created in response to the
+                  <span class="text-bold text-underline"> Anti-Displacement Ordinance</span> passed by Louisville Metro City
+                  Council on November 9th, 2023.
+                  <span class="text-bold">
+                    This law requires that new housing projects receiving city support, such as tax breaks or official
+                    letters of support, be reviewed for their potential to displace current residents.</span
+                  >
+                  <br /><br />
+                  The ADAT is a public and free-to-use platform that helps assess how new housing developments may affect
+                  local communities.
+                  <span class="text-bold">
+                    Its purpose is to prevent displacement and to support fair, equitable, and inclusive neighborhood
+                    growth.</span
+                  >
+                  <br /><br />
+                  Developed by researchers at Boston University and the University of Southern California in collaboration
+                  with Metro Louisville, the ADAT determines the risk of displacement associated with the location of projects
+                  seeking Metro support and the required affordability level required for the project to mitigate displacement.
+                </p>
 
+                <div class="left-content-bottom">
                   <!-- MHC video (555 × 305) -->
                   <div class="video-wrapper">
                     <video
@@ -108,18 +77,18 @@ import BaseLayout from '../layouts/Layout.astro';
                       controls
                       playsinline
                       preload="metadata"
-                      poster="/assets/education/architect.png"
+                      poster="/assets/education/mhc-poster.png"
                     >
                       Your browser does not support the video tag.
                     </video>
                   </div>
-                </div>
 
-                <p class="image-caption">
-                  Learn more about Area Median Income (AMI) from the <span class="text-underline"
-                    >Metropolitan Housing Coalition</span
-                  >
-                </p>
+                  <p class="image-caption">
+                    Learn more about Area Median Income (AMI) from the <span class="text-underline"
+                      >Metropolitan Housing Coalition</span
+                    >
+                  </p>
+                </div>
               </div>
 
               <div class="content-right">
@@ -175,11 +144,8 @@ import BaseLayout from '../layouts/Layout.astro';
 
         <p class="overview-text">
           Louisville Metro produced a comprehensive
-          <a
-            href="https://louisvilleky.gov/housing-needs-assessment"
-            class="u"
-            target="_blank"
-            rel="noopener noreferrer">Housing Needs Assessment</a
+          <a href="/assessment" class="link" style="opacity: 68%" target="_blank" rel="noopener noreferrer"
+            >Housing Needs Assessment</a
           >
           in 2019 that was updated in 2024. The assessment identified
           <span class="strong"> two critical factors</span>
@@ -222,7 +188,12 @@ import BaseLayout from '../layouts/Layout.astro';
                 class="chart-sidebar-image"
               />
             </div>
-            <a href="#" class="learn-more-btn">Learn more</a>
+            <a
+              href="#"
+              class="button"
+              data-popup-text="More about the housing statistics and methodology. Visit the Housing Needs Assessment for full details."
+              >Learn more</a
+            >
           </div>
         </div>
       </div>
@@ -232,8 +203,7 @@ import BaseLayout from '../layouts/Layout.astro';
     <section class="housing-mismatch-section">
       <div class="housing-mismatch-content">
         <div class="housing-mismatch-text">
-          <h3 class="text-large text-bold">Housing Mismatch</h3>
-          <br /><br />
+          <h3 class="housing-mismatch-title">Housing Mismatch</h3>
           There are currently a <span class="text-bold text-italic"
             >shortage of affordable housing units for Louisville residents</span
           >. Currently, there are about
@@ -254,117 +224,114 @@ import BaseLayout from '../layouts/Layout.astro';
               class="housing-chart-image"
             />
           </div>
-          <a href="/housing-data" class="learn-more-btn">Learn more</a>
-        </div>
-      </div>
-
-      <!-- Role Section -->
-      <section class="content-section">
-        <div class="scroll-container">
-          <div class="section-content">
-            <div class="section-header">
-              <div class="section-icon-container">
-                <img src="/assets/education/ADT master file_icon/Vector-2.svg" alt="Role icon" class="section-icon" />
-              </div>
-              <h2 class="section-title">The Role You Play</h2>
-            </div>
-
-            <div class="divider-line"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Role Cards Section -->
-      <section class="role-cards-section">
-        <div class="role-cards-divider"></div>
-
-        <div class="role-cards-container">
-          <article class="role-card">
-            <img
-              src="/assets/education/ADT master file_icon/Ellipse 1-1.svg"
-              alt="City official representative"
-              class="role-card-image"
-              style="width: 48%;"
-            />
-            <div class="role-card-content">
-              <h3 class="role-card-title">City Officials</h3>
-              <p class="role-card-description">
-                Review development proposals using ADAT to ensure projects meet anti-displacement requirements and
-                support equitable growth.
-              </p>
-            </div>
-          </article>
-
-          <article class="role-card">
-            <img
-              src="/assets/education/ADT master file_icon/Ellipse 2.svg"
-              alt="Community member representative"
-              class="role-card-image"
-              style="width: 36%;"
-            />
-            <div class="role-card-content">
-              <h3 class="role-card-title">Community Members</h3>
-              <p class="role-card-description" style="width: 86%;">
-                Use ADAT to understand how proposed developments may impact your neighborhood and advocate for
-                affordable housing.
-              </p>
-            </div>
-          </article>
-
-          <article class="role-card">
-            <img
-              src="/assets/education/ADT master file_icon/Ellipse 1.svg"
-              alt="Developer representative"
-              class="role-card-image"
-              style="width: 44%;"
-            />
-            <div class="role-card-content">
-              <h3 class="role-card-title">Developers</h3>
-              <p class="role-card-description">
-                Plan projects that meet affordability requirements and contribute to community stability using ADAT
-                insights.
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- ADAT Usage Section -->
-      <section class="content-section">
-        <div class="scroll-container">
-          <div class="section-content">
-            <div class="section-header">
-              <div class="section-icon-container">
-                <img
-                  src="/assets/education/ADT master file_icon/Vector.svg"
-                  alt="How to use ADAT icon"
-                  class="section-icon"
-                />
-              </div>
-              <h2 class="section-title">How to Use ADAT</h2>
-            </div>
-
-            <div class="divider-line"></div>
-          </div>
-        </div>
-      </section>
-
-      <div class="adat-diagram-section">
-        <div class="adat-diagram-container">
-          <div class="adat-diagram-divider"></div>
-          <img
-            src="/assets/education/ADT master file_img/ADATExplainer-DRAFT2 1.png"
-            alt="ADAT tool usage diagram and workflow"
-            class="adat-diagram-image"
-          />
+          <a
+            href="/housing-data"
+            class="button"
+            data-popup-text="Explore detailed housing data and downloads on the Housing Data page.">Learn more</a
+          >
         </div>
       </div>
     </section>
-  </main>
 
-  <script
-    type="module"
-    src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fdanielsa4079back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"
-    is:inline></script>
-  <script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1" is:inline></script>
+    <!-- Role Section -->
+    <section class="content-section">
+      <div class="scroll-container">
+        <div class="section-content">
+          <div class="section-header">
+            <div class="section-icon-container">
+              <img src="/assets/education/ADT master file_icon/Vector-2.svg" alt="Role icon" class="section-icon" />
+            </div>
+            <h2 class="section-title">The Role You Play</h2>
+          </div>
+
+          <div class="divider-line"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Role Cards Section -->
+    <section class="role-cards-section">
+      <div class="role-cards-divider"></div>
+
+      <div class="role-cards-container">
+        <article class="role-card">
+          <img
+            src="/assets/education/ADT master file_icon/Ellipse 1-1.svg"
+            alt="City official representative"
+            class="role-card-image"
+            style="width: 48%;"
+          />
+          <div class="role-card-content">
+            <h3 class="role-card-title">City Officials</h3>
+            <p class="role-card-description">
+              Review development proposals using ADAT to ensure projects meet anti-displacement requirements and support
+              equitable growth.
+            </p>
+          </div>
+        </article>
+
+        <article class="role-card">
+          <img
+            src="/assets/education/ADT master file_icon/Ellipse 2.svg"
+            alt="Community member representative"
+            class="role-card-image"
+            style="width: 36%;"
+          />
+          <div class="role-card-content">
+            <h3 class="role-card-title">Community Members</h3>
+            <p class="role-card-description" style="width: 86%;">
+              Use ADAT to understand how proposed developments may impact your neighborhood and advocate for affordable
+              housing.
+            </p>
+          </div>
+        </article>
+
+        <article class="role-card">
+          <img
+            src="/assets/education/ADT master file_icon/Ellipse 1.svg"
+            alt="Developer representative"
+            class="role-card-image"
+            style="width: 44%;"
+          />
+          <div class="role-card-content">
+            <h3 class="role-card-title">Developers</h3>
+            <p class="role-card-description">
+              Plan projects that meet affordability requirements and contribute to community stability using ADAT
+              insights.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ADAT Usage Section -->
+    <section class="content-section">
+      <div class="scroll-container">
+        <div class="section-content">
+          <div class="section-header">
+            <div class="section-icon-container">
+              <img
+                src="/assets/education/ADT master file_icon/Vector.svg"
+                alt="How to use ADAT icon"
+                class="section-icon"
+              />
+            </div>
+            <h2 class="section-title">How to Use the ADAT</h2>
+          </div>
+
+          <div class="divider-line"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="adat-diagram-section">
+      <div class="adat-diagram-container">
+        <img
+          src="/assets/education/ADT master file_img/ADATExplainer-DRAFT2 1.png"
+          alt="ADAT tool usage diagram and workflow"
+          class="adat-diagram-image"
+        />
+      </div>
+    </div>
+  </main>
 </BaseLayout>

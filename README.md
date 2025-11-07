@@ -117,6 +117,10 @@ Astro loads environment variables from `.env` files using Vite conventions.
 
 See the [Astro docs on environment variables](https://docs.astro.build/en/guides/environment-variables/) for deeper control, including runtime vs. build-time values.
 
+## Adding Google Maps API Key
+
+A google maps API key is needed from Google Cloud Console. Follow the steps in the guide below and insert your key in '.env' under PUBLIC_GOOGLE_MAPS_API_KEY. Make sure Maps, Autocomplete, and Geocoding are toggled on for your API key.
+
 ## Adding Additional Tech
 
 Astro is flexible and supports many integrations. A few starting points:
@@ -127,4 +131,5 @@ Astro is flexible and supports many integrations. A few starting points:
 - [React Ecosystem](https://docs.astro.build/en/guides/integrations-guide/react/) – guidance on using React libraries within Astro islands.
 
 ### Component Libraries
+
 All new projects are expected to align with a design system. Work with your DS488 design team to determine the component library (e.g., Material UI, Chakra UI, Tailwind UI) that best matches the provided design kit, then integrate it within Astro/React islands.
