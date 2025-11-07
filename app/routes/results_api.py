@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from dotenv import load_dotenv
 import os
 import httpx
@@ -92,14 +92,14 @@ async def get_assessment_results(
     if resp.status_code >= 400:
         try:
             detail = resp.json()
-        except Exception:
+        except (ValueError, httpx.ResponseNotRead):
             detail = resp.text
         return ErrorResponse(status="error", reason=str(detail))
 
     # parsing through json
     try:
         results = resp.json()
-    except Exception:
+    except (ValueError, httpx.ResponseNotRead):
         return ErrorResponse(status="error", reason="Failed to parse response")
 
     if not results:
@@ -114,7 +114,7 @@ async def get_assessment_results(
 
     try:
         result = AssessmentResult(**result_data)
-    except Exception as e:
-        return ErrorResponse(status="error", reason=f"Validation failed: {str(e)}")
+    except ValidationError as e:
+        return ErrorResponse(status="error", reason=f"Validation failed: {e!s}")
 
     return AssessResponse(status="ok", result=result)
