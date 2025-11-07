@@ -1,0 +1,51 @@
+---
+const { sessionId } = Astro.props;
+const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+
+let developable = null;
+let error = null;
+
+try {
+  const response = await fetch(`${apiUrl}/storage?session_id=${sessionId}`);
+  const data = await response.json();
+
+  if (data.status === 'error') {
+    error = data.reason;
+  } else if (data.result?.developable !== undefined) {
+    developable = data.result.developable;
+  } else {
+    error = 'Invalid response structure from API';
+  }
+} catch (err) {
+  error = err.message;
+}
+
+const isYes = developable === 'YES';
+const bgColor = isYes ? '#E7FCE1' : '#FCF8E1';
+const textColor = isYes ? '#2D5016' : '#5C4A1A';
+---
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+
+<div class="tool-results" style={`background-color: ${bgColor}; color: ${textColor};`}>
+  {error ? `Error: ${error}` : developable}
+</div>
+
+<style>
+  .tool-results {
+    width: 1299px;
+    height: 550px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 120px;
+    font-weight: 600;
+    letter-spacing: -2px;
+  }
+</style>
