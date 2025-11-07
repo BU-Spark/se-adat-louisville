@@ -12,6 +12,11 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SUPABASE_SCHEMA = os.getenv("SUPABASE_SCHEMA", "public")
 
+if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+    raise ValueError(
+        "Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set"
+    )
+    
 router = APIRouter()
 
 # response models --> dummy data shape for proof of concept only, will be changed
