@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, conint, constr
 from celery.result import AsyncResult
 from celeryApp import celery_app, process_assessment_task
@@ -9,6 +10,21 @@ import uuid
 load_dotenv()
 
 app = FastAPI(title="ADAT API Gateway")
+
+# Add CORS middleware to allow frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4321",  # Astro default dev server
+        "http://localhost:3000",  # Alternative dev port
+        "http://localhost:4322",  # Astro alternative port
+        # Add your production domain when deploying:
+        # "https://your-production-domain.com"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/health")
 def health():

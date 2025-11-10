@@ -1,7 +1,8 @@
 ---
 import Layout from '../layouts/GeneralLayout.astro';
-import LocationMap from '../components/LocationMap.tsx';
-import AssessmentFormHandler from '../components/AssessmentForm.tsx';
+import LocationMap from '../components/LocationMap';
+import AssessmentFormHandler from '../components/AssessmentForm';
+import AssessmentAPIHandler from '../components/AssessmentAPIHandler';
 import formStyles from '../styles/AssessmentForm.module.css';
 ---
 
@@ -147,7 +148,7 @@ import formStyles from '../styles/AssessmentForm.module.css';
               />
             </div>
 
-            <button type="finalSubmit" class={formStyles.confirmButton}>Confirm</button>
+            <button type="submit" class={formStyles.confirmButton}>Confirm</button>
           </form>
         </div>
       </div>
@@ -155,4 +156,5 @@ import formStyles from '../styles/AssessmentForm.module.css';
   </div>
 
   <AssessmentFormHandler client:load />
+  <AssessmentAPIHandler client:load />
 </Layout>
