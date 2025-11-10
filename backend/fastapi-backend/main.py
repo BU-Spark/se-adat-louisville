@@ -99,7 +99,7 @@ def get_task_status(task_id: str):
             "status": "pending",
             "message": "Waiting in queue"
         }
-    elif task_result.state == 'PROCESSING':
+    elif task_result.state == 'STARTED':
         return {
             "task_id": task_id,
             "status": "processing",
