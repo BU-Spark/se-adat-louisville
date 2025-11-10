@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, conint, constr
 from celery.result import AsyncResult
 from celeryApp import celery_app, process_assessment_task
+from celery.exceptions import OperationalError
 from dotenv import load_dotenv
 import uuid
 
@@ -64,12 +65,19 @@ async def assess(payload: AssessmentInput):
         "city": payload.city,
         "state": payload.state,
         "zip": payload.zip,
-        "affordability": payload.affordability.dict()
+        "affordability": payload.affordability.model_dump()
     }
     
-    # Queue task
-    task = process_assessment_task.delay(celery_payload)
-    
+    # Queue task with error handling
+    try:
+        task = process_assessment_task.delay(celery_payload)
+    except OperationalError as e:
+        print(f"[MAIN.PY] Celery connection error: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail="Task queue unavailable. Please try again later."
+        )
+
     print(f"[MAIN.PY] Queued task: {task.id}\n")
     
     return {
