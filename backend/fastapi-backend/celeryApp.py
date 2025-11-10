@@ -11,7 +11,7 @@ REDIS_URL = os.getenv("REDIS_URL")
 if not REDIS_URL:
     raise ValueError("REDIS_URL must be set in .env file")
 
-# Use Redis as broker, but disable result backend
+# Use Redis as both broker and result backend
 celery_app = Celery(
     "adat_tasks",
     broker=REDIS_URL,
