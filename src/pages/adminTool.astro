@@ -229,11 +229,9 @@
             color: #374151;
         }
         
-        .state-option:hover,
-        .state-option:focus {
+        .state-option:hover {
             background: #dbeafe;
             color: #2563eb;
-            outline: none;
         }
         
         .state-select input {
@@ -255,19 +253,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
         
         .logo-preview svg {
             width: 2rem;
             height: 2rem;
             color: #9ca3af;
-        }
-        
-        .logo-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
         
         .upload-btn {
@@ -305,11 +296,6 @@
             border: 1px solid #d1d5db;
             border-radius: 0.25rem;
             cursor: pointer;
-        }
-        
-        .color-swatch:focus {
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
         }
         
         .color-picker input[type="text"] {
@@ -387,7 +373,7 @@
             <div class="header-right">
                 <button class="header-btn">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                     <span>Settings</span>
@@ -429,58 +415,58 @@
                     
                     <div class="form-field state-select">
                         <label for="state">State</label>
-                        <input type="text" id="state" name="state" placeholder="Select state..." autocomplete="off" readonly>
+                        <input type="text" id="state" name="state" placeholder="Search or select state..." autocomplete="off" readonly>
                         <div class="state-dropdown" id="stateDropdown">
-                            <div class="state-option" data-value="Alabama" tabindex="0">Alabama</div>
-                            <div class="state-option" data-value="Alaska" tabindex="0">Alaska</div>
-                            <div class="state-option" data-value="Arizona" tabindex="0">Arizona</div>
-                            <div class="state-option" data-value="Arkansas" tabindex="0">Arkansas</div>
-                            <div class="state-option" data-value="California" tabindex="0">California</div>
-                            <div class="state-option" data-value="Colorado" tabindex="0">Colorado</div>
-                            <div class="state-option" data-value="Connecticut" tabindex="0">Connecticut</div>
-                            <div class="state-option" data-value="Delaware" tabindex="0">Delaware</div>
-                            <div class="state-option" data-value="Florida" tabindex="0">Florida</div>
-                            <div class="state-option" data-value="Georgia" tabindex="0">Georgia</div>
-                            <div class="state-option" data-value="Hawaii" tabindex="0">Hawaii</div>
-                            <div class="state-option" data-value="Idaho" tabindex="0">Idaho</div>
-                            <div class="state-option" data-value="Illinois" tabindex="0">Illinois</div>
-                            <div class="state-option" data-value="Indiana" tabindex="0">Indiana</div>
-                            <div class="state-option" data-value="Iowa" tabindex="0">Iowa</div>
-                            <div class="state-option" data-value="Kansas" tabindex="0">Kansas</div>
-                            <div class="state-option" data-value="Kentucky" tabindex="0">Kentucky</div>
-                            <div class="state-option" data-value="Louisiana" tabindex="0">Louisiana</div>
-                            <div class="state-option" data-value="Maine" tabindex="0">Maine</div>
-                            <div class="state-option" data-value="Maryland" tabindex="0">Maryland</div>
-                            <div class="state-option" data-value="Massachusetts" tabindex="0">Massachusetts</div>
-                            <div class="state-option" data-value="Michigan" tabindex="0">Michigan</div>
-                            <div class="state-option" data-value="Minnesota" tabindex="0">Minnesota</div>
-                            <div class="state-option" data-value="Mississippi" tabindex="0">Mississippi</div>
-                            <div class="state-option" data-value="Missouri" tabindex="0">Missouri</div>
-                            <div class="state-option" data-value="Montana" tabindex="0">Montana</div>
-                            <div class="state-option" data-value="Nebraska" tabindex="0">Nebraska</div>
-                            <div class="state-option" data-value="Nevada" tabindex="0">Nevada</div>
-                            <div class="state-option" data-value="New Hampshire" tabindex="0">New Hampshire</div>
-                            <div class="state-option" data-value="New Jersey" tabindex="0">New Jersey</div>
-                            <div class="state-option" data-value="New Mexico" tabindex="0">New Mexico</div>
-                            <div class="state-option" data-value="New York" tabindex="0">New York</div>
-                            <div class="state-option" data-value="North Carolina" tabindex="0">North Carolina</div>
-                            <div class="state-option" data-value="North Dakota" tabindex="0">North Dakota</div>
-                            <div class="state-option" data-value="Ohio" tabindex="0">Ohio</div>
-                            <div class="state-option" data-value="Oklahoma" tabindex="0">Oklahoma</div>
-                            <div class="state-option" data-value="Oregon" tabindex="0">Oregon</div>
-                            <div class="state-option" data-value="Pennsylvania" tabindex="0">Pennsylvania</div>
-                            <div class="state-option" data-value="Rhode Island" tabindex="0">Rhode Island</div>
-                            <div class="state-option" data-value="South Carolina" tabindex="0">South Carolina</div>
-                            <div class="state-option" data-value="South Dakota" tabindex="0">South Dakota</div>
-                            <div class="state-option" data-value="Tennessee" tabindex="0">Tennessee</div>
-                            <div class="state-option" data-value="Texas" tabindex="0">Texas</div>
-                            <div class="state-option" data-value="Utah" tabindex="0">Utah</div>
-                            <div class="state-option" data-value="Vermont" tabindex="0">Vermont</div>
-                            <div class="state-option" data-value="Virginia" tabindex="0">Virginia</div>
-                            <div class="state-option" data-value="Washington" tabindex="0">Washington</div>
-                            <div class="state-option" data-value="West Virginia" tabindex="0">West Virginia</div>
-                            <div class="state-option" data-value="Wisconsin" tabindex="0">Wisconsin</div>
-                            <div class="state-option" data-value="Wyoming" tabindex="0">Wyoming</div>
+                            <div class="state-option" data-value="Alabama">Alabama</div>
+                            <div class="state-option" data-value="Alaska">Alaska</div>
+                            <div class="state-option" data-value="Arizona">Arizona</div>
+                            <div class="state-option" data-value="Arkansas">Arkansas</div>
+                            <div class="state-option" data-value="California">California</div>
+                            <div class="state-option" data-value="Colorado">Colorado</div>
+                            <div class="state-option" data-value="Connecticut">Connecticut</div>
+                            <div class="state-option" data-value="Delaware">Delaware</div>
+                            <div class="state-option" data-value="Florida">Florida</div>
+                            <div class="state-option" data-value="Georgia">Georgia</div>
+                            <div class="state-option" data-value="Hawaii">Hawaii</div>
+                            <div class="state-option" data-value="Idaho">Idaho</div>
+                            <div class="state-option" data-value="Illinois">Illinois</div>
+                            <div class="state-option" data-value="Indiana">Indiana</div>
+                            <div class="state-option" data-value="Iowa">Iowa</div>
+                            <div class="state-option" data-value="Kansas">Kansas</div>
+                            <div class="state-option" data-value="Kentucky">Kentucky</div>
+                            <div class="state-option" data-value="Louisiana">Louisiana</div>
+                            <div class="state-option" data-value="Maine">Maine</div>
+                            <div class="state-option" data-value="Maryland">Maryland</div>
+                            <div class="state-option" data-value="Massachusetts">Massachusetts</div>
+                            <div class="state-option" data-value="Michigan">Michigan</div>
+                            <div class="state-option" data-value="Minnesota">Minnesota</div>
+                            <div class="state-option" data-value="Mississippi">Mississippi</div>
+                            <div class="state-option" data-value="Missouri">Missouri</div>
+                            <div class="state-option" data-value="Montana">Montana</div>
+                            <div class="state-option" data-value="Nebraska">Nebraska</div>
+                            <div class="state-option" data-value="Nevada">Nevada</div>
+                            <div class="state-option" data-value="New Hampshire">New Hampshire</div>
+                            <div class="state-option" data-value="New Jersey">New Jersey</div>
+                            <div class="state-option" data-value="New Mexico">New Mexico</div>
+                            <div class="state-option" data-value="New York">New York</div>
+                            <div class="state-option" data-value="North Carolina">North Carolina</div>
+                            <div class="state-option" data-value="North Dakota">North Dakota</div>
+                            <div class="state-option" data-value="Ohio">Ohio</div>
+                            <div class="state-option" data-value="Oklahoma">Oklahoma</div>
+                            <div class="state-option" data-value="Oregon">Oregon</div>
+                            <div class="state-option" data-value="Pennsylvania">Pennsylvania</div>
+                            <div class="state-option" data-value="Rhode Island">Rhode Island</div>
+                            <div class="state-option" data-value="South Carolina">South Carolina</div>
+                            <div class="state-option" data-value="South Dakota">South Dakota</div>
+                            <div class="state-option" data-value="Tennessee">Tennessee</div>
+                            <div class="state-option" data-value="Texas">Texas</div>
+                            <div class="state-option" data-value="Utah">Utah</div>
+                            <div class="state-option" data-value="Vermont">Vermont</div>
+                            <div class="state-option" data-value="Virginia">Virginia</div>
+                            <div class="state-option" data-value="Washington">Washington</div>
+                            <div class="state-option" data-value="West Virginia">West Virginia</div>
+                            <div class="state-option" data-value="Wisconsin">Wisconsin</div>
+                            <div class="state-option" data-value="Wyoming">Wyoming</div>
                         </div>
                     </div>
                     
@@ -518,12 +504,11 @@
                 <p>Set city seal and customize branding colors</p>
                 
                 <div class="logo-upload">
-                    <div class="logo-preview" id="logoPreview">
+                    <div class="logo-preview">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                         </svg>
                     </div>
-                    <input type="file" id="logoUpload" accept="image/png, image/jpeg" style="display: none;">
                     <button class="upload-btn">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -534,18 +519,18 @@
                 
                 <div class="form-grid">
                     <div class="form-field">
-                        <label for="primaryColor">Primary Color</label>
-                        <div class="color-picker" role="group" aria-label="Primary color picker">
-                            <div class="color-swatch" style="background-color: #BF1212;" role="button" tabindex="0" aria-label="Select primary color"></div>
-                            <input id="primaryColor" name="primaryColor" type="text" value="#BF1212">
+                        <label>Primary Color</label>
+                        <div class="color-picker">
+                            <div class="color-swatch" style="background-color: #BF1212;"></div>
+                            <input type="text" value="#BF1212">
                         </div>
                     </div>
                     
                     <div class="form-field">
-                        <label for="accentColor">Accent Color</label>
-                        <div class="color-picker" role="group" aria-label="Accent color picker">
-                            <div class="color-swatch" style="background-color: #FBD04E;" role="button" tabindex="0" aria-label="Select accent color"></div>
-                            <input id="accentColor" name="accentColor" type="text" value="#FBD04E">
+                        <label>Accent Color</label>
+                        <div class="color-picker">
+                            <div class="color-swatch" style="background-color: #FBD04E;"></div>
+                            <input type="text" value="#FBD04E">
                         </div>
                     </div>
                 </div>
@@ -554,185 +539,77 @@
     </main>
 
     <button class="save-btn">
-        <svg fill="currentColor" viewBox="0 0 24 24">
-            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-            <path d="M17 21v-8H7v8M7 3v5h8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <svg fill="currentColor" viewBox="0 0 20 20">
+            <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
         </svg>
         Save Configuration
     </button>
 
-    <script>
-        // State dropdown functionality
-        const stateInput = document.getElementById('state');
-        const stateDropdown = document.getElementById('stateDropdown');
-        const stateOptions = document.querySelectorAll('.state-option');
-        let currentFocusIndex = -1;
-        
-        if (stateInput && stateDropdown) {
-            stateInput.addEventListener('click', function() {
-                stateDropdown.classList.toggle('show');
-                if (stateDropdown.classList.contains('show')) {
-                    currentFocusIndex = -1;
-                }
-            });
-            
-            stateInput.addEventListener('keydown', function(e) {
-                if (!stateDropdown.classList.contains('show')) {
-                    if (e.key === 'ArrowDown' || e.key === 'Enter') {
-                        e.preventDefault();
-                        stateDropdown.classList.add('show');
-                        currentFocusIndex = 0;
-                        focusOption(0);
-                    }
-                    return;
-                }
-                
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    currentFocusIndex = Math.min(currentFocusIndex + 1, stateOptions.length - 1);
-                    focusOption(currentFocusIndex);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    currentFocusIndex = Math.max(currentFocusIndex - 1, 0);
-                    focusOption(currentFocusIndex);
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (currentFocusIndex >= 0) {
-                        selectOption(currentFocusIndex);
-                    }
-                } else if (e.key === 'Escape') {
-                    e.preventDefault();
-                    stateDropdown.classList.remove('show');
-                    stateInput.focus();
-                }
-            });
-            
-            stateOptions.forEach((option, index) => {
-                option.addEventListener('click', function() {
-                    stateInput.value = this.getAttribute('data-value');
-                    stateDropdown.classList.remove('show');
-                    stateInput.focus();
-                });
-                
-                option.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        selectOption(index);
-                    } else if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        currentFocusIndex = Math.min(index + 1, stateOptions.length - 1);
-                        focusOption(currentFocusIndex);
-                    } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        currentFocusIndex = Math.max(index - 1, 0);
-                        focusOption(currentFocusIndex);
-                    } else if (e.key === 'Escape') {
-                        e.preventDefault();
-                        stateDropdown.classList.remove('show');
-                        stateInput.focus();
-                    }
-                });
-            });
-            
-            function focusOption(index) {
-                if (index >= 0 && index < stateOptions.length) {
-                    stateOptions[index].focus();
-                    stateOptions[index].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                }
-            }
-            
-            function selectOption(index) {
-                if (index >= 0 && index < stateOptions.length) {
-                    stateInput.value = stateOptions[index].getAttribute('data-value');
-                    stateDropdown.classList.remove('show');
-                    stateInput.focus();
-                }
-            }
-            
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.state-select')) {
-                    stateDropdown.classList.remove('show');
-                }
-            });
-        }
-        
-        // Logo upload functionality
-        const uploadBtn = document.querySelector('.upload-btn');
-        const logoInput = document.getElementById('logoUpload');
-        const logoPreview = document.getElementById('logoPreview');
-        
-        if (uploadBtn && logoInput) {
-            uploadBtn.addEventListener('click', () => logoInput.click());
-            
-            logoInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file && file.type.match('image.*')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        logoPreview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-        
-        // Color picker functionality
-        function isHex(color) {
-            return /^#(?:[0-9A-F]{3}){1,2}$/i.test(color);
-        }
-        
-        function normalizeHex(h) {
-            if (/^#[0-9A-F]{3}$/i.test(h)) {
-                return '#' + h.slice(1).split('').map(c => c + c).join('').toUpperCase();
-            }
-            return h.toUpperCase();
-        }
+    <!-- ✅ Fixed script block -->
+    <script is:inline>
+      const stateInput = document.getElementById('state');
+      const stateDropdown = document.getElementById('stateDropdown');
+      const stateOptions = document.querySelectorAll('.state-option');
 
-        document.querySelectorAll('.color-picker').forEach(picker => {
-            const swatch = picker.querySelector('.color-swatch');
-            const text = picker.querySelector('input[type="text"]');
-
-            if (text && isHex(text.value)) {
-                const hex = normalizeHex(text.value.trim());
-                swatch.style.backgroundColor = hex;
-                text.value = hex;
-            }
-
-            const hidden = document.createElement('input');
-            hidden.type = 'color';
-            hidden.style.display = 'none';
-            hidden.setAttribute('aria-hidden', 'true');
-            hidden.value = isHex(text.value) ? normalizeHex(text.value) : '#000000';
-            picker.appendChild(hidden);
-
-            text.addEventListener('input', e => {
-                const val = e.target.value.trim();
-                if (isHex(val)) {
-                    const hex = normalizeHex(val);
-                    swatch.style.backgroundColor = hex;
-                    e.target.value = hex;
-                    if (hidden) hidden.value = hex;
-                }
-            });
-
-            // Click to open color picker
-            swatch.addEventListener('click', () => hidden.click());
-            
-            // Keyboard accessibility for color swatch
-            swatch.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    hidden.click();
-                }
-            });
-            
-            // Update when color picker changes
-            hidden.addEventListener('input', e => {
-                const hex = e.target.value.toUpperCase();
-                swatch.style.backgroundColor = hex;
-                text.value = hex;
-            });
+      if (stateInput && stateDropdown) {
+        stateInput.addEventListener('click', () => {
+          stateDropdown.classList.toggle('show');
         });
+
+        stateOptions.forEach(option => {
+          option.addEventListener('click', () => {
+            stateInput.value = option.getAttribute('data-value');
+            stateDropdown.classList.remove('show');
+          });
+        });
+
+        document.addEventListener('click', event => {
+          if (!event.target.closest('.state-select')) {
+            stateDropdown.classList.remove('show');
+          }
+        });
+      }
+
+      const isHex = color => /^#(?:[0-9A-F]{3}){1,2}$/i.test(color);
+      const normalizeHex = h =>
+        /^#[0-9A-F]{3}$/i.test(h)
+          ? '#' + h.slice(1).split('').map(c => c + c).join('').toUpperCase()
+          : h.toUpperCase();
+
+      document.querySelectorAll('.color-picker').forEach(picker => {
+        const swatch = picker.querySelector('.color-swatch');
+        const text = picker.querySelector('input[type="text"]');
+
+        if (text && isHex(text.value)) {
+          const hex = normalizeHex(text.value.trim());
+          swatch.style.backgroundColor = hex;
+          text.value = hex;
+        }
+
+        const hidden = document.createElement('input');
+        hidden.type = 'color';
+        hidden.style.display = 'none';
+        hidden.value = isHex(text.value) ? normalizeHex(text.value) : '#000000';
+        picker.appendChild(hidden);
+
+        text.addEventListener('input', e => {
+          const val = e.target.value.trim();
+          if (isHex(val)) {
+            const hex = normalizeHex(val);
+            swatch.style.backgroundColor = hex;
+            e.target.value = hex;
+            hidden.value = hex;
+          }
+        });
+
+        swatch.addEventListener('click', () => hidden.click());
+        hidden.addEventListener('input', e => {
+          const hex = e.target.value.toUpperCase();
+          swatch.style.backgroundColor = hex;
+          text.value = hex;
+        });
+      });
     </script>
 </body>
 </html>
+
