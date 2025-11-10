@@ -4,10 +4,16 @@ import os
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("SUPABASE_URL and SUPABASE_KEY environment variables must be set")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def store_session_results(session_id: str, fake_results: dict):
     """Store results in Supabase"""
+    if not fake_results or not isinstance(fake_results, dict):
+        raise ValueError(f"fake_results must be a non-empty dict, got: {type(fake_results)}")
     print(f"\n[BACKEND DB] Storing results for session: {session_id}")
 
     try:
