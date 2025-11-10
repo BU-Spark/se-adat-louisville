@@ -49,6 +49,8 @@ def process_assessment_task(self, payload):
         
         # Step 2: Store session_id + results in database
         session_id = payload.get("session_id")
+        if not session_id:
+            raise ValueError("session_id is required in payload")
         store_session_results(session_id, fake_results)
         
         print(f"{'='*60}")
