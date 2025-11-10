@@ -3,12 +3,12 @@ from typing import Dict, Any
 from datetime import datetime, timezone
 
 def simulate_r_processing(payload: Dict[str, Any]) -> Dict[str, Any]:
-    print(f"\n[FAKE R SCRIPT] Starting processing...")
+    print("\n[FAKE R SCRIPT] Starting processing...")
     print(f"[FAKE R SCRIPT] Session ID: {payload.get('session_id')}")
     print(f"[FAKE R SCRIPT] Project: {payload.get('project_name')}")
     
     # Simulate R processing time (like the old R plumber service)
-    print(f"[FAKE R SCRIPT] Processing (simulating delay)...")
+    print("[FAKE R SCRIPT] Processing (simulating delay)...")
     time.sleep(3)  # Simulate 3 second processing time
     
     # Calculate total affordable (this is the only real logic)
