@@ -1,8 +1,6 @@
 from celery import Celery
 import os
 from dotenv import load_dotenv
-import sys
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv()
 
@@ -11,7 +9,7 @@ REDIS_URL = os.getenv("REDIS_URL")
 if not REDIS_URL:
     raise ValueError("REDIS_URL must be set in .env file")
 
-# Use Redis as broker, but disable result backend
+# Use Redis as both broker and result backend
 celery_app = Celery(
     "adat_tasks",
     broker=REDIS_URL,
@@ -51,6 +49,8 @@ def process_assessment_task(self, payload):
         
         # Step 2: Store session_id + results in database
         session_id = payload.get("session_id")
+        if not session_id:
+            raise ValueError("session_id is required in payload")
         store_session_results(session_id, fake_results)
         
         print(f"{'='*60}")
