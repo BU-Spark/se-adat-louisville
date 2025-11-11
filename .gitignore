@@ -26,3 +26,8 @@ build/
 # OS junk
 .DS_Store
 Thumbs.db
+
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "*.pyo" >> .gitignore
+echo "*.pyd" >> .gitignore
