@@ -1,15 +1,30 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, conint, constr
 from celery.result import AsyncResult
 from celeryApp import celery_app, process_assessment_task
-from celery.exceptions import OperationalError
 from dotenv import load_dotenv
 import uuid
 
 load_dotenv()
 
 app = FastAPI(title="ADAT API Gateway")
+
+# Add CORS middleware to allow frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4321",  # Astro default dev server
+        "http://localhost:3000",  # Alternative dev port
+        "http://localhost:4322",  # Astro alternative port
+        # Add your production domain when deploying:
+        # "https://your-production-domain.com"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/health")
 def health():
@@ -65,19 +80,12 @@ async def assess(payload: AssessmentInput):
         "city": payload.city,
         "state": payload.state,
         "zip": payload.zip,
-        "affordability": payload.affordability.model_dump()
+        "affordability": payload.affordability.dict()
     }
     
-    # Queue task with error handling
-    try:
-        task = process_assessment_task.delay(celery_payload)
-    except OperationalError as e:
-        print(f"[MAIN.PY] Celery connection error: {e}")
-        raise HTTPException(
-            status_code=503,
-            detail="Task queue unavailable. Please try again later."
-        )
-
+    # Queue task
+    task = process_assessment_task.delay(celery_payload)
+    
     print(f"[MAIN.PY] Queued task: {task.id}\n")
     
     return {
@@ -99,7 +107,7 @@ def get_task_status(task_id: str):
             "status": "pending",
             "message": "Waiting in queue"
         }
-    elif task_result.state == 'STARTED':
+    elif task_result.state == 'PROCESSING':
         return {
             "task_id": task_id,
             "status": "processing",
