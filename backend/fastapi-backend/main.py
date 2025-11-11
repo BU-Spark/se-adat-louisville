@@ -1,36 +1,21 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, conint, constr
-import httpx
+from celery.result import AsyncResult
+from celeryApp import celery_app, process_assessment_task
+from celery.exceptions import OperationalError
+from dotenv import load_dotenv
+import uuid
+
+load_dotenv()
 
 app = FastAPI(title="ADAT API Gateway")
-
-### ---- R service base ----
-import os
-
-### ---- R service base ----
-R_BASE = os.getenv("R_SERVICE_URL", "http://127.0.0.1:8001")
-
-### ---- Existing quick endpoint (keep) ----
-class EligibilityInput(BaseModel):
-    affordable_units: float = Field(ge=0, le=1, description="Share of units affordable, 0..1")
 
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
 
-@app.post("/api/eligibility")
-def eligibility(inp: EligibilityInput):
-    return {
-        "status": "ok",
-        "result": {
-            "eligible": inp.affordable_units >= 0.30,
-            "affordable_units": inp.affordable_units
-        }
-    }
-
-### ---- Full assessment models ----
+### ---- Models ----
 class Affordability(BaseModel):
     ami30: conint(ge=0) = 0 
     ami50: conint(ge=0) = 0
@@ -39,77 +24,101 @@ class Affordability(BaseModel):
     ami80: conint(ge=0) = 0
 
 class AssessmentInput(BaseModel):
-    session_id: constr(min_length=1)
+    session_id: Optional[constr(min_length=1)] = None  # Make it optional
     project_name: constr(min_length=1)
     project_units_total: conint(gt=0)
     build_type: Optional[str] = None
-
+    scatter: Optional[bool] = None
     address: constr(min_length=1)
     city: constr(min_length=1)
     state: constr(min_length=2, max_length=2)
     zip: constr(min_length=5, max_length=10)
-
     affordability: Affordability
+
+### ---- Main Route - JUST receives and queues ----
 @app.post("/api/assess")
 async def assess(payload: AssessmentInput):
-    # 1) Geocode via R
-    geo_req = {
+    print(f"\n[MAIN.PY] Received request for: {payload.project_name}")
+    
+    # Auto-generate UUID if session_id not provided or invalid
+    if payload.session_id is None:
+        session_id = str(uuid.uuid4())
+        print(f"[MAIN.PY] Generated new session_id: {session_id}")
+    else:
+        try:
+            # Validate it's a proper UUID
+            uuid.UUID(payload.session_id)
+            session_id = payload.session_id
+        except ValueError:
+            # If invalid UUID format, generate new one
+            session_id = str(uuid.uuid4())
+            print(f"[MAIN.PY] Invalid UUID provided, generated new: {session_id}")
+    
+    # Convert to dict for Celery
+    celery_payload = {
+        "session_id": session_id,  # Use validated/generated UUID
+        "project_name": payload.project_name,
+        "project_units_total": payload.project_units_total,
+        "build_type": payload.build_type,
+        "scatter": payload.scatter,
         "address": payload.address,
         "city": payload.city,
         "state": payload.state,
-        "zip": payload.zip
+        "zip": payload.zip,
+        "affordability": payload.affordability.model_dump()
     }
+    
+    # Queue task with error handling
     try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            geo = await client.post(f"{R_BASE}/geocode", json=geo_req)
-    except httpx.TimeoutException as exc:
-        raise HTTPException(status_code=504, detail=f"Geocode timeout: {exc}")
-    except httpx.RequestError as exc:
-        raise HTTPException(status_code=503, detail=f"Geocode service unavailable: {exc}")
-    if geo.status_code != 200:
-        raise HTTPException(status_code=geo.status_code, detail=f"Geocode failed: {geo.text}")
-    geo_json = geo.json()
-    lat = geo_json.get("lat")
-    lng = geo_json.get("lng")
-    if lat is None or lng is None:
-        raise HTTPException(status_code=400, detail="Geocode returned no lat/lng")
+        task = process_assessment_task.delay(celery_payload)
+    except OperationalError as e:
+        print(f"[MAIN.PY] Celery connection error: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail="Task queue unavailable. Please try again later."
+        )
 
-    # 2) Block-group lookup via R
-    async with httpx.AsyncClient(timeout=30) as client:
-        bg = await client.post(f"{R_BASE}/bg-lookup", json={"lat": lat, "lng": lng})
-    if bg.status_code != 200:
-        raise HTTPException(status_code=bg.status_code, detail=f"BG lookup failed: {bg.text}")
-    gisjoin = bg.json().get("gisjoin")
-    if not gisjoin:
-        raise HTTPException(status_code=404, detail="No GISJOIN found for point")
-
-    # 3) Summarize affordable units
-    total_aff = sum([
-        payload.affordability.ami30,
-        payload.affordability.ami50,
-        payload.affordability.ami60,
-        payload.affordability.ami70,
-        payload.affordability.ami80
-    ])
-    if total_aff > payload.project_units_total:
-        raise HTTPException(status_code=400, detail="affordability exceeds total units")
-
-    # 4) Call R /assess with a compact body (mirrors your plumber /assess)
-    r_body = {
-        "session_id": payload.session_id,
-        "project_name": payload.project_name,
-        "project_units_total": payload.project_units_total,
-        "affordability": jsonable_encoder(payload.affordability),
-        "lat": lat,
-        "lng": lng,
-        "gisjoin": gisjoin
+    print(f"[MAIN.PY] Queued task: {task.id}\n")
+    
+    return {
+        "status": "queued",
+        "message": "Assessment queued for processing",
+        "task_id": task.id,
+        "session_id": session_id  # Return the UUID we're using
     }
-    if payload.build_type is not None:
-        r_body["build_type"] = payload.build_type
-    async with httpx.AsyncClient(timeout=60) as client:
-        r_resp = await client.post(f"{R_BASE}/assess", json=r_body)
 
-    if r_resp.status_code != 200:
-        raise HTTPException(status_code=r_resp.status_code, detail=f"R assess failed: {r_resp.text}")
-
-    return r_resp.json()
+### ---- Check task status ----
+@app.get("/api/task/{task_id}")
+def get_task_status(task_id: str):
+    """Check Celery task status"""
+    task_result = AsyncResult(task_id, app=celery_app)
+    
+    if task_result.state == 'PENDING':
+        return {
+            "task_id": task_id,
+            "status": "pending",
+            "message": "Waiting in queue"
+        }
+    elif task_result.state == 'STARTED':
+        return {
+            "task_id": task_id,
+            "status": "processing",
+            "message": "Fake script is running"
+        }
+    elif task_result.state == 'SUCCESS':
+        return {
+            "task_id": task_id,
+            "status": "completed",
+            "result": task_result.result
+        }
+    elif task_result.state == 'FAILURE':
+        return {
+            "task_id": task_id,
+            "status": "failed",
+            "error": str(task_result.info)
+        }
+    else:
+        return {
+            "task_id": task_id,
+            "status": task_result.state.lower()
+        }
