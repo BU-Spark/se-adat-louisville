@@ -6,7 +6,7 @@ and affordability criteria for Louisville Metro housing projects.
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import ClassVar, Dict, List, Tuple
 from enum import Enum
 
 
@@ -156,8 +156,6 @@ class Recommendation:
     criteria_met: List[str]
     criteria_unmet: List[str]
     details: str
-
-from typing import ClassVar, Dict, List, Tuple
 
 class RiskCalculator:
     """Calculator for housing project recommendations based on displacement risk."""
