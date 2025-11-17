@@ -440,8 +440,9 @@ class TestEdgeCases:
         
         # This should handle gracefully (though not realistic)
         calculator = RiskCalculator(neighborhood, project)
-        # This will cause a division by zero issue in percentage calculation
-        # The calculator should handle this gracefully
+        
+        with pytest.raises(ZeroDivisionError):
+        calculator.calculate_recommendation()
     
     def test_all_units_at_lowest_ami(self):
         """Test project with all units at 30% AMI."""
