@@ -87,6 +87,9 @@ class ProjectAffordability:
     
     def __post_init__(self):
         """Validate that affordable units don't exceed project size."""
+        if self.proj_size <= 0:
+            raise ValueError("Project size must be greater than zero")
+        
         total_affordable = (self.affordable30 + self.affordable50 + 
                           self.affordable60 + self.affordable70 + self.affordable80)
         if total_affordable > self.proj_size:
@@ -154,12 +157,13 @@ class Recommendation:
     criteria_unmet: List[str]
     details: str
 
+from typing import ClassVar, Dict, List, Tuple
 
 class RiskCalculator:
     """Calculator for housing project recommendations based on displacement risk."""
     
-    AMI_LEVELS = ['30', '50', '60', '70', '80']
-    AMI_LABELS = {
+    AMI_LEVELS: ClassVar[List[str]] = ['30', '50', '60', '70', '80']
+    AMI_LABELS: ClassVar[Dict[str, str]] = {
         '30': '30% AMI',
         '50': '50% AMI',
         '60': '60% AMI',
