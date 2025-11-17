@@ -1,0 +1,14 @@
+HHWT,HHINC_levels,RENT_levels,RENTGRS,rent_burden
+100,"Below 30%  ($27,125)","Below 30%  ($678)",600,No burden
+100,"Below 30%  ($27,125)","30% to 50% ($1010)",900,Burdened
+100,"Below 30%  ($27,125)","50% to 80% ($1615)",1400,Severely burdened
+100,"30% to 50% ($40,400)","Below 30%  ($678)",600,No burden
+100,"30% to 50% ($40,400)","30% to 50% ($1010)",900,No burden
+100,"30% to 50% ($40,400)","50% to 80% ($1615)",1400,Burdened
+100,"50% to 80% ($64,625)","Below 30%  ($678)",600,No burden
+100,"50% to 80% ($64,625)","30% to 50% ($1010)",900,No burden
+100,"50% to 80% ($64,625)","50% to 80% ($1615)",1400,No burden
+100,"Above 80%","Below 30%  ($678)",600,No burden
+100,"Above 80%","30% to 50% ($1010)",900,No burden
+100,"Above 80%","50% to 80% ($1615)",1400,No burden
+100,"Above 80%","Above 80%  (market)",2000,No burden
