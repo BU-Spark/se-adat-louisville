@@ -818,8 +818,8 @@ pop_s = local_area.merge(
     how="left"
 )
 
-# R assigns: GISJOIN_proj = local area unit ID
-pop_s["GISJOIN_proj"] = pop_s["GISJOIN_comp"]
+# Preserve GISJOIN_proj from local_area as the local‑area ID (project BG).
+# GISJOIN_comp is used only for joining comparison BG attributes; do not overwrite GISJOIN_proj.
 
 # Aggregate population to Local Area × Year
 pop_s = (
@@ -941,7 +941,7 @@ HUD_FMI = pd.DataFrame({
     ],
     "MFI_LI": [
         50250,57400,64600,71750,77500,83250,89000,98750,
-        47450,542000,61000,67750,73200,78600,84050,89450,
+        447450,54200,61000,67750,73200,78600,84050,89450,
         43050,49200,55350,61500,66450,71350,76300,81200
     ]
 })
@@ -1909,7 +1909,10 @@ def renter_adj_py(names, values, FMI_cut):
     bins = np.array([int(x.split("_")[1]) for x in names])
     vals = np.array(values, dtype=float)
 
-    mp = np.min(np.where(bins > FMI_cut))
+    candidates = np.where(bins > FMI_cut)[0]
+    if len(candidates) == 0:
+        return int(np.round(vals.sum()))
+    mp = candidates[0]
 
     bin1 = bins[mp]
     bin0 = bins[mp - 1]
