@@ -914,7 +914,7 @@ print("CHUNK 8 complete.")
 print("------------------------------------------------------------\n")
 
 # ---------------------------------------------------------------
-# CHUNK 9 — PUMS Housing Assessment Data (ALTERNATIVE METHOD)
+# CHUNK 9 — PUMS Housing Assessment Data
 # ---------------------------------------------------------------
 
 print("CHUNK 9: Processing PUMS housing assessment data...")
@@ -947,76 +947,59 @@ HUD_FMI = pd.DataFrame({
 })
 
 # ----------------------------
-# Load IPUMS ACS microdata - ALTERNATIVE METHOD
-# Use pyreadstat or direct pandas reading
+# Load IPUMS ACS microdata
 # ----------------------------
 
+xml_file = "data/pums_usa/acs_21_23/usa_00001.xml"
+dat_file = "data/pums_usa/acs_21_23/usa_00001.dat.gz"
+
 try:
-    print("   - Attempting to load PUMS data with pyreadstat...")
-    import pyreadstat
+    # Read directly using pandas with column specifications from XML
+    import xml.etree.ElementTree as ET
     
-    dat_file = "data/pums_usa/acs_21_23/usa_00001.dat.gz"
-    xml_file = "data/pums_usa/acs_21_23/usa_00001.xml"
+    print(f"   - Parsing {xml_file} for column specifications...")
     
-    # Try using pyreadstat to read the IPUMS data
-    micro, meta = pyreadstat.read_sav(dat_file)
-    print(f"   - Loaded with pyreadstat: {micro.shape}")
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
     
-except ImportError:
-    print("   - pyreadstat not available, trying alternative method...")
+    # Find variable descriptions
+    colspecs = []
+    names = []
     
-    try:
-        # Alternative: Read directly using pandas with column specifications from XML
-        # This requires parsing the XML to get column positions
-        import xml.etree.ElementTree as ET
+    for var in root.findall(".//{http://www.icpsr.umich.edu/DDI}var"):
+        name = var.get('name')
+        location = var.find('.//{http://www.icpsr.umich.edu/DDI}location')
         
-        xml_file = "data/pums_usa/acs_21_23/usa_00001.xml"
-        dat_file = "data/pums_usa/acs_21_23/usa_00001.dat.gz"
-        
-        print(f"   - Parsing {xml_file} for column specifications...")
-        
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-        
-        # Find variable descriptions
-        colspecs = []
-        names = []
-        
-        for var in root.findall(".//{http://www.icpsr.umich.edu/DDI}var"):
-            name = var.get('name')
-            location = var.find('.//{http://www.icpsr.umich.edu/DDI}location')
+        if location is not None:
+            start = int(location.get('StartPos')) - 1  # 0-indexed
+            width = int(location.get('width'))
+            end = start + width
             
-            if location is not None:
-                start = int(location.get('StartPos')) - 1  # 0-indexed
-                width = int(location.get('width'))
-                end = start + width
-                
-                colspecs.append((start, end))
-                names.append(name)
-        
-        print(f"   - Found {len(names)} variables")
-        print(f"   - Reading fixed-width file...")
-        
-        # Read fixed-width format
-        micro = pd.read_fwf(dat_file, colspecs=colspecs, names=names, 
-                           compression='gzip', dtype=str)
-        
-        # Convert to numeric
-        for col in ['YEAR', 'PUMA', 'HHINCOME', 'OWNERSHP', 'RENTGRS', 
-                    'NUMPREC', 'SAMPLE', 'SERIAL', 'HHWT']:
-            if col in micro.columns:
-                micro[col] = pd.to_numeric(micro[col], errors='coerce')
-        
-        print(f"   - Loaded IPUMS data: {micro.shape}")
-        
-    except Exception as e:
-        print(f"   - WARNING: Could not load IPUMS data: {type(e).__name__}: {e}")
-        print("   - Skipping PUMS block.")
-        micro = None
+            colspecs.append((start, end))
+            names.append(name)
+    
+    print(f"   - Found {len(names)} variables")
+    print(f"   - Reading fixed-width file from {dat_file}...")
+    
+    # Read fixed-width format
+    micro = pd.read_fwf(dat_file, colspecs=colspecs, names=names, 
+                       compression='gzip', dtype=str)
+    
+    # Convert to numeric
+    numeric_cols = ['YEAR', 'PUMA', 'HHINCOME', 'OWNERSHP', 'RENTGRS', 
+                    'NUMPREC', 'SAMPLE', 'SERIAL', 'HHWT']
+    for col in numeric_cols:
+        if col in micro.columns:
+            micro[col] = pd.to_numeric(micro[col], errors='coerce')
+    
+    print(f"   - Loaded IPUMS data: {micro.shape}")
+    
+except Exception as e:
+    print(f"   - WARNING: Could not load IPUMS data: {type(e).__name__}: {e}")
+    print("   - Skipping PUMS block.")
+    micro = None
 
 if micro is not None:
-    # Rest of CHUNK 9 stays the same...
-    # (Keep all the existing filtering and processing code)
     
     print("   - Filtering to Jefferson County renters...")
 
@@ -1029,12 +1012,20 @@ if micro is not None:
     print(f"   - Filtered to {len(ky_h)} renter households")
 
     if len(ky_h) == 0:
-        print("   - WARNING: No households matched filter.")
+        print("   - WARNING: No households matched filter. Checking data...")
+        print(f"     Available PUMAs: {sorted(micro['PUMA'].unique())[:10]}")
+        print(f"     OWNERSHP values: {micro['OWNERSHP'].value_counts().to_dict()}")
     else:
+        # Replace negatives with zero
         ky_h["HHINCOME"] = ky_h["HHINCOME"].clip(lower=0)
+
+        # Create household ID
         ky_h["HH_ID"] = ky_h["SAMPLE"].astype(str) + "_" + ky_h["SERIAL"].astype(str)
+
+        # Merge FMI limits
         ky_h = ky_h.merge(HUD_FMI, on=["YEAR", "NUMPREC"], how="left")
 
+        # Income Brackets
         def income_level(row):
             inc = row["HHINCOME"]
             if inc < row["MFI_ELI"]:
@@ -1048,6 +1039,7 @@ if micro is not None:
 
         ky_h["HHINC_levels"] = ky_h.apply(income_level, axis=1)
 
+        # Rent Brackets
         def rent_level(row):
             rent = row["RENTGRS"]
             if rent < (row["MFI_ELI"] * .3) / 12:
@@ -1061,6 +1053,7 @@ if micro is not None:
 
         ky_h["RENT_levels"] = ky_h.apply(rent_level, axis=1)
 
+        # Rent Burden Categories
         def burden(row):
             inc = row["HHINCOME"]
             rent = row["RENTGRS"]
@@ -1073,14 +1066,17 @@ if micro is not None:
 
         ky_h["rent_burden"] = ky_h.apply(burden, axis=1)
 
+        # Select final fields
         ky_h_final = ky_h[[
             "HHWT", "HHINC_levels", "RENT_levels", "RENTGRS", "rent_burden"
         ]].copy()
 
+        # Write to CSV
         ky_h_final.to_csv("DHNA/data/hh_micro.csv", index=False)
         print("   - hh_micro.csv successfully written.")
 
 print("CHUNK 9 complete.\n------------------------------------------------------------\n")
+
 # ---------------------------------------------------------------
 # CHUNK 10A — BG DATA FORMATTING: Population + Race Change
 # ---------------------------------------------------------------
