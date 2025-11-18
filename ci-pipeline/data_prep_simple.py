@@ -59,7 +59,10 @@ def renter_adj(names, values, fmi):
     Returns:
         Adjusted count as integer
     """
-    inc_bins = np.array([float(re.search(r"_(\d+)", name).group(1)) for name in names])
+    inc_bins = np.array([
+        float(m.group(1)) if (m := re.search(r"_(\d+)", name)) else np.nan
+        for name in names
+    ])
     vals = np.array(values, dtype=float)
     mp_candidates = np.where(inc_bins > fmi)[0]
     if len(mp_candidates) == 0:
@@ -74,13 +77,12 @@ def renter_adj(names, values, fmi):
     return adjusted
 
 
-def calculate_risk_level(median_income, median_rent, rent_change):
+def calculate_risk_level(median_income, rent_change):
     """
     Calculate displacement risk level based on area characteristics.
 
     Args:
         median_income: median household income
-        median_rent: median rent cost
         rent_change: percentage change in rent
 
     Returns:
