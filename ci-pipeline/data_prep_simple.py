@@ -77,13 +77,12 @@ def renter_adj(names, values, fmi):
     return adjusted
 
 
-def calculate_risk_level(median_income, median_rent, rent_change):
+def calculate_risk_level(median_income, rent_change):
     """
     Calculate displacement risk level based on area characteristics.
 
     Args:
         median_income: median household income
-        median_rent: median rent cost
         rent_change: percentage change in rent
 
     Returns:
