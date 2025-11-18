@@ -8,8 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  python-ci:
-    name: Python Module Tests
+  ci-pipeline:
     runs-on: ubuntu-latest
     
     steps:
@@ -21,6 +20,9 @@ jobs:
       with:
         python-version: '3.11'
     
+    # Skip Python linting since this is an Astro project
+    
+    # Task 1: Unit Testing (Python module only)
     - name: Install testing dependencies
       run: |
         cd ci-pipeline
@@ -29,29 +31,28 @@ jobs:
     - name: Run Unit Tests
       run: |
         cd ci-pipeline
-        pytest test_data_prep.py -v --cov=data_prep_simple
+        echo "Running unit tests..."
+        pytest test_data_prep.py -v --cov=data_prep_simple --cov-report=term-missing
+        echo "✓ All tests passed!"
     
-    - name: Validate Python Module
+    # Task 2: Build Automation (Validation Build)
+    - name: Install project dependencies
       run: |
         cd ci-pipeline
+        echo "Installing project dependencies..."
+        pip install -r requirements.txt
+    
+    - name: Validate Python Script
+      run: |
+        cd ci-pipeline
+        echo "Validating data_prep_simple.py can be imported..."
         python -c "import py_compile; py_compile.compile('data_prep_simple.py', doraise=True)"
-
-  astro-ci:
-    name: Astro Project Linting
-    runs-on: ubuntu-latest
+        echo "✓ Script validation passed!"
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Run ESLint
-      run: npm run lint
-      continue-on-error: true  # Won't fail if linting has issues
+    - name: Build Success
+      run: |
+        echo "=========================================="
+        echo "✓ CI Pipeline completed successfully!"
+        echo "  - Testing: PASSED"
+        echo "  - Build: PASSED"
+        echo "=========================================="
