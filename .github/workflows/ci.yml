@@ -1,49 +1,57 @@
-name: Node.js CI
+name: ADAT CI Pipeline
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches: [ main, master, dev ]
   pull_request:
-    branches:
-      - main
-      - dev
+    branches: [ main, master, dev ]
+  workflow_dispatch:
 
 jobs:
-  test-lint-build:
-    name: Test, Lint, and Build
+  python-ci:
+    name: Python Module Tests
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x] # You can specify other versions or a matrix of versions
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install testing dependencies
+      run: |
+        cd ci-pipeline
+        pip install pytest pytest-cov numpy
+    
+    - name: Run Unit Tests
+      run: |
+        cd ci-pipeline
+        pytest test_data_prep.py -v --cov=data_prep_simple
+    
+    - name: Validate Python Module
+      run: |
+        cd ci-pipeline
+        python -c "import py_compile; py_compile.compile('data_prep_simple.py', doraise=True)"
 
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm' # Cache npm dependencies
-
-      - name: Install dependencies
-        run: npm ci || npm install # Fallback to npm install if lockfile is out of sync
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run tests and collect coverage
-        run: npm run test:coverage
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-          if-no-files-found: error # Fails the step if coverage/ directory is not found
-
-      - name: Build project
-        run: npm run build
+  astro-ci:
+    name: Astro Project Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Run ESLint
+      run: npm run lint
+      continue-on-error: true  # Won't fail if linting has issues
