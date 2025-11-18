@@ -59,7 +59,10 @@ def renter_adj(names, values, fmi):
     Returns:
         Adjusted count as integer
     """
-    inc_bins = np.array([float(re.search(r"_(\d+)", name).group(1)) for name in names])
+    inc_bins = np.array([
+        float(m.group(1)) if (m := re.search(r"_(\d+)", name)) else np.nan
+        for name in names
+    ])
     vals = np.array(values, dtype=float)
     mp_candidates = np.where(inc_bins > fmi)[0]
     if len(mp_candidates) == 0:
