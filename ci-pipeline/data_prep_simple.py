@@ -72,6 +72,9 @@ def renter_adj(names, values, fmi):
         return vals.sum()
 
     mp = mp_candidates[0]
+    if mp == 0:
+        # FMI is below the first bin; return 0 or handle as appropriate
+        return 0
     bin1 = inc_bins[mp]
     bin0 = inc_bins[mp - 1]
     inc_width = bin1 - bin0
