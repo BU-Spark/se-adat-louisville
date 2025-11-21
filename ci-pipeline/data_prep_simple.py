@@ -42,9 +42,12 @@ def med_lin_est(names, values):
         return bin_0 + inc_ratio * inc_width
 
     # If mp == 0 (first bin holds median)
+    if mp + 1 >= len(names):
+        return bin_1  # Only one bin; return its value
     next_bin = bin_number(names[mp + 1])
-    inc_ratio_1 = 0.5 / (vals[0] / vals.sum())
-    return next_bin * inc_ratio_1
+    inc_width = next_bin - bin_1
+    inc_ratio = (vals.sum() / 2) / vals[mp]  # Fraction through the first bin
+    return bin_1 + inc_ratio * inc_width
 
 
 def renter_adj(names, values, fmi):
