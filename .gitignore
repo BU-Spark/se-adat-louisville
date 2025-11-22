@@ -30,4 +30,5 @@ Thumbs.db
 echo "__pycache__/" >> .gitignore
 echo "*.pyc" >> .gitignore
 echo "*.pyo" >> .gitignore
-echo "*.pyd" >> .gitignore
+echo "*.pyd" >> .gitignoremy-astro-app/
+se-adat-louisville/
