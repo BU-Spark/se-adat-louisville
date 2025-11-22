@@ -89,12 +89,13 @@ def root():
 @app.get("/health")
 def health_check():
     """Health check endpoint"""
-    try:
+   try:
         # Test database connection
         supabase.table('data_files').select("count", count="exact").execute()
         return {"status": "healthy", "database": "connected", "storage": "connected"}
     except Exception as e:
-        return {"status": "unhealthy", "error": str(e)}
+        # Surface failure via HTTP status for infra health checks
+        raise HTTPException(status_code=503, detail=f"Unhealthy: {e}")
 
 # ============================================================================
 # FILE METADATA ENDPOINTS
