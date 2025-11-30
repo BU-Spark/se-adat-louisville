@@ -53,6 +53,7 @@ def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
     4. GEOID (if exists)
     
     Also handles type mismatches by trying string conversion.
+    Handles GISJOIN values with/without leading 'G'.
     
     Args:
         adat_df: DataFrame with area risk data
@@ -89,6 +90,17 @@ def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
                 return matches.iloc[0]
         except (TypeError, ValueError):
             pass
+        
+        # For GISJOIN-style columns, also try toggling a leading 'G'
+        if col.lower().startswith("gisjoin"):
+            try:
+                bgid_str = str(bgid)
+                alt = bgid_str[1:] if bgid_str.startswith("G") else f"G{bgid_str}"
+                matches = adat_df[adat_df[col].astype(str) == alt]
+                if not matches.empty:
+                    return matches.iloc[0]
+            except (TypeError, ValueError):
+                pass
     
     return None
 
