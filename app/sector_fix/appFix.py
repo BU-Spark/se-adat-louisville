@@ -87,7 +87,7 @@ def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
             matches = adat_df[adat_df[col].astype(str) == str(bgid)]
             if not matches.empty:
                 return matches.iloc[0]
-        except:
+        except (TypeError, ValueError):
             pass
     
     return None
