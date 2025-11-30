@@ -105,7 +105,7 @@ def test_sector_lookup(
                         "row_count": len(str_match),
                         "sample_row": str_match.iloc[0].to_dict()
                     }
-            except:
+            except (TypeError, ValueError):
                 pass
     
     if not results["matches"]:
