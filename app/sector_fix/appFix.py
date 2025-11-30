@@ -270,10 +270,7 @@ def compute_recommendation_logic(
                     f"to at least half the renter population be >= {cost_burden_pct}% "
                     f"(housing cost-burdened households)."
                 )
-                if meets_all_affordable:
-                    recommendation = "recommended"
-                else:
-                    recommendation = "conditional"
+                recommendation = "recommended" if meets_all_affordable else "not_recommended"
             else:
                 messages.append(
                     f"✗ The share of units affordable to at least half the renter population "
