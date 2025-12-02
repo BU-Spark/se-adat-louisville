@@ -31,9 +31,9 @@ def _load_adat_data() -> pd.DataFrame:
     try:
         # prefer package import when running as module, fall back to top-level
         try:
-            from app import toolresults as _tr
+            from app import dataRoute as _tr
         except Exception:
-            import toolresults as _tr
+            import app.dataRoute as _tr
 
         datasets = {}
         if hasattr(_tr, "load_all_csvs"):

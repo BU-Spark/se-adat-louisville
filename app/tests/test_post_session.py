@@ -43,7 +43,7 @@ _cleanup = os.getenv("SUPABASE_TEST_AUTOCLEANUP", "true")
 SUPABASE_TEST_AUTOCLEANUP = str(_cleanup).strip().lower() in ("1", "true", "yes")
 
 # import app after loading environment
-from app.main import app
+from app.sessionRoute import app
 client = TestClient(app)
 
 
