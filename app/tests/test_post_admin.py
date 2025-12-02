@@ -25,7 +25,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
     pytest.skip("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY not set; skipping integration test.", allow_module_level=True)
 
 
-from app.main import app  # import after env check so the module-level runtime check passes
+from app.sessionRoute import app  # import after env check so the module-level runtime check passes
 
 
 def test_post_admin_and_optional_cleanup():
