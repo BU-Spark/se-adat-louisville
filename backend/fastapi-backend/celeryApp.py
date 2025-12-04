@@ -33,11 +33,11 @@ celery_app.conf.update(
 def process_assessment_task(self, payload):
     """
     Celery task:
-    1. Run recommendation logic from appFix.py
+    1. Run recommendation logic from app.py
     2. Send session_id + results to backend_db
     """
     try:
-        from appFix import compute_recommendation_logic
+        from app import compute_recommendation_logic
         from backendRoute import store_session_results
         
         print(f"\n{'='*60}")
