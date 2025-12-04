@@ -10,10 +10,10 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def store_session_results(session_id: str, fake_results: dict):
-    """Store results in Supabase"""
-    if not fake_results or not isinstance(fake_results, dict):
-        raise ValueError(f"fake_results must be a non-empty dict, got: {type(fake_results)}")
+def store_session_results(session_id: str, results: dict):
+    """Store recommendation results in Supabase"""
+    if not results or not isinstance(results, dict):
+        raise ValueError(f"results must be a non-empty dict, got: {type(results)}")
     print(f"\n[BACKEND DB] Storing results for session: {session_id}")
 
     try:
@@ -28,14 +28,29 @@ def store_session_results(session_id: str, fake_results: dict):
         supabase.table("sessions").upsert(session_data).execute()
         print("[BACKEND DB] ✓ Session created/updated")
 
-        # STEP 2: Now store tool_results (with foreign key to session)
+        # STEP 2: Determine developable status based on recommendation
+        recommendation = results.get("recommendation", "undetermined")
+        
+        # Map recommendation to developable status
+        if recommendation == "recommended":
+            developable = "YES"
+        elif recommendation == "conditional":
+            developable = "CONDITIONAL"
+        elif recommendation == "not_recommended":
+            developable = "NO"
+        else:
+            developable = "UNDETERMINED"
+        
+        # Store tool_results (with foreign key to session)
         result_data = {
             "session_id": session_id,
-            "results": fake_results,
-            "developable": "YES" if fake_results.get("eligible") else "NO"
+            "results": results,
+            "developable": developable
         }
         supabase.table("tool_results").upsert(result_data).execute()
-        print("[BACKEND DB] ✓ Stored in tool_results table\n")
+        print(f"[BACKEND DB] ✓ Stored in tool_results table (developable: {developable})")
+        print(f"[BACKEND DB] ✓ Recommendation: {recommendation}")
+        print(f"[BACKEND DB] ✓ Risk level: {results.get('risk_level', 'unknown')}\n")
 
     except Exception as e:
         print(f"[BACKEND DB] ✗ Error: {e}\n")

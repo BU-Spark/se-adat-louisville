@@ -39,9 +39,10 @@ class Affordability(BaseModel):
     ami80: conint(ge=0) = 0
 
 class AssessmentInput(BaseModel):
-    session_id: Optional[constr(min_length=1)] = None  # Make it optional
+    session_id: Optional[constr(min_length=1)] = None
     project_name: constr(min_length=1)
     project_units_total: conint(gt=0)
+    bgid: constr(min_length=1)  # GISJOIN identifier for census block group
     build_type: Optional[str] = None
     scatter: Optional[bool] = None
     address: constr(min_length=1)
@@ -53,12 +54,12 @@ class AssessmentInput(BaseModel):
 ### ---- Main Route - JUST receives and queues ----
 @app.post("/api/assess")
 async def assess(payload: AssessmentInput):
-    print(f"\n[MAIN.PY] Received request for: {payload.project_name}")
+    print(f"\n[CELERY ROUTE] Received request for: {payload.project_name}")
     
     # Auto-generate UUID if session_id not provided or invalid
     if payload.session_id is None:
         session_id = str(uuid.uuid4())
-        print(f"[MAIN.PY] Generated new session_id: {session_id}")
+        print(f"[CELERY ROUTE] Generated new session_id: {session_id}")
     else:
         try:
             # Validate it's a proper UUID
@@ -67,13 +68,14 @@ async def assess(payload: AssessmentInput):
         except ValueError:
             # If invalid UUID format, generate new one
             session_id = str(uuid.uuid4())
-            print(f"[MAIN.PY] Invalid UUID provided, generated new: {session_id}")
+            print(f"[CELERY ROUTE] Invalid UUID provided, generated new: {session_id}")
     
     # Convert to dict for Celery
     celery_payload = {
-        "session_id": session_id,  # Use validated/generated UUID
+        "session_id": session_id,
         "project_name": payload.project_name,
         "project_units_total": payload.project_units_total,
+        "bgid": payload.bgid,
         "build_type": payload.build_type,
         "scatter": payload.scatter,
         "address": payload.address,
@@ -86,13 +88,13 @@ async def assess(payload: AssessmentInput):
     # Queue task
     task = process_assessment_task.delay(celery_payload)
     
-    print(f"[MAIN.PY] Queued task: {task.id}\n")
+    print(f"[CELERY ROUTE] Queued task: {task.id}\n")
     
     return {
         "status": "queued",
         "message": "Assessment queued for processing",
         "task_id": task.id,
-        "session_id": session_id  # Return the UUID we're using
+        "session_id": session_id
     }
 
 ### ---- Check task status ----
@@ -111,7 +113,7 @@ def get_task_status(task_id: str):
         return {
             "task_id": task_id,
             "status": "processing",
-            "message": "Fake script is running"
+            "message": "Computing recommendation"
         }
     elif task_result.state == 'SUCCESS':
         return {
