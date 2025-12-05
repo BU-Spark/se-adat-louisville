@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 import os
 
-# Import your routes
-from routes.results_api import router as results_router
+# Import router from same folder
+from .results_api import router as resultsRoute  
 
 load_dotenv()
 
@@ -16,7 +16,7 @@ if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
 app = FastAPI(title="ADAT Results API")
 
 # Include routers
-app.include_router(results_router)
+app.include_router(resultsRoute)
 
 @app.get("/health")
 async def health():
