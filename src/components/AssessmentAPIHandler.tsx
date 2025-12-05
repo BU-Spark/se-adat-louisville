@@ -20,11 +20,24 @@ interface ApiResponse {
   session_id: string;
 }
 
+interface TaskResult {
+  status: string;
+  task_id: string;
+  session_id?: string;
+  results?: {
+    eligible?: boolean;
+    total_affordable?: number;
+    total_units?: number;
+    processed_at?: string;
+    [key: string]: unknown; // For any additional result properties
+  };
+}
+
 interface TaskStatusResponse {
   task_id: string;
   status: string;
   message?: string;
-  result?: any;
+  result?: TaskResult;
   error?: string;
 }
 
@@ -34,7 +47,6 @@ interface TaskStatusResponse {
  * This component handles final submission and API communication
  */
 export default function AssessmentAPIHandler() {
-  const [taskId, setTaskId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taskStatus, setTaskStatus] = useState<string | null>(null);
@@ -46,51 +58,54 @@ export default function AssessmentAPIHandler() {
   useEffect(() => {
     // Find the final submit button in step 3
     const step3Form = document.querySelector('#step3 form') as HTMLFormElement;
-    
+
     if (step3Form) {
       const handleFinalSubmit = async (e: Event) => {
         e.preventDefault();
-        
+
         // Collect all form data from the page
         const addressInput = document.getElementById('addressInput') as HTMLInputElement;
         const cityInput = document.getElementById('cityInput') as HTMLInputElement;
         const zipcodeInput = document.getElementById('zipcodeInput') as HTMLInputElement;
+        const stateSelect = document.getElementById('stateSelect') as HTMLSelectElement;
         const numUnitsInput = document.getElementById('numUnitsInput') as HTMLInputElement;
         const units80Input = document.getElementById('units80AMI') as HTMLInputElement;
         const units50Input = document.getElementById('units50AMI') as HTMLInputElement;
         const units30Input = document.getElementById('units30AMI') as HTMLInputElement;
-        
+        const units60Input = document.getElementById('units60AMI') as HTMLInputElement;
+        const units70Input = document.getElementById('units70AMI') as HTMLInputElement;
+
         // Validate all inputs are filled
-        if (!addressInput?.value || !cityInput?.value || !zipcodeInput?.value) {
-          alert('Please complete Step 1: Enter address, city, and zipcode');
+        if (!addressInput?.value || !cityInput?.value || !zipcodeInput?.value || !stateSelect?.value) {
+          alert('Please complete Step 1: Enter address, city, state, and zipcode');
           return;
         }
-        
+
         if (!numUnitsInput?.value || parseInt(numUnitsInput.value) < 1) {
           alert('Please complete Step 2: Enter a valid number of units');
           return;
         }
-        
+
         // Build the form data object
         const formData: FormData = {
           address: addressInput.value,
           city: cityInput.value,
           zip: zipcodeInput.value,
-          state: 'MA', // Default to Massachusetts, you can make this dynamic
+          state: stateSelect.value,
           project_units_total: parseInt(numUnitsInput.value),
           ami80: parseInt(units80Input?.value || '0'),
           ami50: parseInt(units50Input?.value || '0'),
           ami30: parseInt(units30Input?.value || '0'),
-          ami60: 0, // Not in your form, but required by API
-          ami70: 0, // Not in your form, but required by API
+          ami60: parseInt(units60Input?.value || '0'),
+          ami70: parseInt(units70Input?.value || '0'),
         };
-        
+
         console.log('Submitting assessment:', formData);
         await submitAssessment(formData);
       };
-      
+
       step3Form.addEventListener('submit', handleFinalSubmit);
-      
+
       return () => {
         step3Form.removeEventListener('submit', handleFinalSubmit);
       };
@@ -100,7 +115,7 @@ export default function AssessmentAPIHandler() {
   const submitAssessment = async (formData: FormData) => {
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       // Prepare payload for API
       const payload = {
@@ -133,37 +148,36 @@ export default function AssessmentAPIHandler() {
       });
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data: ApiResponse = await response.json();
       console.log('API Response:', data);
 
-      setTaskId(data.task_id);
       setSessionId(data.session_id);
       setTaskStatus('queued');
 
       // Show initial success message
       alert(
         `✅ Assessment submitted successfully!\n\n` +
-        `Task ID: ${data.task_id}\n` +
-        `Session ID: ${data.session_id}\n\n` +
-        `Processing your assessment... This will take about 3-5 seconds.`
+          `Task ID: ${data.task_id}\n` +
+          `Session ID: ${data.session_id}\n\n` +
+          `Processing your assessment... This will take about 3-5 seconds.`
       );
 
       // Start polling for task status
       pollTaskStatus(data.task_id);
-
     } catch (err) {
       console.error('Submission error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
       alert(
         `❌ Error submitting assessment\n\n` +
-        `${err instanceof Error ? err.message : 'Unknown error'}\n\n` +
-        `Please check:\n` +
-        `1. Backend is running (http://localhost:8000)\n` +
-        `2. Redis is running\n` +
-        `3. Celery worker is running`
+          `${err instanceof Error ? err.message : 'Unknown error'}\n\n` +
+          `Please check:\n` +
+          `1. Backend is running (${API_BASE_URL}/health)\n` +
+          `2. Redis is running\n` +
+          `3. Celery worker is running`
       );
     } finally {
       setIsSubmitting(false);
@@ -179,17 +193,17 @@ export default function AssessmentAPIHandler() {
         setTaskStatus('timeout');
         alert(
           `⏱️ Polling timeout\n\n` +
-          `The task is still processing after 60 seconds.\n` +
-          `This might be normal for complex assessments.\n\n` +
-          `Check the Celery worker logs for progress.\n` +
-          `Session ID: ${sessionId}`
+            `The task is still processing after 60 seconds.\n` +
+            `This might be normal for complex assessments.\n\n` +
+            `Check the Celery worker logs for progress.\n` +
+            `Session ID: ${sessionId}`
         );
         return;
       }
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/task/${taskId}`);
-        
+
         if (!response.ok) {
           throw new Error(`Status check failed: ${response.status}`);
         }
@@ -201,31 +215,29 @@ export default function AssessmentAPIHandler() {
 
         if (status.status === 'completed') {
           console.log('Task completed!', status.result);
-          
+
           const results = status.result?.results;
           const eligible = results?.eligible ? 'YES ✅' : 'NO ❌';
-          
+
           alert(
             `🎉 Assessment Complete!\n\n` +
-            `Eligible for Development: ${eligible}\n\n` +
-            `Affordable Units: ${results?.total_affordable || 'N/A'}\n` +
-            `Total Units: ${results?.total_units || 'N/A'}\n` +
-            `Processed At: ${results?.processed_at || 'N/A'}\n\n` +
-            `Session ID: ${sessionId}\n` +
-            `Check your Supabase database for full details.`
+              `Eligible for Development: ${eligible}\n\n` +
+              `Affordable Units: ${results?.total_affordable || 'N/A'}\n` +
+              `Total Units: ${results?.total_units || 'N/A'}\n` +
+              `Processed At: ${results?.processed_at || 'N/A'}\n\n` +
+              `Session ID: ${sessionId}\n` +
+              `Check your Supabase database for full details.`
           );
           return;
-          
         } else if (status.status === 'failed') {
           setError(status.error || 'Task failed');
           alert(
             `❌ Assessment Failed\n\n` +
-            `Error: ${status.error || 'Unknown error'}\n\n` +
-            `Task ID: ${taskId}\n` +
-            `Check the Celery worker logs for details.`
+              `Error: ${status.error || 'Unknown error'}\n\n` +
+              `Task ID: ${taskId}\n` +
+              `Check the Celery worker logs for details.`
           );
           return;
-          
         } else {
           // Still processing, poll again
           attempts++;
@@ -236,10 +248,10 @@ export default function AssessmentAPIHandler() {
         setError(err instanceof Error ? err.message : 'Error checking status');
         alert(
           `❌ Error checking task status\n\n` +
-          `${err instanceof Error ? err.message : 'Unknown error'}\n\n` +
-          `The task may still be processing. Check:\n` +
-          `1. Backend is still running\n` +
-          `2. Task ID: ${taskId}`
+            `${err instanceof Error ? err.message : 'Unknown error'}\n\n` +
+            `The task may still be processing. Check:\n` +
+            `1. Backend is still running\n` +
+            `2. Task ID: ${taskId}`
         );
         return;
       }
