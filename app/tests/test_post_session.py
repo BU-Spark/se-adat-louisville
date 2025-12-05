@@ -108,15 +108,15 @@ def run_test():
         print("PowerShell (Invoke-RestMethod):")
         ps_cmd = (
             f"Invoke-RestMethod -Uri \"{delete_url}\" -Method DELETE -Headers @{{\n"
-            f"  'apikey' = '{SUPABASE_SERVICE_ROLE_KEY}';\n"
-            f"  'Authorization' = 'Bearer {SUPABASE_SERVICE_ROLE_KEY}';\n"
+            f"  'apikey' = 'SERVICE_ROLE_KEY';\n"
+            f"  'Authorization' = 'Bearer SERVICE_ROLE_KEY';\n"
             + (f"  'Content-Profile' = '{SUPABASE_SCHEMA}';\n  'Accept-Profile' = '{SUPABASE_SCHEMA}';\n" if SUPABASE_SCHEMA and SUPABASE_SCHEMA != 'public' else "")
             + " }}"
         )
         print(ps_cmd)
         print("curl (bash):")
         curl_cmd = (
-            f"curl -X DELETE '{delete_url}' -H \"apikey: {SUPABASE_SERVICE_ROLE_KEY}\" -H \"Authorization: Bearer {SUPABASE_SERVICE_ROLE_KEY}\""
+            f"curl -X DELETE '{delete_url}' -H \"apikey: SERVICE_ROLE_KEY\" -H \"Authorization: Bearer SERVICE_ROLE_KEY\""
             + (f" -H \"Content-Profile: {SUPABASE_SCHEMA}\" -H \"Accept-Profile: {SUPABASE_SCHEMA}\"" if SUPABASE_SCHEMA and SUPABASE_SCHEMA != 'public' else "")
         )
         print(curl_cmd)
