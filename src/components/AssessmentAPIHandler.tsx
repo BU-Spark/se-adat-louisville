@@ -9,8 +9,8 @@ interface FormData {
   ami80: number;
   ami50: number;
   ami30: number;
-  ami60: number;
-  ami70: number;
+  ami60: 0;
+  ami70: 0;
 }
 
 interface ApiResponse {
@@ -29,7 +29,7 @@ interface TaskResult {
     total_affordable?: number;
     total_units?: number;
     processed_at?: string;
-    [key: string]: unknown; // For any additional result properties
+    [key: string]: unknown;
   };
 }
 
@@ -41,33 +41,24 @@ interface TaskStatusResponse {
   error?: string;
 }
 
-/**
- * This component works ALONGSIDE your existing AssessmentForm.tsx
- * AssessmentForm.tsx handles form progression (steps 1-3)
- * This component handles final submission and API communication
- */
 export default function AssessmentAPIHandler() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taskStatus, setTaskStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Backend API URL - should be configured via environment variable
   const API_BASE_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
   useEffect(() => {
-    // Find the final submit button in step 3
     const step3Form = document.querySelector('#step3 form') as HTMLFormElement;
 
     if (step3Form) {
       const handleFinalSubmit = async (e: Event) => {
         e.preventDefault();
 
-        // Collect all form data from the page
         const addressInput = document.getElementById('addressInput') as HTMLInputElement;
         const cityInput = document.getElementById('cityInput') as HTMLInputElement;
         const zipcodeInput = document.getElementById('zipcodeInput') as HTMLInputElement;
-        const stateSelect = document.getElementById('stateSelect') as HTMLSelectElement;
         const numUnitsInput = document.getElementById('numUnitsInput') as HTMLInputElement;
         const units80Input = document.getElementById('units80AMI') as HTMLInputElement;
         const units50Input = document.getElementById('units50AMI') as HTMLInputElement;
@@ -75,9 +66,9 @@ export default function AssessmentAPIHandler() {
         const units60Input = document.getElementById('units60AMI') as HTMLInputElement;
         const units70Input = document.getElementById('units70AMI') as HTMLInputElement;
 
-        // Validate all inputs are filled
-        if (!addressInput?.value || !cityInput?.value || !zipcodeInput?.value || !stateSelect?.value) {
-          alert('Please complete Step 1: Enter address, city, state, and zipcode');
+        // Remove state from validation since we're hardcoding it
+        if (!addressInput?.value || !cityInput?.value || !zipcodeInput?.value) {
+          alert('Please complete Step 1: Enter address, city, and zipcode');
           return;
         }
 
@@ -86,12 +77,11 @@ export default function AssessmentAPIHandler() {
           return;
         }
 
-        // Build the form data object
         const formData: FormData = {
           address: addressInput.value,
           city: cityInput.value,
           zip: zipcodeInput.value,
-          state: stateSelect.value,
+          state: 'KY', // Hardcoded for Louisville, Kentucky
           project_units_total: parseInt(numUnitsInput.value),
           ami80: parseInt(units80Input?.value || '0'),
           ami50: parseInt(units50Input?.value || '0'),
@@ -117,8 +107,8 @@ export default function AssessmentAPIHandler() {
     setError(null);
 
     try {
-      // Prepare payload for API
       const payload = {
+        session_id: null,
         project_name: `${formData.address}, ${formData.city}`,
         project_units_total: formData.project_units_total,
         address: formData.address,
@@ -138,7 +128,6 @@ export default function AssessmentAPIHandler() {
 
       console.log('Sending to API:', payload);
 
-      // Submit to FastAPI backend
       const response = await fetch(`${API_BASE_URL}/api/assess`, {
         method: 'POST',
         headers: {
@@ -158,7 +147,6 @@ export default function AssessmentAPIHandler() {
       setSessionId(data.session_id);
       setTaskStatus('queued');
 
-      // Show initial success message
       alert(
         `✅ Assessment submitted successfully!\n\n` +
           `Task ID: ${data.task_id}\n` +
@@ -166,7 +154,6 @@ export default function AssessmentAPIHandler() {
           `Processing your assessment... This will take about 3-5 seconds.`
       );
 
-      // Start polling for task status
       pollTaskStatus(data.task_id);
     } catch (err) {
       console.error('Submission error:', err);
@@ -185,7 +172,7 @@ export default function AssessmentAPIHandler() {
   };
 
   const pollTaskStatus = async (taskId: string) => {
-    const maxAttempts = 20; // Poll for up to ~60 seconds
+    const maxAttempts = 20;
     let attempts = 0;
 
     const poll = async () => {
@@ -219,15 +206,18 @@ export default function AssessmentAPIHandler() {
           const results = status.result?.results;
           const eligible = results?.eligible ? 'YES ✅' : 'NO ❌';
 
+          // Get the session ID from task result or stored state
+          const resultSessionId = status.result?.session_id || sessionId;
+
+          // Show brief alert then redirect
           alert(
             `🎉 Assessment Complete!\n\n` +
               `Eligible for Development: ${eligible}\n\n` +
-              `Affordable Units: ${results?.total_affordable || 'N/A'}\n` +
-              `Total Units: ${results?.total_units || 'N/A'}\n` +
-              `Processed At: ${results?.processed_at || 'N/A'}\n\n` +
-              `Session ID: ${sessionId}\n` +
-              `Check your Supabase database for full details.`
+              `Redirecting to results page...`
           );
+
+          // Redirect to results page with session ID
+          window.location.href = `/results?session_id=${resultSessionId}`;
           return;
         } else if (status.status === 'failed') {
           setError(status.error || 'Task failed');
@@ -241,7 +231,7 @@ export default function AssessmentAPIHandler() {
         } else {
           // Still processing, poll again
           attempts++;
-          setTimeout(poll, 3000); // Poll every 3 seconds
+          setTimeout(poll, 3000);
         }
       } catch (err) {
         console.error('Error polling task status:', err);
@@ -257,12 +247,9 @@ export default function AssessmentAPIHandler() {
       }
     };
 
-    // Start polling after a short delay
     setTimeout(poll, 2000);
   };
 
-  // This component renders a hidden status indicator
-  // You can optionally show this to the user
   return (
     <div style={{ display: 'none' }} id="assessment-api-status">
       {isSubmitting && <div>Submitting assessment...</div>}

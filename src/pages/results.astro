@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/GeneralLayout.astro';
+import LocationMap from '../components/LocationMap';
+import ToolResults from '../components/ToolResults.astro';
+
+const sessionId = Astro.url.searchParams.get('session_id');
+const hasSessionId = sessionId !== null;
+---
+
+<Layout title="Results">
+  <div class="min-h-screen bg-white font-sans">
+    <div class="w-full bg-white-200 relative">
+      <LocationMap client:idle marker={null} />
+    </div>
+
+    <main style="max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center;">
+      <h1 style="font-size: 24px; font-weight: 600; margin-bottom: 20px;">Assessment Results</h1>
+
+      <div style="margin: 40px 0; min-height: 300px; display: flex; align-items: center; justify-content: center;">
+        {
+          hasSessionId ? (
+            <ToolResults sessionId={sessionId} />
+          ) : (
+            <div
+              style="
+            width: 800px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Instrument Sans', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            background: #FCF8E1;
+            color: #5C4A1A;
+            border-radius: 12px;
+          "
+            >
+              No assessment found
+            </div>
+          )
+        }
+      </div>
+
+      <a
+        href="/assessment"
+        style="
+          display: inline-block;
+          padding: 10px 20px;
+          background: #0070f3;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+          margin-top: 20px;
+        "
+      >
+        {hasSessionId ? 'Start Over' : 'Start Assessment'}
+      </a>
+    </main>
+  </div>
+</Layout>
