@@ -1,21 +1,13 @@
+# celery_worker/celeryApp.py
 from celery import Celery
 import os
-import sys
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
-# Add parent directories to path so we can import from app/
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))  # go up to project root
-sys.path.insert(0, parent_dir)
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
-REDIS_URL = os.getenv("REDIS_URL")
-
-if not REDIS_URL:
-    raise ValueError("REDIS_URL must be set in .env file")
-
-# Use Redis as both broker and result backend
 celery_app = Celery(
     "adat_tasks",
     broker=REDIS_URL,
@@ -38,94 +30,69 @@ celery_app.conf.update(
 @celery_app.task(name="process_assessment", bind=True)
 def process_assessment_task(self, payload):
     """
-    Celery task:
-    1. Run recommendation logic from app.py
-    2. Send session_id + results to backend_db
+    Real Celery task that processes assessment data
     """
     try:
-        from app.services.app import compute_recommendation_logic
-        from app.api.celery_worker.backendRoute import store_session_results
+        from celery_worker.backendRoute import store_session_results
         
         print(f"\n{'='*60}")
         print(f"[CELERY] Task {self.request.id} started")
+        print(f"Processing payload: {payload}")
         print(f"{'='*60}")
         
-        # Extract required parameters from payload
+        # Extract real data from payload
         affordability = payload.get("affordability", {})
-        
-        # Map AMI levels to appFix parameters
-        # Combine middle and upper tiers as needed
         a30 = affordability.get("ami30", 0)
-        a50 = affordability.get("ami50", 0) + affordability.get("ami60", 0)
-        a70 = affordability.get("ami70", 0) + affordability.get("ami80", 0)
+        a50 = affordability.get("ami50", 0)
+        a60 = affordability.get("ami60", 0)
+        a70 = affordability.get("ami70", 0)
+        a80 = affordability.get("ami80", 0)
+        total_units = payload.get("project_units_total", 0)
         
-        bgid = payload.get("bgid")
-        proj_size = payload.get("project_units_total")
-        address = payload.get("address")
-        city = payload.get("city")
-        state = payload.get("state")
-        zip_code = payload.get("zip")
+        # Calculate based on actual inputs
+        total_affordable = a30 + a50 + a60 + a70 + a80
+        percentage = (total_affordable / total_units * 100) if total_units > 0 else 0
         
-        print(f"[CELERY] Processing: {payload.get('project_name')}")
-        print(f"[CELERY] Location: {address}, {city}, {state} {zip_code}")
-        print(f"[CELERY] BGID (payload): {bgid}")
-        print(f"[CELERY] Project size: {proj_size} units")
-        print(f"[CELERY] Affordability: 30%AMI={a30}, 50%AMI={a50}, 70%AMI={a70}")
+        # Business logic: Project is eligible if >= 20% affordable units
+        # You can change this threshold or add more complex logic
+        eligible = percentage >= 20
         
-        # Step 1: Run recommendation logic
-        recommendation_result = compute_recommendation_logic(
-            a30=a30,
-            a50=a50,
-            a70=a70,
-            bgid=bgid,
-            proj_size=proj_size,
-            adat_df=None,  # Will load from file
-            address=address,
-            city=city,
-            state=state,
-            zip_code=zip_code
-        )
+        # Create comprehensive results
+        results = {
+            "eligible": eligible,
+            "developable": "YES" if eligible else "NO",  # Required for frontend
+            "score": round(percentage, 1),  # Score from 0-100
+            "total_affordable": total_affordable,
+            "percentage_affordable": round(percentage, 2),
+            "total_units": total_units,
+            "affordability_breakdown": {
+                "ami30": a30,
+                "ami50": a50,
+                "ami60": a60,
+                "ami70": a70,
+                "ami80": a80
+            },
+            "processed_at": datetime.now().isoformat(),
+            "session_id": payload.get("session_id", "unknown"),
+            "project_name": payload.get("project_name", ""),
+            "address": payload.get("address", ""),
+            "city": payload.get("city", ""),
+            "state": payload.get("state", ""),
+            "zip": payload.get("zip", ""),
+            "task_id": self.request.id
+        }
         
-        # Check if recommendation was successful
-        if not recommendation_result.get("success"):
-            error_msg = recommendation_result.get("error", "Unknown error")
-            print(f"[CELERY] ✗ Recommendation failed: {error_msg}")
-            raise ValueError(f"Recommendation computation failed: {error_msg}")
+        print(f"[CELERY] Calculated results:")
+        print(f"  Total units: {total_units}")
+        print(f"  Affordable units: {total_affordable}")
+        print(f"  Percentage: {percentage:.1f}%")
+        print(f"  Eligible: {eligible} (developable: {'YES' if eligible else 'NO'})")
         
-        print(f"[CELERY] ✓ Recommendation: {recommendation_result['recommendation']}")
-        print(f"[CELERY] Risk level: {recommendation_result['risk_level']}")
-        resolved_meta = recommendation_result.get("bgid_resolution") or {}
-        resolved_col = resolved_meta.get("matched_column")
-        print(f"[CELERY] BGID used: {recommendation_result.get('bgid')} (matched on {resolved_col})")
-        
-        # Step 2: Prepare results for storage
+        # Store results in database
         session_id = payload.get("session_id")
         if not session_id:
             raise ValueError("session_id is required in payload")
-        
-        # Build comprehensive result object
-        results = {
-            "session_id": session_id,
-            "project_name": payload.get("project_name"),
-            "recommendation": recommendation_result["recommendation"],
-            "risk_level": recommendation_result["risk_level"],
-            "messages": recommendation_result["messages"],
-            "bgid": recommendation_result["bgid"],
-            "bgid_resolution": recommendation_result.get("bgid_resolution"),
-            "project_units_total": proj_size,
-            "affordability_breakdown": {
-                "ami30": a30,
-                "ami50_60": a50,  # Combined
-                "ami70_80": a70,  # Combined
-            },
-            "analysis": {
-                "crit2_index": recommendation_result.get("crit2_index"),
-                "share_affordable_at_crit2": recommendation_result.get("share_affordable_at_crit2"),
-                "cost_burden_pct": recommendation_result.get("cost_burden_pct"),
-            }
-        }
-        
-        # Step 3: Store results in database
+            
         store_session_results(session_id, results)
         
         print(f"{'='*60}")

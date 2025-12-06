@@ -21,6 +21,7 @@ try {
 }
 
 const isYes = developable === 'YES';
+const message = isYes ? 'This project meets ADAT requirements' : 'This project does not meet ADAT requirements';
 const bgColor = isYes ? '#E7FCE1' : '#FCF8E1';
 const textColor = isYes ? '#2D5016' : '#5C4A1A';
 ---
@@ -33,7 +34,7 @@ const textColor = isYes ? '#2D5016' : '#5C4A1A';
 />
 
 <div class="tool-results" style={`background-color: ${bgColor}; color: ${textColor};`}>
-  {error ? `Error: ${error}` : developable}
+  {error ? `Error: ${error}` : message}
 </div>
 
 <style>
@@ -44,8 +45,11 @@ const textColor = isYes ? '#2D5016' : '#5C4A1A';
     align-items: center;
     justify-content: center;
     font-family: 'Instrument Sans', sans-serif;
-    font-size: 120px;
+    font-size: 33px;
     font-weight: 600;
-    letter-spacing: -2px;
+    letter-spacing: -0.5px;
+    text-align: center;
+    padding: 2rem;
+    line-height: 1.4;
   }
 </style>
