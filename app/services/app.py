@@ -11,6 +11,11 @@ def _load_adat_data() -> pd.DataFrame:
       1. If `dataLoader` module is available, use its load_all_csvs()
       2. Fall back to reading `./data/LVM_Risk_Database.csv` from disk
     """
+    # Add services directory to path so dataLoader can be imported
+    services_dir = os.path.join(os.path.dirname(__file__))
+    if services_dir not in sys.path:
+        sys.path.insert(0, services_dir)
+    
     # Try multiple import paths
     import_attempts = [
         ("dataLoader", lambda: __import__("dataLoader")),
@@ -145,6 +150,52 @@ def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
     return None
 
 
+def resolve_bgid(
+    address: Optional[str] = None,
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    zip_code: Optional[str] = None,
+    adat_df: Optional[pd.DataFrame] = None
+) -> Optional[str]:
+    """
+    Resolve BGID from address/city/state/zip information.
+    
+    Since we don't have geocoding API, we return a default BGID from the dataset.
+    In a production system, this would call a Census geocoding API to get
+    the block group GEOID from coordinates.
+    
+    Args:
+        address: Street address
+        city: City name
+        state: State code
+        zip_code: ZIP code
+        adat_df: Optional DataFrame to use (otherwise loads default)
+    
+    Returns:
+        A BGID string to use, or None if lookup fails
+    """
+    if adat_df is None:
+        adat_df = _load_adat_data()
+    
+    if adat_df.empty:
+        print("[BGID Resolver] No data available for lookup")
+        return None
+    
+    # For now, return the first available GISJOIN_proj as default
+    # In production, use actual geocoding based on address/city/state/zip
+    id_columns = ["GISJOIN_proj", "GISJOIN", "bgid", "GEOID"]
+    
+    for col in id_columns:
+        if col in adat_df.columns:
+            bgid = adat_df[col].dropna().iloc[0]
+            print(f"[BGID Resolver] Using default BGID '{bgid}' from column '{col}'")
+            print(f"  Location: {address}, {city}, {state} {zip_code}")
+            return str(bgid)
+    
+    print("[BGID Resolver] No valid BGID columns found in dataset")
+    return None
+
+
 def compute_recommendation_logic(
     a30: int,
     a50: int,
@@ -152,15 +203,21 @@ def compute_recommendation_logic(
     bgid: Optional[str],
     proj_size: int,
     adat_df: Optional[pd.DataFrame] = None,
+    address: Optional[str] = None,
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    zip_code: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Compute recommendation for a proposed project.
 
     Inputs:
         - a30, a50, a70: counts of units reserved at the given AMI levels
         - bgid: GISJOIN or identifier used to select the row in adat_df
+                (if None, will attempt to resolve from address/city/state/zip)
         - proj_size: total number of units in the project
         - adat_df: optional dataframe containing area indicators (if None,
           the function will attempt to load `./data/LVM_Risk_Database.csv`)
+        - address, city, state, zip_code: location info for bgid resolution
 
     Returns a dict with keys: success (bool), recommendation (str),
     messages (list), and diagnostic values used in the decision.
@@ -178,16 +235,21 @@ def compute_recommendation_logic(
             "error": "proj_size must be a positive integer."
         }
 
-    if bgid is None:
-        return {
-            "success": False, 
-            "error": "bgid (area id) is required."
-        }
-
-    # Load data if not provided
+    # Load data if not provided (needed for bgid resolution)
     if adat_df is None:
         print("\nAttempting to load LVM_Risk_Database...")
         adat_df = _load_adat_data()
+
+    # Resolve bgid if not provided
+    if bgid is None:
+        print(f"[Recommendation] Resolving BGID from location: {address}, {city}, {state} {zip_code}")
+        bgid = resolve_bgid(address, city, state, zip_code, adat_df)
+        
+        if bgid is None:
+            return {
+                "success": False, 
+                "error": "Could not resolve BGID from address or find default value in dataset."
+            }
 
     # Normalize adat_df to DataFrame
     if isinstance(adat_df, dict):

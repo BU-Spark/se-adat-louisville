@@ -109,7 +109,7 @@ async def get_assessment_results(
 
     result_data["session_id"] = row.get("session_id", session_id)
     result_data["developable"] = row.get("developable", "NO")
-
+    
     try:
         result = AssessmentResult(**result_data)
     except ValidationError as e:
