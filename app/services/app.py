@@ -87,7 +87,8 @@ def _load_adat_data() -> pd.DataFrame:
     return pd.DataFrame()
 
 
-def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
+
+# def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
     """
     Robustly find the sector/area row in the database.
     
@@ -150,50 +151,7 @@ def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
     return None
 
 
-def resolve_bgid(
-    address: Optional[str] = None,
-    city: Optional[str] = None,
-    state: Optional[str] = None,
-    zip_code: Optional[str] = None,
-    adat_df: Optional[pd.DataFrame] = None
-) -> Optional[str]:
-    """
-    Resolve BGID from address/city/state/zip information.
-    
-    Since we don't have geocoding API, we return a default BGID from the dataset.
-    In a production system, this would call a Census geocoding API to get
-    the block group GEOID from coordinates.
-    
-    Args:
-        address: Street address
-        city: City name
-        state: State code
-        zip_code: ZIP code
-        adat_df: Optional DataFrame to use (otherwise loads default)
-    
-    Returns:
-        A BGID string to use, or None if lookup fails
-    """
-    if adat_df is None:
-        adat_df = _load_adat_data()
-    
-    if adat_df.empty:
-        print("[BGID Resolver] No data available for lookup")
-        return None
-    
-    # For now, return the first available GISJOIN_proj as default
-    # In production, use actual geocoding based on address/city/state/zip
-    id_columns = ["GISJOIN_proj", "GISJOIN", "bgid", "GEOID"]
-    
-    for col in id_columns:
-        if col in adat_df.columns:
-            bgid = adat_df[col].dropna().iloc[0]
-            print(f"[BGID Resolver] Using default BGID '{bgid}' from column '{col}'")
-            print(f"  Location: {address}, {city}, {state} {zip_code}")
-            return str(bgid)
-    
-    print("[BGID Resolver] No valid BGID columns found in dataset")
-    return None
+
 
 
 def compute_recommendation_logic(
@@ -240,16 +198,6 @@ def compute_recommendation_logic(
         print("\nAttempting to load LVM_Risk_Database...")
         adat_df = _load_adat_data()
 
-    # Resolve bgid if not provided
-    if bgid is None:
-        print(f"[Recommendation] Resolving BGID from location: {address}, {city}, {state} {zip_code}")
-        bgid = resolve_bgid(address, city, state, zip_code, adat_df)
-        
-        if bgid is None:
-            return {
-                "success": False, 
-                "error": "Could not resolve BGID from address or find default value in dataset."
-            }
 
     # Normalize adat_df to DataFrame
     if isinstance(adat_df, dict):
@@ -276,9 +224,12 @@ def compute_recommendation_logic(
         }
 
     # Use robust sector lookup
-    fmi = find_sector_row(adat_df, bgid)
+    # fmi = find_sector_row(adat_df, bgid)
+
+    fmi = adat_df[adat_df.get("GISJOIN_proj") == bgid]
     
-    if fmi is None:
+    
+    if fmi is None or fmi.empty:
         # Provide helpful diagnostic info
         available_ids = [col for col in adat_df.columns if any(
             keyword in col.lower() for keyword in ['gis', 'join', 'bgid', 'geoid']
@@ -291,6 +242,8 @@ def compute_recommendation_logic(
             "sample_identifiers": adat_df[available_ids[0]].head(5).tolist() if available_ids else [],
             "hint": "Check if bgid value matches the format in the database."
         }
+    
+    fmi = fmi.iloc[0]
 
     # Helper function
     def pct_or_zero(num, denom):
