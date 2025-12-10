@@ -151,10 +151,21 @@ def find_sector_row(
         
         # Try string conversion (handles int vs string mismatches)
         try:
-            matches = adat_df[adat_df[col].astype(str) == str(bgid)]
+            col_str = adat_df[col].astype(str)
+            matches = adat_df[col_str == str(bgid)]
             if not matches.empty:
                 result = matches.iloc[0]
                 return (result, col) if return_column else result
+
+            # Handle GEOID columns that include a prefix like '1500000US'
+            if "geo" in col.lower():
+                bgid_str = str(bgid)
+                # If the column values look like '1500000US###########', compare on suffix
+                if col_str.str.startswith("1500000US").any():
+                    suffix_matches = adat_df[col_str.str[-len(bgid_str):] == bgid_str]
+                    if not suffix_matches.empty:
+                        result = suffix_matches.iloc[0]
+                        return (result, col) if return_column else result
         except (TypeError, ValueError):
             pass
         
