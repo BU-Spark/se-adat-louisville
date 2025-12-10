@@ -1,5 +1,8 @@
 from supabase import create_client, Client
 import pandas as pd
+import geopandas as gpd
+import tempfile
+from pathlib import Path
 from io import StringIO
 import os
 from dotenv import load_dotenv
@@ -60,6 +63,49 @@ def load_all_csvs() -> dict:
     except Exception as e:
         print(f"❌ Error: {e}")
         return {}
+
+
+def load_shapefile() -> gpd.GeoDataFrame:
+    """Load the KY_Jefferson_BG_2023 shapefile from Supabase into memory"""
+    global supabase
+    
+    # Create client on first use
+    if supabase is None:
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    
+    shapefile_name = "KY_Jefferson_BG_2023.shp"
+    companion_files = ["KY_Jefferson_BG_2023.shx", "KY_Jefferson_BG_2023.dbf", "KY_Jefferson_BG_2023.prj"]
+    
+    try:
+        # Create temporary directory for shapefile components
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            
+            # Download main shapefile
+            print(f"Loading shapefile from bucket: {BUCKET_NAME}")
+            shp_data = supabase.storage.from_(BUCKET_NAME).download(shapefile_name)
+            shp_file = temp_path / shapefile_name
+            shp_file.write_bytes(shp_data)
+            print(f"✅ Downloaded {shapefile_name}")
+            
+            # Download companion files
+            for companion in companion_files:
+                try:
+                    companion_data = supabase.storage.from_(BUCKET_NAME).download(companion)
+                    companion_file = temp_path / companion
+                    companion_file.write_bytes(companion_data)
+                    print(f"✅ Downloaded {companion}")
+                except Exception as e:
+                    print(f"⚠️  Could not download {companion}: {e}")
+            
+            # Load shapefile with geopandas (don't transform CRS yet - that happens after filtering)
+            gdf = gpd.read_file(str(shp_file))
+            print(f"✅ Shapefile loaded: {len(gdf)} features × {len(gdf.columns)} columns")
+            return gdf
+            
+    except Exception as e:
+        print(f"❌ Failed to load shapefile: {e}")
+        raise
 
 # run
 if __name__ == "__main__":

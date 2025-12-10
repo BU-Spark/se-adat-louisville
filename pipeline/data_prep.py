@@ -2492,6 +2492,30 @@ def main() -> None:
                 'bucket_path': 'Renthub_quarterly_rent.csv',
                 'file_type': 'rent',
                 'description': 'Quarterly rent data by block group'
+            },
+            {
+                'local_path': 'DHNA/data/gis/KY_Jefferson_BG_2023.shp',
+                'bucket_path': 'KY_Jefferson_BG_2023.shp',
+                'file_type': 'geometry',
+                'description': 'Kentucky Jefferson County Block Group/Tract shapefile (2023) for spatial intersection'
+            },
+            {
+                'local_path': 'DHNA/data/gis/KY_Jefferson_BG_2023.shx',
+                'bucket_path': 'KY_Jefferson_BG_2023.shx',
+                'file_type': 'geometry',
+                'description': 'Shapefile index file (.shx)'
+            },
+            {
+                'local_path': 'DHNA/data/gis/KY_Jefferson_BG_2023.dbf',
+                'bucket_path': 'KY_Jefferson_BG_2023.dbf',
+                'file_type': 'geometry',
+                'description': 'Shapefile attribute database file (.dbf)'
+            },
+            {
+                'local_path': 'DHNA/data/gis/KY_Jefferson_BG_2023.prj',
+                'bucket_path': 'KY_Jefferson_BG_2023.prj',
+                'file_type': 'geometry',
+                'description': 'Shapefile projection file (.prj)'
             }
         ]
     
@@ -2509,17 +2533,25 @@ def main() -> None:
             bucket_path = file_info['bucket_path']
         
             try:
-                # Load CSV to get stats
-                df = pd.read_csv(local_path)
-                row_count = len(df)
-                column_count = len(df.columns)
                 file_size = os.path.getsize(local_path)
-            
-                # Get schema info
-                schema_info = {
-                    'columns': df.columns.tolist(),
-                    'dtypes': df.dtypes.astype(str).to_dict()
-                }
+                
+                # Handle CSV files differently from other files (like shapefiles)
+                if file_name.endswith('.csv'):
+                    # Load CSV to get stats
+                    df = pd.read_csv(local_path)
+                    row_count = len(df)
+                    column_count = len(df.columns)
+                
+                    # Get schema info
+                    schema_info = {
+                        'columns': df.columns.tolist(),
+                        'dtypes': df.dtypes.astype(str).to_dict()
+                    }
+                else:
+                    # For non-CSV files (like shapefiles), just get file size
+                    row_count = None
+                    column_count = None
+                    schema_info = {'type': file_info.get('file_type', 'unknown')}
             
                 # Remove old file from storage first
                 try:
@@ -2532,10 +2564,14 @@ def main() -> None:
                     result = supabase.storage.from_('dhna-output-data').upload(
                         bucket_path,
                         f,
-                        file_options={"content-type": "text/csv"}
+                        file_options={"content-type": "text/csv" if file_name.endswith('.csv') else "application/octet-stream"}
                     )
             
-                print(f"   ✓ Uploaded: {file_name} ({row_count:,} rows, {file_size:,} bytes)")
+                # Print upload message (different format for non-CSV files)
+                if row_count is not None:
+                    print(f"   ✓ Uploaded: {file_name} ({row_count:,} rows, {file_size:,} bytes)")
+                else:
+                    print(f"   ✓ Uploaded: {file_name} ({file_size:,} bytes)")
             
                 # ================================================================
                 # STEP 2: Create metadata reference in database
