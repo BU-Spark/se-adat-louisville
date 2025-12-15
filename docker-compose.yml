@@ -1,9 +1,9 @@
 # docker-compose.yml
-version: '3.8'
 
 services:
   # Frontend (React/Vue/Next.js)
   frontend:
+    image: ghcr.io/bu-spark/se-adat-louisville/frontend:main
     build:
       context: .
       dockerfile: Dockerfile.frontend
@@ -20,6 +20,7 @@ services:
 
   # FastAPI Backend
   backend:
+    image: ghcr.io/bu-spark/se-adat-louisville/backend:main
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -39,6 +40,7 @@ services:
 
   # Celery Worker
   celery_worker:
+    image: ghcr.io/bu-spark/se-adat-louisville/backend:main
     build:
       context: .
       dockerfile: Dockerfile.backend
