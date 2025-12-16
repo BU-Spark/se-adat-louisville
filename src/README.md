@@ -27,7 +27,7 @@ cd src
 npm install
 npm run dev
 ```
-Dev server runs at http://localhost:1234
+Dev server runs at http://localhost:4321
 
 ## Build for Production
 ```
