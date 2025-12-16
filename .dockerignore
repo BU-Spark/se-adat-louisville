@@ -31,6 +31,7 @@ dist/
 .idea/
 
 # Environment
+.env
 .env.local
 *.log
 
