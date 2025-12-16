@@ -18,8 +18,9 @@ PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here
 ```
 ## Running Locally
 ### With Docker Compose
+```
 docker-compose up frontend
-
+```
 ### Manually
 ```
 cd src
