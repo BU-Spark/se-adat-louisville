@@ -62,17 +62,16 @@ For details on the API Setup, see the [Frontend README](src/README.md).
 ## Environment Variables
 List of required environment variables across all components:
 
-# Supabase (get from https://app.supabase.com/project/ttbbmlochycxvdbfxynp/settings/api)
+### Supabase (get from https://app.supabase.com/project/ttbbmlochycxvdbfxynp/settings/api)
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 ```
-# Redis (use this exact value for Docker)
+### Redis (use this exact value for Docker)
 ```
 REDIS_URL=redis://redis:6379/0
 ```
 
-## Known Issues and Bugs
 ## Known Issues and Bugs
 
 - **Celery on Windows:** Celery may fail to start on Windows without using the `--pool=solo` flag.
@@ -107,17 +106,17 @@ To run tests, follow the instructions in the **API README**:
 **`app/api/README.md` → Testing section**
 
 ### Project Structure
-├── pipeline/ # ETL / data processing pipeline
+├── pipeline/              # ETL / data processing pipeline
 ├── app/
-│ ├── api/ # FastAPI backend & Celery worker
-│ └── services/ # Analysis application & policy logic
-├── src/ # Frontend application (Astro + React + Tailwind)
-├── CI/ # Continuous Integration configuration (GitHub Actions)
-├── docker-compose.yml # Local development orchestration
-├── .env.example # Template environment variables
-└── README.md # Main project overview and instructions
+│   ├── api/              # FastAPI backend & Celery worker
+│   └── services/         # Analysis application & policy logic
+├── src/                  # Frontend application (Astro + React + Tailwind)
+├── CI/                   # Continuous Integration configuration (GitHub Actions)
+├── docker-compose.yml    # Local development orchestration
+├── .env.example          # Template environment variables
+└── README.md             # Main project overview and instructions
 
 ## Team Members
-Ramona Bergeron
-Daniel Kryzhanovsky
-Jen (Jenny) Tang
+- Ramona Bergeron
+- Daniel Kryzhanovsky
+- Jen (Jenny) Tang
