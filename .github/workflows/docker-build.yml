@@ -2,7 +2,7 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ main, develop, infra/DockerSetupAndDocs-jt ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
 
