@@ -6,16 +6,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# setup
+# setup - defer client creation to avoid import-time errors
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+supabase: Client = None  # Will be created on first use
 
 BUCKET_NAME = "dhna-output-data"
 
 # all csv are directly loaded into dictionary of dataframes (refer to comments at bottom)
 def load_all_csvs() -> dict:
     """Load all CSV files from bucket directly into memory"""
+    global supabase
+    
+    # Apply httpx monkeypatch before creating Supabase client
+    import httpx
+    if not hasattr(httpx.Client.__init__, '_patched'):
+        _original_httpx_init = httpx.Client.__init__
+        
+        def _patched_httpx_init(self, *args, **kwargs):
+            kwargs.pop('proxy', None)
+            return _original_httpx_init(self, *args, **kwargs)
+        
+        _patched_httpx_init._patched = True
+        httpx.Client.__init__ = _patched_httpx_init
+    
+    # Create client on first use
+    if supabase is None:
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    
     datasets = {}
     
     try:

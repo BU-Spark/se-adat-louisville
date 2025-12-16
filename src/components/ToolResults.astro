@@ -1,29 +1,45 @@
 ---
-const { sessionId } = Astro.props;
+const { sessionId: propSessionId } = Astro.props;
 const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+
+// Fallback: Astro SSR doesn't always read query params correctly
+// The actual sessionId will be obtained client-side
+const sessionId = propSessionId || '';
 
 let developable = null;
 let error = null;
+let messages = null;
+let recommendation = null;
 
-try {
-  const response = await fetch(`${apiUrl}/storage?session_id=${sessionId}`);
-  const data = await response.json();
+if (sessionId) {
+  try {
+    const url = `${apiUrl}/storage?session_id=${sessionId}`;
+    console.log('[ToolResults] Fetching from:', url);
+    
+    const response = await fetch(url);
+    console.log('[ToolResults] Response status:', response.status);
+    
+    const data = await response.json();
+    console.log('[ToolResults] Response data:', data);
 
-  if (data.status === 'error') {
-    error = data.reason;
-  } else if (data.result?.developable !== undefined) {
-    developable = data.result.developable;
-  } else {
-    error = 'Invalid response structure from API';
+    if (data.status === 'error') {
+      error = data.reason;
+    } else if (data.result) {
+      recommendation = data.result.recommendation;
+      developable = data.result.developable;
+      messages = data.result?.messages || null;
+    } else {
+      error = 'Invalid response structure from API';
+    }
+  } catch (err) {
+    console.error('[ToolResults] Fetch error:', err);
+    error = err instanceof Error ? err.message : String(err);
   }
-} catch (err) {
-  error = err.message;
 }
 
-const isYes = developable === 'YES';
-const message = isYes ? 'This project meets ADAT requirements' : 'This project does not meet ADAT requirements';
-const bgColor = isYes ? '#E7FCE1' : '#FCF8E1';
-const textColor = isYes ? '#2D5016' : '#5C4A1A';
+const isRecommended = recommendation === 'recommended';
+const bgColor = isRecommended ? '#E7FCE1' : '#FCF8E1';
+const textColor = isRecommended ? '#2D5016' : '#5C4A1A';
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,9 +49,74 @@ const textColor = isYes ? '#2D5016' : '#5C4A1A';
   rel="stylesheet"
 />
 
-<div class="tool-results" style={`background-color: ${bgColor}; color: ${textColor};`}>
-  {error ? `Error: ${error}` : message}
+<div class="tool-results" id="tool-results-container" style={`background-color: ${bgColor}; color: ${textColor};`}>
+  {error ? `Error: ${error}` : recommendation ? (isRecommended ? 'This project meets ADAT requirements' : 'This project does not meet ADAT requirements') : 'Loading...'}
 </div>
+
+<script define:vars={{ apiUrl }}>
+  // Client-side: Always fetch results from URL params
+  const container = document.getElementById('tool-results-container');
+  if (container) {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    console.log('[ToolResults client] sessionId from URL:', sessionId);
+    
+    if (!sessionId) {
+      container.textContent = 'Error: No session ID in URL';
+      container.style.backgroundColor = '#FCE1E1';
+      container.style.color = '#5C1A1A';
+      return;
+    }
+    
+    const url = `${apiUrl}/storage?session_id=${sessionId}`;
+    console.log('[ToolResults client] Fetching from:', url);
+    
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log('[ToolResults client] Response data:', data);
+        
+        if (data.status === 'error') {
+          const error = data.reason;
+          container.textContent = `Error: ${error}`;
+          container.style.backgroundColor = '#FCE1E1';
+          container.style.color = '#5C1A1A';
+        } else if (data.result?.recommendation !== undefined) {
+          const recommendation = data.result.recommendation;
+          const isRecommended = recommendation === 'recommended';
+          const message = isRecommended ? 'This project meets ADAT requirements' : 'This project does not meet ADAT requirements';
+          const messages = data.result.messages;
+          
+          console.log('[ToolResults client] recommendation:', recommendation);
+          console.log('[ToolResults client] messages:', messages);
+          
+          // Build HTML with main message and messages as plain text below
+          let html = `<div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+            <div>${message}</div>`;
+          
+          if (messages) {
+            const messagesText = Array.isArray(messages) ? messages.join('\n') : messages;
+            html += `<div style="font-size: 16px; white-space: pre-wrap; text-align: center;">${messagesText}</div>`;
+          }
+          
+          html += '</div>';
+          container.innerHTML = html;
+          container.style.backgroundColor = isRecommended ? '#E7FCE1' : '#FCF8E1';
+          container.style.color = isRecommended ? '#2D5016' : '#5C4A1A';
+        } else {
+          container.textContent = 'Error: Invalid response structure from API';
+          container.style.backgroundColor = '#FCE1E1';
+          container.style.color = '#5C1A1A';
+        }
+      })
+      .catch(err => {
+        console.error('[ToolResults client] Fetch error:', err);
+        container.textContent = `Error: ${err.message}`;
+        container.style.backgroundColor = '#FCE1E1';
+        container.style.color = '#5C1A1A';
+      });
+  }
+</script>
 
 <style>
   .tool-results {

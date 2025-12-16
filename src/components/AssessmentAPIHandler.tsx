@@ -20,17 +20,30 @@ interface ApiResponse {
   session_id: string;
 }
 
+interface AssessmentResults {
+  recommendation: 'recommended' | 'not_recommended';
+  messages: string[];
+  risk_level: string;
+  bgid: string;
+  project_units_total?: number;
+  affordability_breakdown?: {
+    ami30: number;
+    ami50_60: number;
+    ami70_80: number;
+  };
+  analysis?: {
+    crit2_index: number;
+    share_affordable_at_crit2: number;
+    cost_burden_pct: number;
+  };
+  [key: string]: unknown;
+}
+
 interface TaskResult {
   status: string;
   task_id: string;
-  session_id?: string;
-  results?: {
-    eligible?: boolean;
-    total_affordable?: number;
-    total_units?: number;
-    processed_at?: string;
-    [key: string]: unknown;
-  };
+  session_id: string;
+  results: AssessmentResults;
 }
 
 interface TaskStatusResponse {
@@ -204,20 +217,27 @@ export default function AssessmentAPIHandler() {
           console.log('Task completed!', status.result);
 
           const results = status.result?.results;
-          const eligible = results?.eligible ? 'YES ✅' : 'NO ❌';
+          const recommendation = results?.recommendation;
+          const isRecommended = recommendation === 'recommended' ? 'YES ✅' : 'NO ❌';
 
           // Get the session ID from task result or stored state
           const resultSessionId = status.result?.session_id || sessionId;
+          console.log('[AssessmentAPIHandler] resultSessionId:', resultSessionId);
+          console.log('[AssessmentAPIHandler] status.result:', status.result);
+          console.log('[AssessmentAPIHandler] sessionId state:', sessionId);
 
           // Show brief alert then redirect
           alert(
             `🎉 Assessment Complete!\n\n` +
-              `Eligible for Development: ${eligible}\n\n` +
+              `Eligible for Development: ${isRecommended}\n\n` +
+              `Session ID: ${resultSessionId}\n\n` +
               `Redirecting to results page...`
           );
 
           // Redirect to results page with session ID
-          window.location.href = `/results?session_id=${resultSessionId}`;
+          const redirectUrl = `/results?session_id=${resultSessionId}`;
+          console.log('[AssessmentAPIHandler] Redirecting to:', redirectUrl);
+          window.location.href = redirectUrl;
           return;
         } else if (status.status === 'failed') {
           setError(status.error || 'Task failed');
