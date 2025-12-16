@@ -68,7 +68,7 @@ def process_assessment_task(self, payload):
         
         print(f"[CELERY] Processing: {payload.get('project_name')}")
         print(f"[CELERY] Location: {address}, {city}, {state} {zip_code}")
-        print(f"[CELERY] BGID: {bgid}")
+        print(f"[CELERY] BGID (payload): {bgid}")
         print(f"[CELERY] Project size: {proj_size} units")
         print(f"[CELERY] Affordability: 30%AMI={a30}, 50%AMI={a50}, 70%AMI={a70}")
         
@@ -94,6 +94,9 @@ def process_assessment_task(self, payload):
         
         print(f"[CELERY] ✓ Recommendation: {recommendation_result['recommendation']}")
         print(f"[CELERY] Risk level: {recommendation_result['risk_level']}")
+        resolved_meta = recommendation_result.get("bgid_resolution") or {}
+        resolved_col = resolved_meta.get("matched_column")
+        print(f"[CELERY] BGID used: {recommendation_result.get('bgid')} (matched on {resolved_col})")
         
         # Step 2: Prepare results for storage
         session_id = payload.get("session_id")
@@ -108,6 +111,7 @@ def process_assessment_task(self, payload):
             "risk_level": recommendation_result["risk_level"],
             "messages": recommendation_result["messages"],
             "bgid": recommendation_result["bgid"],
+            "bgid_resolution": recommendation_result.get("bgid_resolution"),
             "project_units_total": proj_size,
             "affordability_breakdown": {
                 "ami30": a30,
