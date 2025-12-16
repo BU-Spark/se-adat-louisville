@@ -86,10 +86,7 @@ REDIS_URL=redis://redis:6379/0
 
 
 ## Deployment
-**Current Status:** Local development only - not deployed to production.
-
-**For Local Deployment:**
-This project is designed to run via Docker Compose on any machine. See the [Getting Started](#getting-started) section for complete setup instructions.
+**Current Status:** Local development only - not deployed to production. This project is designed to run via Docker Compose on any machine. See the Getting started section for complete setup instructions.
 
 **Recommended platforms:**
 - Frontend: Vercel, Netlify
@@ -103,9 +100,10 @@ Automated tests are implemented for the **API backend**, including unit tests fo
 
 To run tests, follow the instructions in the **API README**:
 
-**`app/api/README.md` → Testing section**
+**`app/api/README.md` → testing section**
 
 ### Project Structure
+```
 ├── pipeline/              # ETL / data processing pipeline
 ├── app/
 │   ├── api/              # FastAPI backend & Celery worker
@@ -115,6 +113,7 @@ To run tests, follow the instructions in the **API README**:
 ├── docker-compose.yml    # Local development orchestration
 ├── .env.example          # Template environment variables
 └── README.md             # Main project overview and instructions
+```
 
 ## Team Members
 - Ramona Bergeron
