@@ -15,7 +15,7 @@ Frontend built with **Astro + React + Tailwind CSS**, connecting to the ADAT bac
 Add your key to `.env`:
 ```env
 PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here
-
+```
 ## Running Locally
 ### With Docker Compose
 docker-compose up frontend
