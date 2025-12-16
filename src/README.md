@@ -21,16 +21,18 @@ PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here
 docker-compose up frontend
 
 ### Manually
+```
 cd src
 npm install
 npm run dev
-
+```
 Dev server runs at http://localhost:1234
 
 ## Build for Production
+```
 npm run build
 npm run preview
-
+```
 Adjust backend URLs in .env if needed.
 
 ## Tips
