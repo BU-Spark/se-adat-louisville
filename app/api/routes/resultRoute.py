@@ -17,9 +17,9 @@ if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
         "Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set"
     )
     
-router = APIRouter()
+router = APIRouter()  # Already has this
 
-# response models --> dummy data shape for proof of concept only, will be changed
+# Response models
 class Affordability(BaseModel):
     ami30: Optional[int] = None
     ami50: Optional[int] = None
@@ -38,9 +38,8 @@ class AssessmentResult(BaseModel):
     building_type: Optional[str] = None
     project_units_total: Optional[int] = None
     affordability: Optional[Affordability] = None
-    developable: Optional[str] = None  # "YES" or "NO"
+    developable: Optional[str] = None
     
-    # Allow any extra fields from the JSONB
     class Config:
         extra = "allow"
 
@@ -56,7 +55,7 @@ class ErrorResponse(BaseModel):
 
 
 # GET route
-@router.get("/storage")
+@router.get("/storage")  # Already correct
 async def get_assessment_results(
     session_id: str = Query(
         "550e8400-e29b-41d4-a716-446655440000",
@@ -65,13 +64,13 @@ async def get_assessment_results(
 ):
     """Get assessment results from database by session_id."""
 
-    # uuid validation
+    # UUID validation
     try:
         UUID(session_id)
     except ValueError:
         return ErrorResponse(status="error", reason="Invalid UUID format for session_id")
 
-    # supabase url
+    # Supabase URL
     url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/tool_results?session_id=eq.{session_id}"
     headers = {
         "apikey": SUPABASE_SERVICE_ROLE_KEY,
@@ -82,7 +81,7 @@ async def get_assessment_results(
         headers["Content-Profile"] = SUPABASE_SCHEMA
         headers["Accept-Profile"] = SUPABASE_SCHEMA
 
-    # fetching from supabase
+    # Fetching from Supabase
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
             resp = await client.get(url, headers=headers)
@@ -96,7 +95,7 @@ async def get_assessment_results(
             detail = resp.text
         return ErrorResponse(status="error", reason=str(detail))
 
-    # parsing through json
+    # Parsing JSON
     try:
         results = resp.json()
     except (ValueError, httpx.ResponseNotRead):
@@ -108,7 +107,6 @@ async def get_assessment_results(
     row = results[0]
     result_data = row.get("results", {}) or {}
 
-    
     result_data["session_id"] = row.get("session_id", session_id)
     result_data["developable"] = row.get("developable", "NO")
 

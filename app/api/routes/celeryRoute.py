@@ -1,34 +1,20 @@
+# celeryRoute.py
 from typing import Optional
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, conint, constr
 from celery.result import AsyncResult
-from celeryApp import celery_app, process_assessment_task
+from celery_worker.celeryApp import celery_app, process_assessment_task
 from dotenv import load_dotenv
 import uuid
 
 load_dotenv()
 
-app = FastAPI(title="ADAT API Gateway")
+router = APIRouter()
 
-# Add CORS middleware to allow frontend requests
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:4321",  # Astro default dev server
-        "http://localhost:3000",  # Alternative dev port
-        "http://localhost:4322",  # Astro alternative port
-        # Add your production domain when deploying:
-        # "https://your-production-domain.com"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
+# REMOVE health endpoint - it should be in main.py
+# @router.get("/api/health")
+# def health():
+#     return {"status": "ok"}
 
 ### ---- Models ----
 class Affordability(BaseModel):
@@ -42,7 +28,6 @@ class AssessmentInput(BaseModel):
     session_id: Optional[constr(min_length=1)] = None
     project_name: constr(min_length=1)
     project_units_total: conint(gt=0)
-    bgid: constr(min_length=1)  # GISJOIN identifier for census block group
     build_type: Optional[str] = None
     scatter: Optional[bool] = None
     address: constr(min_length=1)
@@ -50,9 +35,10 @@ class AssessmentInput(BaseModel):
     state: constr(min_length=2, max_length=2)
     zip: constr(min_length=5, max_length=10)
     affordability: Affordability
+    bgid: Optional[str] = None  # For compute_recommendation_logic
 
 ### ---- Main Route - JUST receives and queues ----
-@app.post("/api/assess")
+@router.post("/api/assess")
 async def assess(payload: AssessmentInput):
     print(f"\n[CELERY ROUTE] Received request for: {payload.project_name}")
     
@@ -62,11 +48,9 @@ async def assess(payload: AssessmentInput):
         print(f"[CELERY ROUTE] Generated new session_id: {session_id}")
     else:
         try:
-            # Validate it's a proper UUID
             uuid.UUID(payload.session_id)
             session_id = payload.session_id
         except ValueError:
-            # If invalid UUID format, generate new one
             session_id = str(uuid.uuid4())
             print(f"[CELERY ROUTE] Invalid UUID provided, generated new: {session_id}")
     
@@ -75,14 +59,14 @@ async def assess(payload: AssessmentInput):
         "session_id": session_id,
         "project_name": payload.project_name,
         "project_units_total": payload.project_units_total,
-        "bgid": payload.bgid,
         "build_type": payload.build_type,
         "scatter": payload.scatter,
         "address": payload.address,
         "city": payload.city,
         "state": payload.state,
         "zip": payload.zip,
-        "affordability": payload.affordability.dict()
+        "affordability": payload.affordability.dict(),
+        "bgid": payload.bgid
     }
     
     # Queue task
@@ -98,7 +82,7 @@ async def assess(payload: AssessmentInput):
     }
 
 ### ---- Check task status ----
-@app.get("/api/task/{task_id}")
+@router.get("/api/task/{task_id}")
 def get_task_status(task_id: str):
     """Check Celery task status"""
     task_result = AsyncResult(task_id, app=celery_app)
@@ -113,7 +97,7 @@ def get_task_status(task_id: str):
         return {
             "task_id": task_id,
             "status": "processing",
-            "message": "Computing recommendation"
+            "message": "Processing assessment"
         }
     elif task_result.state == 'SUCCESS':
         return {

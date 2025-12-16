@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any, List
 import os
+import sys
 import pandas as pd
 
 
@@ -7,39 +8,78 @@ def _load_adat_data() -> pd.DataFrame:
     """Load LVM_Risk_Database table.
 
     Priority order:
-      1. If `toolresults` module is available, use its load_all_csvs()
+      1. If `dataLoader` module is available, use its load_all_csvs()
       2. Fall back to reading `./data/LVM_Risk_Database.csv` from disk
     """
-    try:
+    # Try multiple import paths
+    import_attempts = [
+        ("dataLoader", lambda: __import__("dataLoader")),
+        ("app.services.dataLoader", lambda: __import__("app.services.dataLoader", fromlist=["dataLoader"])),
+        ("app.dataLoader", lambda: __import__("app.dataLoader", fromlist=["dataLoader"])),
+    ]
+    
+    # Also try direct import if we're in the services directory
+    if os.path.basename(os.getcwd()) == "services":
+        import_attempts.insert(0, ("dataLoader (direct)", lambda: __import__("dataLoader")))
+    
+    _tr = None
+    for attempt_name, import_func in import_attempts:
         try:
-            from app import toolresults as _tr
-        except Exception:
-            import toolresults as _tr
-
+            _tr = import_func()
+            print(f"✓ Successfully imported: {attempt_name}")
+            break
+        except Exception as e:
+            print(f"  → Import attempt '{attempt_name}' failed: {e}")
+    
+    if _tr:
         datasets = {}
         if hasattr(_tr, "load_all_csvs"):
             try:
                 datasets = _tr.load_all_csvs() or {}
-            except Exception:
+                print(f"✓ load_all_csvs() returned {len(datasets)} datasets")
+            except Exception as e:
+                print(f"  → load_all_csvs() failed: {e}")
                 datasets = getattr(_tr, "datasets", {}) or {}
         else:
             datasets = getattr(_tr, "datasets", {}) or {}
+            print(f"✓ Using datasets attribute ({len(datasets)} datasets)")
 
         for key in ("LVM_Risk_Database.csv", "LVM_Risk_Database"):
             if key in datasets:
                 df = datasets[key]
                 if isinstance(df, pd.DataFrame):
+                    print(f"✓ Found '{key}' in datasets: {df.shape}")
                     return df
                 else:
-                    return pd.DataFrame(df)
-    except Exception:
-        pass
+                    try:
+                        df = pd.DataFrame(df)
+                        print(f"✓ Converted '{key}' to DataFrame: {df.shape}")
+                        return df
+                    except Exception as e:
+                        print(f"  → Failed to convert '{key}': {e}")
+        
+        print(f"  → LVM_Risk_Database not found. Available keys: {list(datasets.keys())}")
     
     # Fall back to local file
-    try:
-        return pd.read_csv("./data/LVM_Risk_Database.csv")
-    except Exception:
-        return pd.DataFrame()
+    local_paths = [
+        "./data/LVM_Risk_Database.csv",
+        "../data/LVM_Risk_Database.csv",
+        "../../data/LVM_Risk_Database.csv",
+        "data/LVM_Risk_Database.csv",
+        "LVM_Risk_Database.csv",
+    ]
+    
+    for path in local_paths:
+        try:
+            df = pd.read_csv(path)
+            print(f"✓ Loaded from file '{path}': {df.shape}")
+            return df
+        except Exception:
+            pass
+    
+    print(f"✗ All loading methods failed")
+    print(f"  Current directory: {os.getcwd()}")
+    return pd.DataFrame()
 
 
 def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
@@ -146,6 +186,7 @@ def compute_recommendation_logic(
 
     # Load data if not provided
     if adat_df is None:
+        print("\nAttempting to load LVM_Risk_Database...")
         adat_df = _load_adat_data()
 
     # Normalize adat_df to DataFrame
@@ -186,7 +227,7 @@ def compute_recommendation_logic(
             "bgid": bgid,
             "available_identifier_columns": available_ids,
             "sample_identifiers": adat_df[available_ids[0]].head(5).tolist() if available_ids else [],
-            "hint": "Check if bgid value matches the format in the database. Run diagnose_sector.py for detailed analysis."
+            "hint": "Check if bgid value matches the format in the database."
         }
 
     # Helper function

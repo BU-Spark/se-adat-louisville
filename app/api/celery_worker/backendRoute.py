@@ -1,0 +1,52 @@
+# celery_worker/backendRoute.py
+from datetime import datetime, timedelta, timezone
+from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def store_session_results(session_id: str, fake_results: dict):
+    """Store results in Supabase"""
+    if not fake_results or not isinstance(fake_results, dict):
+        raise ValueError(f"fake_results must be a non-empty dict, got: {type(fake_results)}")
+    print(f"\n[CELERY DB] Storing results for session: {session_id}")
+
+    # Load environment variables here
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")  # FIXED NAME
+    
+    # DEBUG: Print what was loaded
+    print(f"[CELERY DB DEBUG] SUPABASE_URL loaded: {'YES' if SUPABASE_URL else 'NO'}")
+    print(f"[CELERY DB DEBUG] SUPABASE_SERVICE_ROLE_KEY loaded: {'YES' if SUPABASE_SERVICE_ROLE_KEY else 'NO'}")
+    
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+        print(f"[CELERY DB DEBUG] Missing: URL={SUPABASE_URL}, KEY={SUPABASE_SERVICE_ROLE_KEY}")
+        raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables must be set")
+
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+    try:
+        # STEP 1: Create/update session first (required for foreign key)
+        now = datetime.now(timezone.utc)
+        session_data = {
+            "session_id": session_id,
+            "created_at": now.isoformat(),
+            "expires_by": (now + timedelta(days=30)).isoformat(),
+            "is_active": True
+        }
+        supabase.table("sessions").upsert(session_data).execute()
+        print("[CELERY DB] ✓ Session created/updated")
+
+        # STEP 2: Now store tool_results (with foreign key to session)
+        result_data = {
+            "session_id": session_id,
+            "results": fake_results,
+            "developable": "YES" if fake_results.get("eligible") else "NO"
+        }
+        supabase.table("tool_results").upsert(result_data).execute()
+        print("[CELERY DB] ✓ Stored in tool_results table\n")
+
+    except Exception as e:
+        print(f"[CELERY DB] ✗ Error: {e}\n")
+        raise
