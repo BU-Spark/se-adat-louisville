@@ -21,10 +21,9 @@ celery_app.conf.update(
     timezone='America/New_York',
     enable_utc=True,
     task_track_started=True,
-    task_time_limit=300,
-    result_expires=3600,
+    task_time_limit=30,
+    result_expires=600,
     broker_connection_retry_on_startup=True,
-    result_backend_transport_options={'visibility_timeout': 3600},
 )
 
 @celery_app.task(name="process_assessment", bind=True)

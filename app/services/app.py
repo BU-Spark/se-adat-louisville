@@ -1,13 +1,7 @@
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, Any, List
 import os
 import sys
 import pandas as pd
-import httpx
-import logging
-
-logger = logging.getLogger(__name__)
-
-CENSUS_GEOCODER_URL = "https://geocoding.geo.census.gov/geocoder/geographies/address"
 
 
 def _load_adat_data() -> pd.DataFrame:
@@ -17,11 +11,6 @@ def _load_adat_data() -> pd.DataFrame:
       1. If `dataLoader` module is available, use its load_all_csvs()
       2. Fall back to reading `./data/LVM_Risk_Database.csv` from disk
     """
-    # Add services directory to path so dataLoader can be imported
-    services_dir = os.path.join(os.path.dirname(__file__))
-    if services_dir not in sys.path:
-        sys.path.insert(0, services_dir)
-    
     # Try multiple import paths
     import_attempts = [
         ("dataLoader", lambda: __import__("dataLoader")),
@@ -93,12 +82,7 @@ def _load_adat_data() -> pd.DataFrame:
     return pd.DataFrame()
 
 
-
-def find_sector_row(
-    adat_df: pd.DataFrame,
-    bgid: Optional[str],
-    return_column: bool = False
-) -> Optional[Tuple[pd.Series, Optional[str]]]:
+def find_sector_row(adat_df: pd.DataFrame, bgid: str) -> Optional[pd.Series]:
     """
     Robustly find the sector/area row in the database.
     
@@ -106,7 +90,7 @@ def find_sector_row(
     1. GISJOIN_proj (primary)
     2. GISJOIN (fallback)
     3. bgid (if exists)
-    4. GEOID/GEOID_bg (if exists)
+    4. GEOID (if exists)
     
     Also handles type mismatches by trying string conversion.
     Handles GISJOIN values with/without leading 'G'.
@@ -114,31 +98,20 @@ def find_sector_row(
     Args:
         adat_df: DataFrame with area risk data
         bgid: Geographic identifier to search for
-        return_column: When True, also return the column that matched
     
     Returns:
-        pandas Series with the matching row (and optional column), or None if not found
+        pandas Series with the matching row, or None if not found
     """
     if adat_df.empty or bgid is None:
-        return (None, None) if return_column else None
+        return None
     
     # List of potential identifier columns to try, in priority order
-    id_columns = [
-        "GISJOIN_proj",
-        "GISJOIN",
-        "bgid",
-        "GEOID",
-        "GEOID_bg",
-        "geoid",
-        "geoid_bg",
-    ]
+    id_columns = ["GISJOIN_proj", "GISJOIN", "bgid", "GEOID"]
     
-    # Also try any column with relevant keywords
-    extra_cols = [
-        col for col in adat_df.columns
-        if any(keyword in col.lower() for keyword in ['gis', 'join', 'bgid', 'geoid'])
-        and col not in id_columns
-    ]
+    # Also try any column with 'gis' or 'join' in the name
+    extra_cols = [col for col in adat_df.columns if any(
+        keyword in col.lower() for keyword in ['gis', 'join']
+    ) and col not in id_columns]
     id_columns.extend(extra_cols)
     
     for col in id_columns:
@@ -148,26 +121,13 @@ def find_sector_row(
         # Try exact match
         matches = adat_df[adat_df[col] == bgid]
         if not matches.empty:
-            result = matches.iloc[0]
-            return (result, col) if return_column else result
+            return matches.iloc[0]
         
         # Try string conversion (handles int vs string mismatches)
         try:
-            col_str = adat_df[col].astype(str)
-            matches = adat_df[col_str == str(bgid)]
+            matches = adat_df[adat_df[col].astype(str) == str(bgid)]
             if not matches.empty:
-                result = matches.iloc[0]
-                return (result, col) if return_column else result
-
-            # Handle GEOID columns that include a prefix like '1500000US'
-            if "geo" in col.lower():
-                bgid_str = str(bgid)
-                # If the column values look like '1500000US###########', compare on suffix
-                if col_str.str.startswith("1500000US").any():
-                    suffix_matches = adat_df[col_str.str[-len(bgid_str):] == bgid_str]
-                    if not suffix_matches.empty:
-                        result = suffix_matches.iloc[0]
-                        return (result, col) if return_column else result
+                return matches.iloc[0]
         except (TypeError, ValueError):
             pass
         
@@ -178,167 +138,11 @@ def find_sector_row(
                 alt = bgid_str[1:] if bgid_str.startswith("G") else f"G{bgid_str}"
                 matches = adat_df[adat_df[col].astype(str) == alt]
                 if not matches.empty:
-                    result = matches.iloc[0]
-                    return (result, col) if return_column else result
+                    return matches.iloc[0]
             except (TypeError, ValueError):
                 pass
     
-    return (None, None) if return_column else None
-
-
-def _geoid_to_gisjoin(bg_geoid: Optional[str]) -> Optional[str]:
-    """Convert a 12-digit block group GEOID to NHGIS-style GISJOIN."""
-    if not bg_geoid:
-        return None
-    geoid_str = str(bg_geoid).zfill(12)
-    return f"G{geoid_str}0"
-
-
-def _geocode_with_census(
-    address: str,
-    city: str,
-    state: str,
-    zip_code: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
-    """Geocode an address and return block group identifiers."""
-    params = {
-        "street": address,
-        "city": city,
-        "state": state,
-        "zip": zip_code or "",
-        "benchmark": "Public_AR_Current",
-        "vintage": "Current_Current",
-        "format": "json",
-    }
-    try:
-        resp = httpx.get(CENSUS_GEOCODER_URL, params=params, timeout=10)
-        resp.raise_for_status()
-    except Exception as exc:
-        print(f"[BGID Resolver] Census geocoder request failed: {exc}")
-        return None
-    
-    try:
-        data = resp.json()
-    except Exception as exc:
-        print(f"[BGID Resolver] Failed to parse geocoder response: {exc}")
-        return None
-    
-    matches = data.get("result", {}).get("addressMatches") or []
-    if not matches:
-        print("[BGID Resolver] No geocoder matches returned")
-        return None
-    
-    match = matches[0]
-    geographies = match.get("geographies") or {}
-    
-    block_info = None
-    for key, value in geographies.items():
-        if "Census Blocks" in key and value:
-            block_info = value[0]
-            break
-    
-    if not block_info:
-        print("[BGID Resolver] No Census block info available in geocoder response")
-        return None
-    
-    block_geoid = str(block_info.get("GEOID", "")).strip()
-    block_group_code = str(block_info.get("BLKGRP", "")).strip()
-    tract_code = str(block_info.get("TRACT", "")).strip().zfill(6)
-    state_fips = str(block_info.get("STATE", "")).strip().zfill(2)
-    county_fips = str(block_info.get("COUNTY", "")).strip().zfill(3)
-    
-    if not block_group_code and block_geoid:
-        # First digit of block code corresponds to block group
-        block_group_code = block_geoid[11:12]
-    block_group_geoid = (
-        f"{state_fips}{county_fips}{tract_code}{block_group_code}"
-        if block_group_code and state_fips and county_fips and tract_code
-        else block_geoid[:12]
-    )
-    
-    return {
-        "coordinates": match.get("coordinates") or {},
-        "block_geoid": block_geoid,
-        "block_group_geoid": block_group_geoid,
-        "state_fips": state_fips,
-        "county_fips": county_fips,
-        "tract_code": tract_code,
-        "block_group_code": block_group_code,
-    }
-
-
-def resolve_bgid(
-    address: Optional[str] = None,
-    city: Optional[str] = None,
-    state: Optional[str] = None,
-    zip_code: Optional[str] = None,
-    adat_df: Optional[pd.DataFrame] = None
-) -> Tuple[Optional[str], Optional[pd.Series], Dict[str, Any]]:
-    """
-    Resolve BGID from address/city/state/zip information.
-    
-    Uses the Census geocoder to obtain a block group GEOID, converts that
-    to GISJOIN format, and looks up the matching row in the adat_df.
-    """
-    details: Dict[str, Any] = {
-        "method": "census_geocoder",
-        "address": address,
-        "city": city,
-        "state": state,
-        "zip": zip_code,
-    }
-    
-    if not (address and city and state):
-        details["error"] = "Address, city, and state are required for BGID resolution."
-        return None, None, details
-    
-    if adat_df is None or adat_df.empty:
-        details["error"] = "ADAT data unavailable; cannot resolve BGID."
-        return None, None, details
-    
-    geocode = _geocode_with_census(address, city, state, zip_code)
-    details["geocode"] = geocode
-    
-    if not geocode:
-        details["error"] = "Geocoding failed or returned no matches."
-        return None, None, details
-    
-    candidates = []
-    if geocode.get("block_group_geoid"):
-        candidates.append(geocode["block_group_geoid"])
-    if geocode.get("block_geoid"):
-        candidates.append(str(geocode["block_geoid"])[:12])
-    
-    gisjoin_candidate = _geoid_to_gisjoin(geocode.get("block_group_geoid"))
-    if gisjoin_candidate:
-        # Prefer GISJOIN when available
-        candidates.insert(0, gisjoin_candidate)
-    
-    # Deduplicate while preserving order
-    seen = set()
-    unique_candidates = []
-    for cand in candidates:
-        if cand and cand not in seen:
-            unique_candidates.append(cand)
-            seen.add(cand)
-    details["candidates_tested"] = unique_candidates
-    
-    for cand in unique_candidates:
-        row, matched_col = find_sector_row(adat_df, cand, return_column=True)
-        if row is not None:
-            resolved_bgid = row.get("GISJOIN_proj") or row.get(matched_col) or cand
-            details.update({
-                "matched_column": matched_col,
-                "matched_value": cand,
-                "resolved_bgid": str(resolved_bgid),
-            })
-            return str(resolved_bgid), row, details
-    
-    details["error"] = "No matching bgid found in ADAT data for the geocoded location."
-    return None, None, details
-
-
-
+    return None
 
 
 def compute_recommendation_logic(
@@ -348,21 +152,15 @@ def compute_recommendation_logic(
     bgid: Optional[str],
     proj_size: int,
     adat_df: Optional[pd.DataFrame] = None,
-    address: Optional[str] = None,
-    city: Optional[str] = None,
-    state: Optional[str] = None,
-    zip_code: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Compute recommendation for a proposed project.
 
     Inputs:
         - a30, a50, a70: counts of units reserved at the given AMI levels
         - bgid: GISJOIN or identifier used to select the row in adat_df
-                (if None, will attempt to resolve from address/city/state/zip)
         - proj_size: total number of units in the project
         - adat_df: optional dataframe containing area indicators (if None,
           the function will attempt to load `./data/LVM_Risk_Database.csv`)
-        - address, city, state, zip_code: location info for bgid resolution
 
     Returns a dict with keys: success (bool), recommendation (str),
     messages (list), and diagnostic values used in the decision.
@@ -380,11 +178,16 @@ def compute_recommendation_logic(
             "error": "proj_size must be a positive integer."
         }
 
-    # Load data if not provided (needed for bgid resolution)
+    if bgid is None:
+        return {
+            "success": False, 
+            "error": "bgid (area id) is required."
+        }
+
+    # Load data if not provided
     if adat_df is None:
         print("\nAttempting to load LVM_Risk_Database...")
         adat_df = _load_adat_data()
-
 
     # Normalize adat_df to DataFrame
     if isinstance(adat_df, dict):
@@ -410,51 +213,22 @@ def compute_recommendation_logic(
             "error": "adat data not available (LVM_Risk_Database.csv missing or empty)."
         }
 
-    # Resolve sector row/bgid
-    resolution_details: Dict[str, Any] = {}
-    fmi_row: Optional[pd.Series] = None
-    matched_column: Optional[str] = None
-
-    if bgid is not None:
-        fmi_row, matched_column = find_sector_row(adat_df, bgid, return_column=True)
-        if fmi_row is not None:
-            resolution_details = {
-                "method": "provided_bgid",
-                "matched_column": matched_column,
-                "matched_value": bgid,
-            }
-
-    if fmi_row is None:
-        resolved_bgid, fmi_row, resolution_details = resolve_bgid(
-            address=address,
-            city=city,
-            state=state,
-            zip_code=zip_code,
-            adat_df=adat_df
-        )
-        if resolved_bgid:
-            bgid = resolved_bgid
-
-
-    if fmi_row is None:
+    # Use robust sector lookup
+    fmi = find_sector_row(adat_df, bgid)
+    
+    if fmi is None:
         # Provide helpful diagnostic info
         available_ids = [col for col in adat_df.columns if any(
             keyword in col.lower() for keyword in ['gis', 'join', 'bgid', 'geoid']
         )]
-        error_response = {
+        return {
             "success": False,
             "error": f"No area data found for bgid='{bgid}'.",
             "bgid": bgid,
             "available_identifier_columns": available_ids,
             "sample_identifiers": adat_df[available_ids[0]].head(5).tolist() if available_ids else [],
-            "hint": "Check if bgid value matches the format in the database.",
+            "hint": "Check if bgid value matches the format in the database."
         }
-        if resolution_details:
-            error_response["bgid_resolution"] = resolution_details
-        return error_response
-    
-
-    fmi = fmi_row
 
     # Helper function
     def pct_or_zero(num, denom):
@@ -488,16 +262,6 @@ def compute_recommendation_logic(
     # Determine the crit2 index (first aff level covering >50% of renters)
     idx_over50 = aff_df[aff_df["aff_pct"] > 50]
     crit2_index = int(idx_over50.index[0]) if not idx_over50.empty else None
-
-    # DEBUG: Display aff_pct_list and idx_over50 for inspection
-    debug_file = "adat_debug.log"
-    with open(debug_file, "a") as f:
-        f.write(f"[DEBUG] aff_pct_list: {aff_pct_list}\n")
-        f.write(f"[DEBUG] idx_over50: {idx_over50.index.tolist()}\n")
-        f.write(f"[DEBUG] crit2_index: {crit2_index}\n")
-        f.write(f"[DEBUG] aff_df:\n{aff_df}\n")
-        # Will add meets_all_affordable and share_affordable_at_crit2 after they're computed
-        f.write("="*80 + "\n")
 
     crit3_cost_burden = fmi.get("cost_burden30_20_p", 0) or 0
     cost_burden_pct = round(float(crit3_cost_burden) * 100, 0) if crit3_cost_burden else 0
@@ -591,20 +355,6 @@ def compute_recommendation_logic(
             )
             recommendation = "not_recommended"
 
-    # DEBUG: Write decision variables to log
-    debug_file = "adat_debug.log"
-    with open(debug_file, "a") as f:
-        f.write(f"[DEBUG] DECISION LOGIC RESULTS:\n")
-        f.write(f"[DEBUG] share_affordable_at_crit2: {share_affordable_at_crit2}\n")
-        if risk_level == "high":
-            meets_all_affordable = (aff_df.loc[2, "aff_proj"] == proj_size)
-            f.write(f"[DEBUG] meets_all_affordable: {meets_all_affordable}\n")
-        if risk_level == "low" or risk_level == "unknown":
-            share_50_or_below = (aff_df.loc[1, "aff_proj"] / proj_size) if proj_size else 0
-            f.write(f"[DEBUG] share_50_or_below: {share_50_or_below}\n")
-        f.write(f"[DEBUG] recommendation: {recommendation}\n")
-        f.write("="*80 + "\n\n")
-
     # Return structured result
     return {
         "success": True,
@@ -612,7 +362,6 @@ def compute_recommendation_logic(
         "messages": messages,
         "risk_level": risk_level,
         "bgid": bgid,
-        "bgid_resolution": resolution_details,
         "crit2_index": crit2_index,
         "share_affordable_at_crit2": share_affordable_at_crit2,
         "cost_burden_pct": cost_burden_pct,
