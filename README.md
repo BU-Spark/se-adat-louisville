@@ -38,11 +38,8 @@ cd se-adat-louisville
 cp .env.example .env
 # Edit .env with your configuration
 
-# Build Docker image
-docker-compose build
-
-# Start all services
-docker-compose up
+# Build Docker image and start all services
+docker-compose up --build
 ```
 ### Manual Setup (Alternative)
 Instructions for running each component individually (link to component READMEs)
