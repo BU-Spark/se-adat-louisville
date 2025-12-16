@@ -59,7 +59,7 @@ For details on the API Setup, see the [Frontend README](src/README.md).
 ## Environment Variables
 List of required environment variables across all components:
 
-+### Supabase (get from `https://app.supabase.com/project/ttbbmlochycxvdbfxynp/settings/api`)
+### Supabase (get from `https://app.supabase.com/project/ttbbmlochycxvdbfxynp/settings/api`)
 ```bash
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
