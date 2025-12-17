@@ -1,0 +1,394 @@
+/* ================================
+   Import Global Styles (includes fonts)
+================================ */
+@import './global.css';
+
+/* ================================
+   Base + Design Tokens
+================================ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img, video { max-width: 100%; height: auto; display: block; }
+
+:root{
+  /* Layout */
+  --max: 1160px;               /* content max width */
+  --pad: 24px;                 /* side padding */
+  --gap: 24px;                 /* vertical rhythm */
+
+  /* Type */
+  --font: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --body: rgba(0,0,0,.68);
+  --muted: rgba(0,0,0,.58);
+  --heading: #3a3a3a;
+
+  /* Brand */
+  --accent: #ffba37;
+  --card: #fcf8f8ad;
+  --line: #eaeaea;
+}
+
+body{
+  font-family: var(--font);
+  color: var(--body);
+  line-height: 1.6;
+  background: #fff;
+}
+
+/* Utilities */
+.container{
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+.stack > * { margin-block: 0; }
+.stack > * + * { margin-block-start: var(--gap); }
+
+.u{ text-decoration: underline; }
+.text-underline{ 
+  text-decoration: underline; 
+  text-underline-offset: 2px; 
+}
+.text-bold{ font-weight: 700; }
+.strong{ font-weight: 700; }
+
+/* ================================
+   Hero (unchanged markup)
+================================ */
+.hero-section{
+  /* Background moved to ::before so we can apply filters without affecting text */
+  position: relative;
+  overflow: hidden;
+  /* Extend hero deeper down the screen */
+  min-height: max(50vh, min(70vh, 40vh + 20vw));
+  margin-bottom: 56px;
+  display: flex;
+  align-items: flex-end; /* keeps content near bottom for a dramatic hero; adjust as needed */
+}
+
+.hero-section::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/education/skyhouse.jpg');
+  background-position: 25% 65%;
+  /* Enlarge background while keeping a consistent crop/focal area */
+  background-size: max(140vw, 150vh) auto;
+  background-repeat: no-repeat;
+  filter: saturate(1.25) contrast(1.05);
+  z-index: 0;
+}
+
+.hero-content{ padding-bottom: clamp(0px, 4vw, 10px); margin-bottom: clamp(20px, 4vw, 40px); position: relative; z-index: 1; }
+.hero-text-section{ 
+  /* Push content further right while staying responsive */
+  padding-left: clamp(10px, 8vw, calc(var(--pad) + 120px)); 
+}
+.hero-title{
+  color:#fff; font-weight:400; line-height:1.03;
+  font-family: 'MuseoModerno', sans-serif;
+  font-size: clamp(60px, 6vw, 84px);
+  max-width: 15ch;
+  margin: 0 0 28px;
+}
+.hero-description{ display:flex; align-items:center; gap: 16px; border-radius: 20px; }
+.hero-icon{ width: clamp(60px, 6vw, 80px); height: clamp(60px, 6vw, 80px); }
+.hero-desc-text{ color:#fff; font-size: clamp(15px, 1.6vw, 20px); max-width: 28ch; line-height: 1.3; }
+
+/* ================================
+   Section header pattern
+   (used by ADAT?, Housing Need, Role, How to Use)
+================================ */
+.section-header{
+  display:flex; align-items:center; gap: 16px;
+  padding-block: 20px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+  color: #ffffff; 
+}
+.section-header .section-icon-container{
+  display:grid; place-items:center;
+  background: var(--accent);
+  border: 3px solid var(--accent);
+  border-radius: 26px;
+  padding: 10px;
+}
+.section-header .section-icon{ width: 28px; height: 28px; }
+.section-title{
+  color: var(--heading);
+  opacity: 68%;
+  font-weight: 600;
+  font-size: clamp(20px, 3vw, 35px);
+  line-height: 1.2;
+  margin: 0;
+}
+.divider-line{
+  height:1px; 
+  background:#00000033; 
+  margin-block: 0px 0;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+/* Make all top headers align to the same container */
+.content-section > .scroll-container,
+.content-section > .section-content,
+.content-section > .section-header,
+.overview-wrap,
+.housing-mismatch-section,
+.role-cards-section, 
+.adat-diagram-container {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+/* ================================
+   “What is ADAT?” body block
+================================ */
+.content-row{
+  margin-top: 40px;
+  display:grid; gap: 32px;
+  grid-template-columns: 1fr;
+}
+.content-left .main-text{
+  font-size: clamp(16px, 2.2vw, 18px);
+  line-height: 1.4;
+}
+.right-content-top .right-caption,
+.left-content-bottom .image-caption {
+  text-align: center;
+  text-transform: uppercase; font-style: italic; font-weight: 600; font-size: 12px; color: #000; opacity: 68%;
+}
+.right-subtitle{ color:#6b6b6b; font-weight:600; font-style: italic; font-size: 24px; margin:0; }
+.right-text{ font-size: clamp(16px, 2.2vw, 18px); }
+
+.video-wrapper{ width:100%; aspect-ratio: 555/305; border-radius:10px; overflow:hidden; }
+.right-video{ width:100%; height:100%; object-fit: cover; }
+
+
+/* ================================
+   Overview (under Housing Need)
+================================ */
+.overview-content {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+.overview-title{
+  color: var(--heading); opacity: 68%;font-weight:700; font-size: clamp(24px, 3vw, 32px); margin: 48px 0 8px;
+}
+.overview-text{
+  font-size: clamp(18px, 2.4vw, 22px);
+  line-height: 1.35;
+}
+
+/* ================================
+   Rent Burden
+================================ */
+
+.rent-burden-title{
+  color: var(--heading);
+  opacity: 68%;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 600;
+  margin: 50px 0 8px;
+}
+.rent-burden-row{
+  display:grid; gap: 24px;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+.rent-burden-quote{
+  font-size: clamp(20px, 3.4vw, 34px);
+  line-height: 1.2;
+  font-style: italic;
+  color: var(--body);
+  opacity: 68%;
+  margin: 0;
+}
+.rent-burden-description{
+  font-size: clamp(16px, 2.2vw, 20px);
+  line-height: 1.4;
+  color: var(--body);
+  opacity: 68%;
+}
+
+/* Chart + legend */
+.chart-section{ 
+  margin-block: 24px 0; 
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr; /* stack on small screens */
+}
+
+.chart-container{
+  border: 3px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  background:#fff;
+}
+.chart-sidebar{ display:flex; flex-direction:column; gap: 20px; align-items:flex-end; }
+.chart-sidebar .chart-sidebar-container{
+  border: 3px solid var(--line); border-radius: 14px; padding: 55px 14px; background:#fff;
+}
+
+
+/* ================================
+   Housing Mismatch
+================================ */
+.housing-mismatch-title{
+  color: var(--heading);
+  font-weight: 700;
+  font-size: clamp(22px, 3vw, 32px);
+  margin: 40px 0 20px;
+  opacity: 68%;
+}
+.housing-mismatch-section{ margin-block: 50px 0; }
+.housing-mismatch-content{
+  display:grid; gap: 24px; grid-template-columns: 1fr;
+}
+.housing-mismatch-text{ font-size: clamp(16px, 2.2vw, 20px); line-height:1.4; }
+.housing-mismatch-right{ display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.housing-chart-container{ border:3px solid var(--line); border-radius:14px; padding: 12px; margin-bottom: 35px; }
+
+
+/* ================================
+   Role Cards (New Figma-based)
+================================ */
+
+.role-cards-section { margin-top: 75px; margin-bottom: 75px; width: 75%}
+.role-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+.role-card {
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  background: #fdfbfb;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+}
+.role-card-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: fill;
+  object-position: center;
+}
+.role-card-title {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+  color: #004597;
+}
+.role-card-description {
+  margin: 0;
+  max-width: 234px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #555555;
+}
+
+/* ================================
+   How to use the ADAT
+================================ */
+
+
+
+/* ================================
+   Small screens polish
+================================ */
+
+@media (max-width: 1024px) {
+  .role-cards-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .housing-mismatch-content{ 
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: auto auto; /* row 1: title, row 2: body */
+    gap: 56px; 
+    align-items: start; 
+  }
+  /* Keep the left column spanning both rows so the title and body flow naturally */
+  .housing-mismatch-text{ grid-column: 1; grid-row: 1 / span 4; }
+  /* Start the chart at row 2 so it top-aligns with the body text, not the title */
+  .housing-mismatch-right{ grid-column: 2; grid-row: 2; align-items: flex-end }
+  .rent-burden-row{ grid-template-columns: 1fr 1fr; gap: 56px; }
+}
+
+@media (min-width: 800px){
+  .content-row{ 
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: auto auto;
+    gap: 24px;
+    column-gap: 56px;
+    align-items:start; 
+  }
+  /* Place chart and sidebar side-by-side from tablet widths */
+  .chart-section{ grid-template-columns: 1fr auto; align-items:start; }
+  .content-left{
+    display: contents;
+    order: initial;
+  }
+  .content-right{
+    display: contents;
+    order: initial;
+  }
+  .content-left .main-text{
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .left-content-bottom{
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .right-content-top{
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .right-content-bottom{
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-header{ padding-inline: var(--pad); }
+  .role-cards-container {
+    grid-template-columns: 1fr;
+  }
+  .role-card {
+    padding: 22px;
+    gap: 18px;
+  }
+  .role-card-image {
+    width: 88px;
+    height: 84px;
+  }
+  .role-card-title {
+    font-size: 20px;
+  }
+  .role-card-description {
+    max-width: 100%;
+    font-size: 14px;
+  }
+  .hero-description{
+    background: rgba(194, 194, 194, 0.8);
+    padding: 0px 16px;
+    max-width: 38ch;
+  }
+}

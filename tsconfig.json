@@ -19,7 +19,7 @@
       "~/": ["./src/"],
       "~/*": ["./src/*"]
     },
-    "types": ["vitest/globals"]
+  "types": ["vitest/globals", "google.maps", "vite/client"]
   },
   "include": ["src/**/*", "**/*.ts", "**/*.tsx", "**/*.astro"],
   "exclude": ["node_modules", "dist", ".astro"]

@@ -1,0 +1,76 @@
+# docker-compose.yml
+
+services:
+  # Frontend (React/Vue/Next.js)
+  frontend:
+    image: ghcr.io/bu-spark/se-adat-louisville/frontend:main
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "4321:4321"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # FastAPI Backend
+  backend:
+    image: ghcr.io/bu-spark/se-adat-louisville/backend:main
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+    command: uvicorn app.api.main:app --reload --host 0.0.0.0 --port 8000
+    networks:
+      - app-network
+
+  # Celery Worker
+  celery_worker:
+    image: ghcr.io/bu-spark/se-adat-louisville/backend:main
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - backend
+    working_dir: /app/app/api/celery_worker
+    command: celery -A celeryApp worker --loglevel=info --pool=solo
+    networks:
+      - app-network
+
+  # Redis (Message Broker for Celery)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis-data:

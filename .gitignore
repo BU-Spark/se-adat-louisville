@@ -1,3 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment files
+.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Node (Astro frontend)
+node_modules/
+dist/
+build/
+.astro/
+
+# Logs
+*.log
+
+# OS junk
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -38,3 +65,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+=======
+.DS_Store

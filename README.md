@@ -1,130 +1,118 @@
-This is a template for Spark! DS 519 projects. It ships with an Astro 5 + React 19 islands stack, along with eslint.config.mjs ([`ESLint`](https://eslint.org/)) and .prettierrc ([`Prettier`](https://prettier.io/)) aligned to industry-standard guidelines.
+## Overview
+ADAT (Anti-Displacement Assessment Tool) evaluates proposed affordable housing developments by analyzing project details—location, size, and affordability mix—against 14 demographic and economic indicators to calculate neighborhood displacement risk. Based on this risk and local policy rules, it recommends whether projects should be supported. The system is designed with abstraction in mind, allowing other cities to implement their own assessment logic.
 
-## Setting Up Your Developer Experience
+**Key Capabilities:**
+- Automated displacement risk assessment for Louisville neighborhoods
+- Policy-based project evaluation with additional reasoning
+- Affordability requirement enforcement based on area, with stricter rules for higher-risk areas
 
-To get the most out of the linting and formatting workflow, make these IDE changes:
+## Technical Architecture
+<img width="1100" height="443" alt="image" src="https://github.com/user-attachments/assets/a5e43037-bb57-4c4e-860c-a97e5d1174db" />
 
-#### Add this code to your _.vscode/settings.json_
+### Architecture Diagram
 
-```json
-{
-  "editor.formatOnSave": true,
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
-}
+### Tech Stack
+- **Frontend:** Astro, React, Tailwind CSS → Next.js
+- **Backend:** FastAPI, Celery, Redis (Upstash)
+- **Database:** Supabase (PostgreSQL + storage)
+- **Data Pipeline:** Python, Pandas, GeoPandas, NHGIS census data
+- **Infrastructure:** Docker Compose (local), Production TBD
+
+## How to Run
+
+### Prerequisites
+- **Docker & Docker Compose** – for running the full stack locally
+- **Python 3.11+** – required for backend, ETL, and tests
+- **Node.js 20+ & npm** – required for frontend (Astro/React)
+- **Git** – to clone the repository and manage branches
+- **Google Maps API key** – for map features in the frontend
+- Optional for local ETL: 4GB+ RAM recommended due to geospatial processing with GeoPandas and Shapely
+
+### Quick Start with Docker Compose
+```bash
+# Clone the repository
+git clone https://github.com/BU-Spark/se-adat-louisville
+cd se-adat-louisville
+
+# Copy environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# Build Docker image and start all services
+docker-compose up --build
+```
+### Manual Setup (Alternative)
+Instructions for running each component individually (link to component READMEs)
+
+#### ETL Setup
+For details on the ETL pipeline, see the [Pipeline README](pipeline/README.md).
+
+#### Analysis App Setup
+For details on the App Setup, see the [Services README](app/services/README.md).
+
+#### API Setup
+For details on the API Setup, see the [API README](app/api/README.md).
+
+#### Frontend Setup
+For details on the API Setup, see the [Frontend README](src/README.md).
+
+## Environment Variables
+List of required environment variables across all components:
+
+### Supabase (get from `https://app.supabase.com/project/ttbbmlochycxvdbfxynp/settings/api`)
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+```
+### Redis (use this exact value for Docker)
+```
+REDIS_URL=redis://redis:6379/0
 ```
 
-#### Download these VSCode extensions:
+## Known Issues and Bugs
 
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- **Celery on Windows:** Celery may fail to start on Windows without using the `--pool=solo` flag.
 
-## Getting Started
+- **Supabase permissions:** API tasks and integration tests require a Supabase **service role key**; using an anon key will cause write operations to fail.
 
-This template uses [Astro](https://docs.astro.build/) with React components mounted as islands.
+- **Redis dependency:** If Redis is not running or misconfigured, asynchronous assessments will not process.
 
-1. Install dependencies
-   ```bash
-   npm install
-   ```
-2. Start the dev server
-   ```bash
-   npm run dev
-   ```
-3. Open [http://localhost:4321](http://localhost:4321) in your browser. Astro will hot-reload when you edit files such as `src/pages/index.astro` or any component under `src/components/`.
+- **Incomplete extracted data:** Some fields in the extracted displacement risk database contain missing values due to gaps in historical census data.
 
-### Useful npm scripts
+- **Frontend deployment:** The frontend is not yet deployed; API URLs and environment variables may require adjustment for production.
 
-- `npm run build` – type-checks with `astro check` and produces a static build in `dist/`.
-- `npm run preview` – serves the production build locally.
-- `npm run lint` – runs ESLint and Prettier on the project.
-- `npm run test` – executes the Vitest suite.
 
-## Testing Your Application
+## Deployment
+**Current Status:** Local development only - not deployed to production. This project is designed to run via Docker Compose on any machine. See the Getting started section for complete setup instructions.
 
-This template includes a Vitest + React Testing Library stack so you can cover Astro islands and utility code.
+**Recommended platforms:**
+- Frontend: Vercel, Netlify
+- Backend: Railway, Render, AWS
+- Database: Supabase (production instance)
 
-<details>
-  <summary><strong>Key Testing Features & Configuration</strong></summary>
+## Development
 
-#### Integrated Tools
+### Running Tests
+Automated tests are implemented for the **API backend**, including unit tests for recommendation logic and integration tests for Supabase-backed endpoints.
 
-- **Vitest:** Fast test runner compatible with Vite/Astro projects.
-- **React Testing Library (RTL):** User-centric utilities for rendering and asserting against React components.
-- **`@testing-library/jest-dom`:** Extends Vitest/Jest matchers with DOM-specific assertions such as `toBeInTheDocument`.
+To run tests, follow the instructions in the **API README**:
 
-#### Configuration Files
+**`app/api/README.md` → testing section**
 
-- **`vitest.config.ts`:** Core Vitest configuration. Sets up jsdom, aliases (`@/` and `~/`), and pulls in the Astro + React plugins.
-- **`vitest.setup.ts`:** Loaded before every test; registers RTL helpers and custom matchers.
+### Project Structure
+```
+├── pipeline/              # ETL / data processing pipeline
+├── app/
+│   ├── api/              # FastAPI backend & Celery worker
+│   └── services/         # Analysis application & policy logic
+├── src/                  # Frontend application (Astro + React + Tailwind)
+├── CI/                   # Continuous Integration configuration (GitHub Actions)
+├── docker-compose.yml    # Local development orchestration
+├── .env.example          # Template environment variables
+└── README.md             # Main project overview and instructions
+```
 
-#### Test File Location
-
-- Co-locate tests with the code they cover (e.g., `Button.test.tsx` next to `Button.tsx`). Vitest is configured to pick up `*.test.{ts,tsx}` files.
-
-</details>
-
-<details>
-  <summary><strong>Running Tests</strong></summary>
-
-- **`npm test`**: Runs the full test suite once. (Used by Husky hooks.)
-  ```bash
-  npm test
-  ```
-- **`npm run test:watch`**: Re-runs affected tests on file change.
-  ```bash
-  npm run test:watch
-  ```
-- **`npm run test:coverage`**: Generates coverage reports in `coverage/`.
-  ```bash
-  npm run test:coverage
-  ```
-  </details>
-
-<details>
-  <summary><strong>Automated Testing with Husky</strong></summary>
-
-To safeguard quality, Husky manages Git hooks:
-
-- **`pre-commit`**: Executes `npx lint-staged` to lint/format staged files before committing.
-- **`pre-push`**: Runs `npm test` to verify the suite before pushing.
-
-Fix any issues surfaced by these hooks prior to completing your Git action.
-
-</details>
-
-<details>
-  <summary><strong>Testing Philosophy</strong></summary>
-
-- **Focus on User Behavior:** Prefer interactions that mirror how someone uses the UI rather than reaching into component internals.
-- **Unit & Integration Coverage:** Mix small targeted tests with broader flows that stitch together multiple islands/utilities.
-- **Confidence over Metrics:** Use coverage to spot gaps, but prioritize scenarios that protect critical behavior.
-- **Readable Tests:** Keep assertions clear and avoid brittle selectors to make the suite easy to maintain.
-</details>
-
-## Managing Environment Variables
-
-Astro loads environment variables from `.env` files using Vite conventions.
-
-- **Local secrets:** Store them in `.env` or `.env.local` (already in `.gitignore`) for values that should never leave your machine.
-- **Expose to the client:** Prefix variables with `PUBLIC_` (e.g., `PUBLIC_ANALYTICS_ID`). Access via `import.meta.env.PUBLIC_ANALYTICS_ID`.
-- **Server-only values:** Variables without the `PUBLIC_` prefix are only available in server-side code (Astro endpoints, server-only utilities).
-- **Provide a template:** Commit an `.env.example` with placeholder values so teammates know which settings to configure.
-
-See the [Astro docs on environment variables](https://docs.astro.build/en/guides/environment-variables/) for deeper control, including runtime vs. build-time values.
-
-## Adding Additional Tech
-
-Astro is flexible and supports many integrations. A few starting points:
-
-- [Astro Integrations](https://docs.astro.build/en/guides/integrations-guide/) – official and community packages (Tailwind, MDX, image optimizers, adapters).
-- [Content Collections](https://docs.astro.build/en/guides/content-collections/) – typed content authoring for blogs, docs, or marketing pages.
-- [SSR & Adapters](https://docs.astro.build/en/guides/server-side-rendering/) – switch from static output to SSR if your deployment needs it.
-- [React Ecosystem](https://docs.astro.build/en/guides/integrations-guide/react/) – guidance on using React libraries within Astro islands.
-
-### Component Libraries
-All new projects are expected to align with a design system. Work with your DS488 design team to determine the component library (e.g., Material UI, Chakra UI, Tailwind UI) that best matches the provided design kit, then integrate it within Astro/React islands.
+## Team Members
+- Ramona Bergeron
+- Daniel Kryzhanovsky
+- Jen (Jenny) Tang
